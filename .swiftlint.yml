@@ -1,0 +1,41 @@
+# SwiftLint Configuration for GitLab Mobile
+
+# Disable rules that are too strict for development
+disabled_rules:
+  - trailing_whitespace
+
+# Opt-in rules for better code quality
+opt_in_rules:
+  - empty_count
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+  - overridden_super_call
+  - redundant_nil_coalescing
+
+# Analyzer rules (for unused_import)
+analyzer_rules:
+  - unused_import
+
+# Exclude files/directories
+excluded:
+  - Pods
+  - Carthage
+  - .build
+  - DerivedData
+
+# Custom rules
+line_length:
+  warning: 120
+  error: 150
+
+function_body_length:
+  warning: 50
+  error: 100
+
+type_body_length:
+  warning: 300
+  error: 500
+
+file_length:
+  warning: 500
+  error: 1000 
