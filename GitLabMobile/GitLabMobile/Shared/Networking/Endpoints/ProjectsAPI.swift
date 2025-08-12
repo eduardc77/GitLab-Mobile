@@ -78,4 +78,3 @@ public enum ProjectsAPI {
         Endpoint(path: "/projects/\(id)")
     }
 }
-

@@ -23,4 +23,3 @@ public struct PersonalProjectsService: PersonalProjectsServiceProtocol, Sendable
         try await api.send(ProjectsAPI.membership(page: page, perPage: perPage))
     }
 }
-

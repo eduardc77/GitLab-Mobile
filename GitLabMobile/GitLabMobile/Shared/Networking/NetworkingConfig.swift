@@ -13,14 +13,15 @@ public struct NetworkingConfig: Sendable {
 public enum AppNetworkingConfig {
     public static func loadFromInfoPlist() -> NetworkingConfig {
         if let dict = Bundle.main.infoDictionary,
-           let gl = dict["GitLabConfiguration"] as? [String: Any],
-           let base = gl["BaseURL"] as? String,
+           let gitLab = dict["GitLabConfiguration"] as? [String: Any],
+           let base = gitLab["BaseURL"] as? String,
            let baseURL = URL(string: base) {
-            let prefix = (gl["APIPrefix"] as? String) ?? "/api/v4"
+            let prefix = (gitLab["APIPrefix"] as? String) ?? "/api/v4"
             return NetworkingConfig(baseURL: baseURL, apiPrefix: prefix)
         }
         // Fallback to gitlab.com
-        return NetworkingConfig(baseURL: URL(string: "https://gitlab.com")!, apiPrefix: "/api/v4")
+        // Avoid force unwrapping
+        let fallbackURL = URL(string: "https://gitlab.com") ?? URL(fileURLWithPath: "/")
+        return NetworkingConfig(baseURL: fallbackURL, apiPrefix: "/api/v4")
     }
 }
-

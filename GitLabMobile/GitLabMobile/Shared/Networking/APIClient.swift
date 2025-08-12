@@ -1,6 +1,6 @@
 import Foundation
 
-public struct APIClient {
+public struct APIClient: Sendable {
     public let baseURL: URL
     public let apiPrefix: String
     public let urlSession: URLSession
@@ -83,4 +83,3 @@ private extension APIClient {
         }
     }
 }
-

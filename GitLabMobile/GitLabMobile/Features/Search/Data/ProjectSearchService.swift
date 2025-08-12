@@ -12,4 +12,3 @@ public struct ProjectSearchService: ProjectSearchServiceProtocol, Sendable {
         try await api.send(ProjectsAPI.search(query, page: page, perPage: perPage))
     }
 }
-

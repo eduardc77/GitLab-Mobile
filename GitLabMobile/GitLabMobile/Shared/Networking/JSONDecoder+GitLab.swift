@@ -8,4 +8,3 @@ public extension JSONDecoder {
         return decoder
     }
 }
-

@@ -2,12 +2,14 @@ import Foundation
 import Security
 import CommonCrypto
 
+/// URLSession delegate that enforces SPKI public key pinning using Base64-encoded SHA-256 hashes.
+/// Pins should be provided as Base64 strings (with or without the "sha256//" prefix). 
+/// Provide pins via Info.plist (top-level key `GitLabSPKIPins`: Array<String>) or inject at init.
 public final class PinnedSessionDelegate: NSObject, URLSessionDelegate {
-    // TODO: populate with Base64-encoded SHA-256 of the SPKI public key(s) for gitlab.com and any self-hosted domains
     private let pinnedSPKISHA256Base64: Set<String>
 
     public init(pins: Set<String> = []) {
-        self.pinnedSPKISHA256Base64 = pins
+        self.pinnedSPKISHA256Base64 = Set(pins.map { PinnedSessionDelegate.normalize(pin: $0) })
         super.init()
     }
 
@@ -51,5 +53,11 @@ public final class PinnedSessionDelegate: NSObject, URLSessionDelegate {
         }
         return Data(hash)
     }
-}
 
+    private static func normalize(pin: String) -> String {
+        if pin.hasPrefix("sha256//") {
+            return String(pin.dropFirst("sha256//".count))
+        }
+        return pin
+    }
+}

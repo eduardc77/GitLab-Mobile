@@ -23,4 +23,3 @@ public struct ExploreProjectsService: ExploreProjectsServiceProtocol, Sendable {
         try await api.send(ProjectsAPI.search(query, page: page, perPage: perPage))
     }
 }
-

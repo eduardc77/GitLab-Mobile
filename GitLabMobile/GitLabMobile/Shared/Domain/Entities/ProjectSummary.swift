@@ -11,4 +11,3 @@ public struct ProjectSummary: Identifiable, Decodable, Equatable, Sendable {
     public let webUrl: URL
     public let lastActivityAt: Date?
 }
-

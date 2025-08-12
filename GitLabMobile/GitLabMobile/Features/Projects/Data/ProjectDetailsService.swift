@@ -13,4 +13,3 @@ public struct ProjectDetailsService: ProjectDetailsServiceProtocol, Sendable {
         try await api.send(ProjectsAPI.project(id: id))
     }
 }
-

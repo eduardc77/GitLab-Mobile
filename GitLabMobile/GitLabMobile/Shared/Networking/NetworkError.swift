@@ -25,4 +25,3 @@ public enum NetworkError: Error, LocalizedError {
         }
     }
 }
-
