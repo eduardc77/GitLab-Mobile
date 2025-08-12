@@ -1,0 +1,86 @@
+name: iOS CI Pipeline
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:  # This allows manual triggering
+
+jobs:
+  # Simple CI for all pushes and PRs
+  ios-ci:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: 'latest-stable'
+    
+    - name: Install SwiftLint
+      run: brew install swiftlint
+    
+    - name: SwiftLint
+      run: swiftlint lint --reporter github-actions-logging
+      continue-on-error: true  # Don't fail build on lint warnings initially
+    
+    - name: Build App
+      run: |
+        xcodebuild build \
+          -scheme "GitLabMobile" \
+          -destination "platform=iOS Simulator,name=iPhone 15,OS=latest" \
+          -configuration Debug
+    
+    - name: Run Unit Tests
+      run: |
+        xcodebuild test \
+          -scheme "GitLabMobile" \
+          -destination "platform=iOS Simulator,name=iPhone 15,OS=latest" \
+          -configuration Debug \
+          -enableCodeCoverage YES \
+          -resultBundlePath UnitTestResults.xcresult
+      continue-on-error: true  # Continue even if no tests exist yet
+    
+    - name: Run Package Tests
+      run: |
+        # Run tests for all packages in the Packages directory (if they exist)
+        if [ -d "Packages" ]; then
+          for package in Packages/*/; do
+            if [ -f "$package/Package.swift" ]; then
+              echo "Testing package: $package"
+              cd "$package"
+              swift test
+              cd ../..
+            fi
+          done
+        else
+          echo "No Packages directory found, skipping package tests"
+        fi
+      continue-on-error: true  # Continue even if no packages exist yet
+    
+    - name: Run UI Tests
+      run: |
+        xcodebuild test \
+          -scheme "GitLabMobile" \
+          -destination "platform=iOS Simulator,name=iPhone 15,OS=latest" \
+          -configuration Debug \
+          -only-testing:GitLabMobileUITests \
+          -resultBundlePath UITestResults.xcresult
+      continue-on-error: true  # Continue even if no UI tests exist yet
+    
+    - name: Upload Unit Test Results
+      uses: actions/upload-artifact@v4
+      if: always()  # Upload even if tests fail
+      with:
+        name: unit-test-results-${{ github.run_number }}
+        path: UnitTestResults.xcresult
+    
+    - name: Upload UI Test Results
+      uses: actions/upload-artifact@v4
+      if: always()  # Upload even if tests fail
+      with:
+        name: ui-test-results-${{ github.run_number }}
+        path: UITestResults.xcresult 
