@@ -1,34 +1,29 @@
-import SwiftUI
+import Observation
 
-public struct AppEnvironment {
-    public let apiClient: APIClient
-    public let exploreService: ExploreProjectsService
-    public let personalProjectsService: PersonalProjectsService
-    public let projectDetailsService: ProjectDetailsService
-    public let authManager: AuthorizationManager
-}
+@MainActor
+@Observable
+final class AppEnvironment {
+    let apiClient: APIClient
+    let exploreService: ExploreProjectsService
+    let personalProjectsService: PersonalProjectsService
+    let projectDetailsService: ProjectDetailsService
+    let authManager: AuthorizationManager
 
-private struct AppEnvironmentKey: EnvironmentKey {
-    static let defaultValue: AppEnvironment = {
+    init() {
         let config = AppNetworkingConfig.loadFromInfoPlist()
-        let oauthService = OAuthService(baseURL: config.baseURL)
-        let authManager = AuthorizationManager(storage: KeychainTokenStorage(), oauthService: oauthService)
-        // API client with pinning delegate and auth provider
-        let sessionDelegate = PinnedSessionDelegate()
+        let oauth = OAuthService(baseURL: config.baseURL)
+        let authManager = AuthorizationManager(oauthService: oauth)
+        let pins = AppPinning.loadPinsFromInfoPlist()
+        let sessionDelegate = PinnedSessionDelegate(pins: pins)
         let client = APIClient(config: config, sessionDelegate: sessionDelegate, authProvider: authManager)
-        return AppEnvironment(
-            apiClient: client,
-            exploreService: ExploreProjectsService(api: client),
-            personalProjectsService: PersonalProjectsService(api: client),
-            projectDetailsService: ProjectDetailsService(api: client),
-            authManager: authManager
-        )
-    }()
-}
+        self.apiClient = client
+        self.exploreService = ExploreProjectsService(api: client)
+        self.personalProjectsService = PersonalProjectsService(api: client)
+        self.projectDetailsService = ProjectDetailsService(api: client)
+        self.authManager = authManager
+    }
 
-public extension EnvironmentValues {
-    var appEnvironment: AppEnvironment {
-        get { self[AppEnvironmentKey.self] }
-        set { self[AppEnvironmentKey.self] = newValue }
+    func createExploreProjectsStore() -> ExploreProjectsStore {
+        ExploreProjectsStore(service: exploreService)
     }
 }

@@ -1,8 +1,16 @@
 import Foundation
 
 public enum ProjectsAPI {
+
+    public enum OrderBy: String {
+        case lastActivityAt = "last_activity_at"
+        case starCount = "star_count"
+        case name = "name"
+        case createdAt = "created_at"
+    }
+
     // Public explore
-    public static func trending(page: Int = 1, perPage: Int = 20) -> Endpoint<[ProjectSummary]> {
+    public static func trending(page: Int = 1, perPage: Int = 20, search: String? = nil) -> Endpoint<[ProjectDTO]> {
         Endpoint(
             path: "/projects",
             queryItems: [
@@ -11,11 +19,12 @@ public enum ProjectsAPI {
                 .init(name: "order_by", value: "last_activity_at"),
                 .init(name: "sort", value: "desc"),
                 .init(name: "visibility", value: "public")
-            ]
+            ].appendingSearch(search),
+            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
         )
     }
 
-    public static func mostStarred(page: Int = 1, perPage: Int = 20) -> Endpoint<[ProjectSummary]> {
+    public static func mostStarred(page: Int = 1, perPage: Int = 20, search: String? = nil) -> Endpoint<[ProjectDTO]> {
         Endpoint(
             path: "/projects",
             queryItems: [
@@ -24,11 +33,12 @@ public enum ProjectsAPI {
                 .init(name: "order_by", value: "star_count"),
                 .init(name: "sort", value: "desc"),
                 .init(name: "visibility", value: "public")
-            ]
+            ].appendingSearch(search),
+            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
         )
     }
 
-    public static func search(_ query: String, page: Int = 1, perPage: Int = 20) -> Endpoint<[ProjectSummary]> {
+    public static func search(_ query: String, page: Int = 1, perPage: Int = 20) -> Endpoint<[ProjectDTO]> {
         Endpoint(
             path: "/projects",
             queryItems: [
@@ -36,7 +46,39 @@ public enum ProjectsAPI {
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "search", value: query),
                 .init(name: "visibility", value: "public")
-            ]
+            ],
+            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
+        )
+    }
+
+    public static func active(page: Int = 1, perPage: Int = 20, search: String? = nil) -> Endpoint<[ProjectDTO]> {
+        // Active == recently updated
+        trending(page: page, perPage: perPage, search: search)
+    }
+
+    public static func inactive(page: Int = 1, perPage: Int = 20, search: String? = nil) -> Endpoint<[ProjectDTO]> {
+        Endpoint(
+            path: "/projects",
+            queryItems: [
+                .init(name: "page", value: String(page)),
+                .init(name: "per_page", value: String(perPage)),
+                .init(name: "order_by", value: "last_activity_at"),
+                .init(name: "sort", value: "asc"),
+                .init(name: "visibility", value: "public")
+            ].appendingSearch(search),
+            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
+        )
+    }
+
+    public static func all(page: Int = 1, perPage: Int = 20, search: String? = nil) -> Endpoint<[ProjectDTO]> {
+        Endpoint(
+            path: "/projects",
+            queryItems: [
+                .init(name: "page", value: String(page)),
+                .init(name: "per_page", value: String(perPage)),
+                .init(name: "visibility", value: "public")
+            ].appendingSearch(search),
+            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
         )
     }
 
@@ -48,7 +90,8 @@ public enum ProjectsAPI {
                 .init(name: "page", value: String(page)),
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "owned", value: "true")
-            ]
+            ],
+            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
         )
     }
 
@@ -59,7 +102,8 @@ public enum ProjectsAPI {
                 .init(name: "page", value: String(page)),
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "starred", value: "true")
-            ]
+            ],
+            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
         )
     }
 
@@ -70,11 +114,46 @@ public enum ProjectsAPI {
                 .init(name: "page", value: String(page)),
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "membership", value: "true")
-            ]
+            ],
+            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
         )
     }
 
-    public static func project(id: Int) -> Endpoint<ProjectSummary> {
+    public static func project(id: Int) -> Endpoint<ProjectDTO> {
         Endpoint(path: "/projects/\(id)")
+    }
+
+    public static func list(
+        orderBy: OrderBy,
+        page: Int = 1,
+        perPage: Int = 20,
+        search: String? = nil,
+        publicOnly: Bool = true
+    ) -> Endpoint<[ProjectDTO]> {
+        var items: [URLQueryItem] = [
+            .init(name: "page", value: String(page)),
+            .init(name: "per_page", value: String(perPage)),
+            .init(name: "order_by", value: orderBy.rawValue)
+        ]
+        if publicOnly { items.append(.init(name: "visibility", value: "public")) }
+        items = items.appendingSearch(search)
+        return Endpoint(
+            path: "/projects",
+            queryItems: items,
+            options: RequestOptions(
+                cachePolicy: nil,
+                timeout: nil,
+                useETag: false
+            )
+        )
+    }
+}
+
+private extension Array where Element == URLQueryItem {
+    func appendingSearch(_ query: String?) -> [URLQueryItem] {
+        guard let query, !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return self }
+        var copy = self
+        copy.append(URLQueryItem(name: "search", value: query))
+        return copy
     }
 }

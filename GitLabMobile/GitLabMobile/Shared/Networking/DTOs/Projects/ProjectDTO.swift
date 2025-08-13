@@ -1,6 +1,6 @@
 import Foundation
 
-public struct ProjectDTO: Decodable, Sendable {
+public struct ProjectDTO: Decodable, Sendable, Equatable {
     public let id: Int
     public let name: String
     public let pathWithNamespace: String

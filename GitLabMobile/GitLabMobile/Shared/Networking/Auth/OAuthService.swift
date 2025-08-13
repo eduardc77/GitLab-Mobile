@@ -26,7 +26,7 @@ public struct OAuthService: Sendable {
         guard let http = response as? HTTPURLResponse, 200..<300 ~= http.statusCode else {
             throw NetworkError.server(statusCode: (response as? HTTPURLResponse)?.statusCode ?? -1, data: data)
         }
-        let decoded = try JSONDecoder().decode(OAuthTokenResponse.self, from: data)
+        let decoded = try JSONDecoder.gitLab.decode(OAuthTokenDTO.self, from: data)
         return decoded.toDomain()
     }
 
@@ -37,7 +37,7 @@ public struct OAuthService: Sendable {
         guard let http = response as? HTTPURLResponse, 200..<300 ~= http.statusCode else {
             throw NetworkError.server(statusCode: (response as? HTTPURLResponse)?.statusCode ?? -1, data: data)
         }
-        let decoded = try JSONDecoder().decode(OAuthTokenResponse.self, from: data)
+        let decoded = try JSONDecoder.gitLab.decode(OAuthTokenDTO.self, from: data)
         return decoded.toDomain()
     }
 }

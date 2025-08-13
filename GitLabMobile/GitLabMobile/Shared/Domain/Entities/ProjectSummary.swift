@@ -1,6 +1,6 @@
 import Foundation
 
-public struct ProjectSummary: Identifiable, Decodable, Equatable, Sendable {
+public struct ProjectSummary: Identifiable, Decodable, Equatable, Sendable, Hashable {
     public let id: Int
     public let name: String
     public let pathWithNamespace: String
