@@ -5,18 +5,32 @@ public struct APIClient: Sendable {
     public let apiPrefix: String
     public let urlSession: URLSession
     private let authProvider: AuthProviding?
+    private let userAgent: String
+    private let acceptLanguage: String
+    private let eTagCache = ETagCache()
 
     public init(
         baseURL: URL,
         apiPrefix: String = "/api/v4",
         sessionDelegate: URLSessionDelegate? = nil,
-        authProvider: AuthProviding? = nil
+        authProvider: AuthProviding? = nil,
+        userAgent: String = "GitLabMobile/1.0 (iOS)",
+        acceptLanguage: String = Locale.preferredLanguages.first ?? "en-US"
     ) {
         self.baseURL = baseURL
         self.apiPrefix = apiPrefix
+        self.userAgent = userAgent
+        self.acceptLanguage = acceptLanguage
         let config = URLSessionConfiguration.default
         config.waitsForConnectivity = true
-        config.requestCachePolicy = .reloadIgnoringLocalCacheData
+        // Use URLCache with protocol-directed caching
+        config.requestCachePolicy = .useProtocolCachePolicy
+        let urlCache = URLCache(
+            memoryCapacity: 20 * 1024 * 1024,   // 20 MB
+            diskCapacity: 100 * 1024 * 1024,    // 100 MB
+            diskPath: "com.gitlabmobile.urlcache"
+        )
+        config.urlCache = urlCache
         self.urlSession = URLSession(configuration: config, delegate: sessionDelegate, delegateQueue: nil)
         self.authProvider = authProvider
     }
@@ -25,8 +39,17 @@ public struct APIClient: Sendable {
         let url = try buildURL(for: endpoint)
         var request = makeRequest(url: url, endpoint: endpoint)
         await applyAuthIfAvailable(&request)
-        let (data, http) = try await perform(request)
+        let (data, http) = try await performWithConditional(request, endpoint: endpoint)
         return try decode(Response.self, data: data, http: http)
+    }
+
+    public func sendPaginated<Item: Decodable>(_ endpoint: Endpoint<[Item]>) async throws -> Paginated<[Item]> {
+        let url = try buildURL(for: endpoint)
+        var request = makeRequest(url: url, endpoint: endpoint)
+        await applyAuthIfAvailable(&request)
+        // For paginated endpoints we avoid memory cache to preserve pagination headers
+        let (data, http) = try await performWithConditional(request, endpoint: endpoint)
+        return try decodePaginated(Item.self, data: data, http: http)
     }
 }
 
@@ -48,6 +71,10 @@ private extension APIClient {
         request.httpMethod = endpoint.method.rawValue
         request.httpBody = endpoint.body
         request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        request.setValue(acceptLanguage, forHTTPHeaderField: "Accept-Language")
+        if let policy = endpoint.options.cachePolicy { request.cachePolicy = policy }
+        if let timeout = endpoint.options.timeout { request.timeoutInterval = timeout }
         endpoint.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
         return request
     }
@@ -71,11 +98,65 @@ private extension APIClient {
         }
     }
 
+    func performWithConditional<Response>(
+        _ request: URLRequest,
+        endpoint: Endpoint<Response>
+    ) async throws -> (Data, HTTPURLResponse) {
+        // Apply ETag/If-None-Match if enabled
+        var conditioned = request
+        if endpoint.options.useETag, let etag = await eTagCache.etag(for: conditioned) {
+            conditioned.setValue(etag, forHTTPHeaderField: "If-None-Match")
+        }
+        let (data, http) = try await perform(conditioned)
+        if let newTag = http.value(forHTTPHeaderField: "Etag")
+            ?? http.value(forHTTPHeaderField: "ETag") {
+            await eTagCache.store(etag: newTag, for: conditioned)
+        }
+        // If-None-Match should not be used for endpoints that disable ETag via options
+        if http.statusCode == 304 {
+            throw NetworkError.server(statusCode: 304, data: nil)
+        }
+        return (data, http)
+    }
+
     func decode<R: Decodable>(_ type: R.Type, data: Data, http: HTTPURLResponse) throws -> R {
         switch http.statusCode {
         case 200..<300:
             if R.self == Data.self, let raw = data as? R { return raw }
-            do { return try JSONDecoder.gitLab.decode(R.self, from: data) } catch { throw NetworkError.decoding(error) }
+            do { return try JSONDecoder.gitLab.decode(R.self, from: data) } catch {
+                if let debugString = String(data: data, encoding: .utf8) {
+                    let urlString = http.url?.absoluteString ?? "-"
+                    let bodySnippet = debugString.prefix(500)
+                    print("Decoding failed for URL: \(urlString)\nBody snippet: \(bodySnippet)")
+                }
+                throw NetworkError.decoding(error)
+            }
+        case 401:
+            throw NetworkError.unauthorized
+        default:
+            throw NetworkError.server(statusCode: http.statusCode, data: data)
+        }
+    }
+
+    func decodePaginated<Item: Decodable>(
+        _ type: Item.Type,
+        data: Data,
+        http: HTTPURLResponse
+    ) throws -> Paginated<[Item]> {
+        switch http.statusCode {
+        case 200..<300:
+            do {
+                let items = try JSONDecoder.gitLab.decode([Item].self, from: data)
+                let pageInfo = PaginationParser.parse(from: http)
+                return Paginated(items: items, pageInfo: pageInfo)
+            } catch {
+                if let debugString = String(data: data, encoding: .utf8) {
+                    let urlString = http.url?.absoluteString ?? "-"
+                    let bodySnippet = debugString.prefix(500)
+                    print("Paginated decode failed for URL: \(urlString)\nBody snippet: \(bodySnippet)")
+                }
+                throw NetworkError.decoding(error)
+            }
         case 401:
             throw NetworkError.unauthorized
         default:

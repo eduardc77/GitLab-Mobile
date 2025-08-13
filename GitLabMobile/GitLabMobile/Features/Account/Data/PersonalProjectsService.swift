@@ -6,7 +6,7 @@ public protocol PersonalProjectsServiceProtocol: Sendable {
     func membership(page: Int, perPage: Int) async throws -> [ProjectSummary]
 }
 
-public struct PersonalProjectsService: PersonalProjectsServiceProtocol, Sendable {
+public struct PersonalProjectsService: PersonalProjectsServiceProtocol {
     private let api: APIClient
 
     public init(api: APIClient) { self.api = api }

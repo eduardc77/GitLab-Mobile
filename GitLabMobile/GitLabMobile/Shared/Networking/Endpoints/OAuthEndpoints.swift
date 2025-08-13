@@ -34,7 +34,7 @@ public enum OAuthEndpoints {
         }
     }
 
-    public func refresh(refreshToken: String) async throws -> OAuthTokenResponse {
+    public func refresh(refreshToken: String) async throws -> OAuthTokenDTO {
         fatalError("Use AuthorizationManager with configured OAuthEndpoints")
     }
 }

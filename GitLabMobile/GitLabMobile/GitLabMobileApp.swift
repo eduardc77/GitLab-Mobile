@@ -6,29 +6,29 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 @main
 struct GitLabMobileApp: App {
+    @State private var appEnv = AppEnvironment()
+
+    init() {
+        Self.configureKingfisher()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(\.appEnvironment, Self.makeEnvironment())
+                .environment(appEnv)
         }
     }
 
-    private static func makeEnvironment() -> AppEnvironment {
-        let config = AppNetworkingConfig.loadFromInfoPlist()
-        let oauth = OAuthService(baseURL: config.baseURL)
-        let authManager = AuthorizationManager(oauthService: oauth)
-        let pins = AppPinning.loadPinsFromInfoPlist()
-        let sessionDelegate = PinnedSessionDelegate(pins: pins)
-        let client = APIClient(config: config, sessionDelegate: sessionDelegate, authProvider: authManager)
-        return AppEnvironment(
-            apiClient: client,
-            exploreService: ExploreProjectsService(api: client),
-            personalProjectsService: PersonalProjectsService(api: client),
-            projectDetailsService: ProjectDetailsService(api: client),
-            authManager: authManager
-        )
+    private static func configureKingfisher() {
+        // Reasonable defaults; tuned for device memory headroom
+        let cache = ImageCache.default
+        cache.memoryStorage.config.totalCostLimit = 30 * 1024 * 1024 // 30 MB
+        cache.diskStorage.config.sizeLimit = 200 * 1024 * 1024 // 200 MB
+        cache.diskStorage.config.expiration = .days(7)
+        KingfisherManager.shared.downloader.downloadTimeout = 15
     }
 }

@@ -1,0 +1,47 @@
+import SwiftUI
+
+public struct ExploreRootView: View {
+    @Environment(AppEnvironment.self) private var appEnvironment
+    @State private var coordinator = ExploreCoordinator()
+
+    public init() {}
+
+    public var body: some View {
+        NavigationStack(path: Bindable(coordinator).navigationPath) {
+            List {
+                Section {
+                    ForEach(ExploreCoordinator.Entry.allCases, id: \.self) { entry in
+                        NavigationLink(value: entry.destination) {
+                            NavigationRow(
+                                systemImage: entry.systemImage,
+                                iconColor: entry.iconColor,
+                                title: entry.title,
+                                subtitle: entry.subtitle
+                            )
+                        }
+                    }
+                }
+                .listSectionSeparator(.hidden, edges: .top)
+            }
+            .listStyle(.plain)
+            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle("Home")
+            .navigationDestination(for: ExploreCoordinator.Destination.self) { dest in
+                switch dest {
+                case .projects:
+                    ExploreProjectsView(store: appEnvironment.createExploreProjectsStore())
+                case .projectDetail(let id):
+                    Text("Project #\(id)")
+                case .users:
+                    Text("Users")
+                case .groups:
+                    Text("Groups")
+                case .topics:
+                    Text("Topics")
+                case .snippets:
+                    Text("Snippets")
+                }
+            }
+        }
+    }
+}

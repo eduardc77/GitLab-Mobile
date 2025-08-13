@@ -7,6 +7,7 @@ public struct Endpoint<Response: Decodable> {
     public var queryItems: [URLQueryItem]
     public var headers: [String: String]
     public var body: Data?
+    public var options: RequestOptions
 
     // If true, `path` is treated as absolute and no prefix will be applied
     public var isAbsolutePath: Bool
@@ -17,7 +18,8 @@ public struct Endpoint<Response: Decodable> {
         queryItems: [URLQueryItem] = [],
         headers: [String: String] = [:],
         body: Data? = nil,
-        isAbsolutePath: Bool = false
+        isAbsolutePath: Bool = false,
+        options: RequestOptions = .default
     ) {
         self.path = path
         self.method = method
@@ -25,5 +27,6 @@ public struct Endpoint<Response: Decodable> {
         self.headers = headers
         self.body = body
         self.isAbsolutePath = isAbsolutePath
+        self.options = options
     }
 }

@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CE84A2402E4BFE3700B03BD6 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = CE84A23F2E4BFE3700B03BD6 /* Kingfisher */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		CE8494CD2E4B783300B03BD6 /* GitLabMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitLabMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE84A2402E4BFE3700B03BD6 /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +84,7 @@
 			);
 			name = GitLabMobile;
 			packageProductDependencies = (
+				CE84A23F2E4BFE3700B03BD6 /* Kingfisher */,
 			);
 			productName = GitLabMobile;
 			productReference = CE8494CD2E4B783300B03BD6 /* GitLabMobile.app */;
@@ -108,6 +114,9 @@
 			);
 			mainGroup = CE8494C42E4B783300B03BD6;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CE84A23E2E4BFE3700B03BD6 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CE8494CE2E4B783300B03BD6 /* Products */;
 			projectDirPath = "";
@@ -376,6 +385,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CE84A23E2E4BFE3700B03BD6 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CE84A23F2E4BFE3700B03BD6 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE84A23E2E4BFE3700B03BD6 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CE8494C52E4B783300B03BD6 /* Project object */;
 }
