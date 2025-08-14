@@ -1,3 +1,11 @@
+//
+//  AppPinning.swift
+//  GitLabMobile
+//
+//  Copyright © 2025 Eliomane. All rights reserved.
+//  Licensed under Apache License v2.0. See LICENSE file.
+//
+
 import Foundation
 
 /// Loads SPKI pin hashes from Info.plist top-level key `GitLabSPKIPins` (Array<String>).
