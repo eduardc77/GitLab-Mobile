@@ -18,26 +18,26 @@ public enum OAuthEndpoints {
         case let .exchange(code, redirectURI, clientId, codeVerifier):
             var req = URLRequest(url: baseURL.appendingPathComponent("/oauth/token"))
             req.httpMethod = "POST"
-            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            let body: [String: String] = [
+            req.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            let params: [String: String] = [
                 "grant_type": "authorization_code",
                 "code": code,
                 "redirect_uri": redirectURI,
                 "client_id": clientId,
                 "code_verifier": codeVerifier
             ]
-            req.httpBody = try JSONSerialization.data(withJSONObject: body)
+            req.httpBody = formURLEncodedBody(params)
             return req
         case let .refresh(refreshToken, clientId):
             var req = URLRequest(url: baseURL.appendingPathComponent("/oauth/token"))
             req.httpMethod = "POST"
-            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            var body: [String: String] = [
+            req.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            var params: [String: String] = [
                 "grant_type": "refresh_token",
                 "refresh_token": refreshToken
             ]
-            if let clientId { body["client_id"] = clientId }
-            req.httpBody = try JSONSerialization.data(withJSONObject: body)
+            if let clientId { params["client_id"] = clientId }
+            req.httpBody = formURLEncodedBody(params)
             return req
         }
     }
@@ -45,4 +45,14 @@ public enum OAuthEndpoints {
     public func refresh(refreshToken: String) async throws -> OAuthTokenDTO {
         fatalError("Use AuthorizationManager with configured OAuthEndpoints")
     }
+}
+
+private func formURLEncodedBody(_ params: [String: String]) -> Data? {
+    let allowed = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~")
+    let encoded = params.map { key, value -> String in
+        let encodedKey = key.addingPercentEncoding(withAllowedCharacters: allowed) ?? key
+        let encodedValue = value.addingPercentEncoding(withAllowedCharacters: allowed) ?? value
+        return "\(encodedKey)=\(encodedValue)"
+    }.joined(separator: "&")
+    return encoded.data(using: .utf8)
 }

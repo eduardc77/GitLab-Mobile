@@ -16,6 +16,9 @@ final class AppEnvironment {
     let personalProjectsService: PersonalProjectsService
     let projectDetailsService: ProjectDetailsService
     let authManager: AuthorizationManager
+    let authStore: AuthenticationStore
+    let profileService: ProfileService
+    let profileStore: ProfileStore
 
     init() {
         let config = AppNetworkingConfig.loadFromInfoPlist()
@@ -29,6 +32,10 @@ final class AppEnvironment {
         self.personalProjectsService = PersonalProjectsService(api: client)
         self.projectDetailsService = ProjectDetailsService(api: client)
         self.authManager = authManager
+        let oauthConfig = AppOAuthConfigLoader.loadFromInfoPlist()
+        self.authStore = AuthenticationStore(oauthService: oauth, authManager: authManager, oauthConfig: oauthConfig)
+        self.profileService = ProfileService(api: client)
+        self.profileStore = ProfileStore(authStore: self.authStore, service: self.profileService)
     }
 
     func createExploreProjectsStore() -> ExploreProjectsStore {

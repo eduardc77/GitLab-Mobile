@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(AppEnvironment.self) private var appEnv
 
     var body: some View {
         TabView {
@@ -18,8 +19,8 @@ struct ContentView: View {
             NavigationStack { Text("Notifications") }
                 .tabItem { Label("Notifications", systemImage: "bell") }
 
-            NavigationStack { Text("Account") }
-                .tabItem { Label("Account", systemImage: "person.circle") }
+            ProfileRootView()
+                .tabItem { Label("Profile", systemImage: "person.circle") }
         }
     }
 }

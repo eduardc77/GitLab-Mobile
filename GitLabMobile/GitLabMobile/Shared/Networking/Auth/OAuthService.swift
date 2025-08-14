@@ -9,12 +9,33 @@
 import Foundation
 
 public struct OAuthService: Sendable {
-    private let baseURL: URL
+    public let baseURL: URL
     private let session: URLSession
 
     public init(baseURL: URL, session: URLSession = .shared) {
         self.baseURL = baseURL
         self.session = session
+    }
+
+    public func authorizationURL(
+        clientId: String,
+        redirectURI: String,
+        scopes: String,
+        codeChallenge: String,
+        state: String
+    ) -> URL? {
+        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
+        components?.path = "/oauth/authorize"
+        components?.queryItems = [
+            URLQueryItem(name: "client_id", value: clientId),
+            URLQueryItem(name: "redirect_uri", value: redirectURI),
+            URLQueryItem(name: "response_type", value: "code"),
+            URLQueryItem(name: "scope", value: scopes),
+            URLQueryItem(name: "state", value: state),
+            URLQueryItem(name: "code_challenge", value: codeChallenge),
+            URLQueryItem(name: "code_challenge_method", value: "S256")
+        ]
+        return components?.url
     }
 
     public func exchangeCode(
