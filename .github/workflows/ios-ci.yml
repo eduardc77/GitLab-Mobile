@@ -1,10 +1,13 @@
-name: iOS CI Pipeline
+name: ios-ci
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 on:
-  push:
-    branches: [main, develop]
   pull_request:
-    branches: [main, develop]
-  workflow_dispatch:  # This allows manual triggering
+    branches: [development, main]
+  push:
+    branches: [development, main]
+  workflow_dispatch:
 
 jobs:
   # Simple CI for all pushes and PRs
@@ -25,8 +28,11 @@ jobs:
     
     - name: SwiftLint
       run: swiftlint lint --reporter github-actions-logging
-      continue-on-error: true  # Don't fail build on lint warnings initially
+      continue-on-error: ${{ !(github.ref == 'refs/heads/main' || github.base_ref == 'main') }}
     
+    - name: Resolve Swift Packages
+      run: xcodebuild -resolvePackageDependencies -project GitLabMobile/GitLabMobile.xcodeproj
+
     - name: Build App
       run: |
         xcodebuild build \
@@ -72,8 +78,7 @@ jobs:
           -configuration Debug \
           -only-testing:GitLabMobileUITests \
           -resultBundlePath UITestResults.xcresult
-      continue-on-error: true  # Continue even if no UI tests exist yet
-    
+      
     - name: Upload Unit Test Results
       uses: actions/upload-artifact@v4
       if: always()  # Upload even if tests fail
@@ -86,4 +91,48 @@ jobs:
       if: always()  # Upload even if tests fail
       with:
         name: ui-test-results-${{ github.run_number }}
-        path: UITestResults.xcresult 
+        path: UITestResults.xcresult
+
+name: ios-ci
+
+on:
+  pull_request:
+    branches: [development, main]
+  push:
+    branches:
+      - development
+      - main
+      - 'feature/**'
+      - 'fix/**'
+
+concurrency:
+  group: ios-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios-ci:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Xcode version
+        run: xcodebuild -version
+
+      - name: Resolve Swift Package dependencies
+        run: xcodebuild -resolvePackageDependencies -project GitLabMobile/GitLabMobile.xcodeproj
+
+      - name: Build (Debug, iPhone Simulator)
+        run: |
+          xcodebuild \
+            -project GitLabMobile/GitLabMobile.xcodeproj \
+            -scheme GitLabMobile \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            build | tee xcodebuild.log
+
+      - name: SwiftLint (non-blocking)
+        run: |
+          brew install swiftlint || true
+          swiftlint || true
