@@ -21,6 +21,7 @@ struct GitLabMobileApp: App {
         WindowGroup {
             ContentView()
                 .environment(appEnv)
+                .task { await appEnv.authStore.restoreIfPossible() }
         }
     }
 

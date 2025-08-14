@@ -6,8 +6,6 @@
 //  Licensed under Apache License v2.0. See LICENSE file.
 //
 
-import Foundation
-
 public protocol ExploreProjectsServiceProtocol: Sendable {
     func getTrending(page: Int, perPage: Int, search: String?) async throws -> Paginated<[ProjectSummary]>
     func getMostStarred(page: Int, perPage: Int, search: String?) async throws -> Paginated<[ProjectSummary]>
