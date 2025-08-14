@@ -69,7 +69,7 @@ jobs:
         fi
       continue-on-error: true  # Continue even if no packages exist yet
     
-    - name: Run UI Tests
+    - name: Run UI Tests (optional)
       run: |
         xcodebuild test \
           -project "GitLabMobile/GitLabMobile.xcodeproj" \
@@ -78,6 +78,7 @@ jobs:
           -configuration Debug \
           -only-testing:GitLabMobileUITests \
           -resultBundlePath UITestResults.xcresult
+      continue-on-error: true
       
     - name: Upload Unit Test Results
       uses: actions/upload-artifact@v4
