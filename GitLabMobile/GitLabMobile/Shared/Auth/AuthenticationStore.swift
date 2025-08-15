@@ -6,10 +6,8 @@
 //  Licensed under Apache License v2.0. See LICENSE file.
 //
 
-import Foundation
 import Observation
 import AuthenticationServices
-import UIKit
 
 @MainActor
 @Observable
@@ -24,7 +22,7 @@ public final class AuthenticationStore {
     private var pendingCodeVerifier: String?
     private var pendingState: String?
 
-    private(set) var status: Status = .unauthenticated
+    private(set) var status: Status = .authenticating
     private(set) var errorMessage: String?
 
     public init(oauthService: OAuthService, authManager: AuthorizationManager, oauthConfig: OAuthAppConfig) {
@@ -38,7 +36,9 @@ public final class AuthenticationStore {
         status = .authenticating
         guard !oauthConfig.clientId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             status = .unauthenticated
-            errorMessage = "Missing ClientID. Set Info.plist → GitLabOAuth → ClientID to your GitLab OAuth application ID."
+            errorMessage = """
+            Missing ClientID. Set Info.plist → GitLabOAuth → ClientID to your GitLab OAuth application ID.
+            """
             return
         }
         let verifier = PKCE.generateCodeVerifier()

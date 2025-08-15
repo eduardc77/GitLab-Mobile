@@ -10,17 +10,17 @@ import Observation
 
 @MainActor
 @Observable
-final class AppEnvironment {
-    let apiClient: APIClient
-    let exploreService: ExploreProjectsService
-    let personalProjectsService: PersonalProjectsService
-    let projectDetailsService: ProjectDetailsService
-    let authManager: AuthorizationManager
-    let authStore: AuthenticationStore
-    let profileService: ProfileService
-    let profileStore: ProfileStore
+public final class AppEnvironment {
+    public let apiClient: APIClient
+    public let exploreService: ExploreProjectsService
+    public let personalProjectsService: PersonalProjectsService
+    public let projectDetailsService: ProjectDetailsService
+    public let authManager: AuthorizationManager
+    public let authStore: AuthenticationStore
+    public let profileService: ProfileService
+    public let profileStore: ProfileStore
 
-    init() {
+    public init() {
         let config = AppNetworkingConfig.loadFromInfoPlist()
         let oauth = OAuthService(baseURL: config.baseURL)
         let authManager = AuthorizationManager(oauthService: oauth)
@@ -36,9 +36,5 @@ final class AppEnvironment {
         self.authStore = AuthenticationStore(oauthService: oauth, authManager: authManager, oauthConfig: oauthConfig)
         self.profileService = ProfileService(api: client)
         self.profileStore = ProfileStore(authStore: self.authStore, service: self.profileService)
-    }
-
-    func createExploreProjectsStore() -> ExploreProjectsStore {
-        ExploreProjectsStore(service: exploreService)
     }
 }

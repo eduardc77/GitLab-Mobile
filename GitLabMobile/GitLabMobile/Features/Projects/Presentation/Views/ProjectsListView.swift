@@ -1,5 +1,5 @@
 //
-//  ExploreProjectsView.swift
+//  ProjectsListView.swift
 //  GitLabMobile
 //
 //  Copyright © 2025 Eliomane. All rights reserved.
@@ -8,11 +8,11 @@
 
 import SwiftUI
 
-public struct ExploreProjectsView: View {
-    @State public var store: ExploreProjectsStore
+public struct ProjectsListView: View {
+    @State public var store: PersonalProjectsStore
 
-    public init(service: ExploreProjectsService) {
-        self._store = State(initialValue: ExploreProjectsStore(service: service))
+    public init(service: PersonalProjectsService, scope: PersonalProjectsStore.Scope) {
+        self._store = State(initialValue: PersonalProjectsStore(service: service, scope: scope))
     }
 
     public var body: some View {
@@ -27,28 +27,28 @@ public struct ExploreProjectsView: View {
             row: { project in ProjectRow(project: project) }
         )
         .listStyle(.plain)
-        .navigationTitle("Explore Projects")
+        .navigationTitle("Projects")
         .navigationBarTitleDisplayMode(.large)
-        .task { await store.initialLoad() }
-        .searchable(text: $store.query,
+        .refreshable { await store.load() }
+        .searchable(
+            text: Binding(
+                get: { store.query },
+                set: { newValue in if newValue != store.query { store.updateQuery(newValue) } }
+            ),
             placement: .navigationBarDrawer(displayMode: .always)
         )
         .searchSuggestions {
             if store.query.isEmpty {
-                Section("Recent Searches") {
+                Section("Recent searches") {
                     ForEach(store.recentQueries, id: \.self) { suggestion in
-                        Text(suggestion)
-                            .lineLimit(1)
-                            .fontWeight(.semibold)
-                            .searchCompletion(suggestion)
+                        Text("**\(suggestion)**").searchCompletion(suggestion)
                     }
                 }
             }
         }
         .onSubmit(of: .search) { Task(priority: .userInitiated) { await store.applySearch() } }
-        .refreshable { await store.load() }
         .overlay {
-            if store.isLoading && (store.items.isEmpty || store.isReloading || store.isSearching) {
+            if store.isLoading && (store.items.isEmpty || store.isSearching) {
                 ProgressView("Loading...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color(.systemGroupedBackground))
@@ -60,25 +60,12 @@ public struct ExploreProjectsView: View {
                 }
             }
         }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Picker("Sort by", selection: $store.section) {
-                        Text("Most starred").tag(ExploreProjectsStore.Section.mostStarred)
-                        Text("Trending").tag(ExploreProjectsStore.Section.trending)
-                        Text("Active").tag(ExploreProjectsStore.Section.active)
-                        Text("Inactive").tag(ExploreProjectsStore.Section.inactive)
-                        Text("All").tag(ExploreProjectsStore.Section.all)
-                    }
-                } label: { Label("Sort", systemImage: "line.3.horizontal.decrease.circle") }
-            }
-        }
         .alert("Error", isPresented: Binding(
             get: { (store.errorMessage ?? "").isEmpty == false },
             set: { _ in store.errorMessage = nil }
         )) {
             Button("OK", role: .cancel) {}
         } message: { Text(store.errorMessage ?? "") }
-        
+        .task { await store.initialLoad() }
     }
 }

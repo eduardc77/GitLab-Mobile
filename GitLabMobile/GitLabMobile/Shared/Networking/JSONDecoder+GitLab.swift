@@ -16,18 +16,26 @@ public extension JSONDecoder {
             let container = try decoder.singleValueContainer()
             let string = try container.decode(String.self)
 
-            // Try fractional seconds first
-            let isoWithFractional = ISO8601DateFormatter()
-            isoWithFractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            if let date = isoWithFractional.date(from: string) { return date }
-
-            // Fallback to standard internet date time
-            let iso = ISO8601DateFormatter()
-            iso.formatOptions = [.withInternetDateTime]
-            if let date = iso.date(from: string) { return date }
+            // Try fractional seconds first (reuse shared formatters to avoid heavy allocations)
+            if let date = DateFormatters.isoWithFractional.date(from: string) { return date }
+            if let date = DateFormatters.iso.date(from: string) { return date }
 
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid ISO8601 date: \(string)")
         }
         return decoder
     }
+}
+
+private enum DateFormatters {
+    static let isoWithFractional: ISO8601DateFormatter = {
+        let isoWithFractional = ISO8601DateFormatter()
+        isoWithFractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return isoWithFractional
+    }()
+
+    static let iso: ISO8601DateFormatter = {
+        let iso = ISO8601DateFormatter()
+        iso.formatOptions = [.withInternetDateTime]
+        return iso
+    }()
 }

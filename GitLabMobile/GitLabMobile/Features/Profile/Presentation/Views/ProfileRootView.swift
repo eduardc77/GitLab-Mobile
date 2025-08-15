@@ -16,30 +16,28 @@ struct ProfileRootView: View {
         NavigationStack(path: Bindable(coordinator).navigationPath) {
             Group {
                 switch appEnv.authStore.status {
-                case .unauthenticated:
-                    SignedOutView(signIn: appEnv.authStore.signIn)
                 case .authenticating:
-                    ProgressView("Signing in...")
+                    ProgressView("Loading...")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color(.systemGroupedBackground))
                 case .authenticated:
-                    ProfileHomeView(store: appEnv.profileStore)
+                    ProfileView(store: appEnv.profileStore)
+                case .unauthenticated:
+                    SignedOutView(signIn: appEnv.authStore.signIn)
                 }
             }
             .navigationTitle("Profile")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     if appEnv.authStore.status == .authenticated {
-                        Button {
-                            coordinator.navigationPath.append(ProfileCoordinator.Destination.settings)
-                        } label: { Image(systemName: "gearshape") }
+                        Button { coordinator.navigate(to: .settings) } label: { Image(systemName: "gearshape") }
                     }
                 }
             }
-            .navigationDestination(for: ProfileCoordinator.Destination.self) { dest in
-                switch dest {
+            .navigationDestination(for: ProfileCoordinator.Destination.self) { destination in
+                switch destination {
                 case .personalProjects:
-                    Text("Personal Projects")
+                    ProjectsListView(service: appEnv.personalProjectsService, scope: .owned)
                 case .groups:
                     Text("Groups")
                 case .assignedIssues:
@@ -47,10 +45,11 @@ struct ProfileRootView: View {
                 case .mergeRequests:
                     Text("Merge Requests")
                 case .settings:
-                    ProfileSettingsView(signOut: { await appEnv.authStore.signOut() })
+                    ProfileSettingsView()
                 }
             }
         }
+        .environment(coordinator)
         .task { await appEnv.profileStore.loadIfNeeded() }
         .alert("Error", isPresented: .constant(appEnv.authStore.errorMessage != nil), actions: {
             Button("OK") { appEnv.authStore.clearError() }

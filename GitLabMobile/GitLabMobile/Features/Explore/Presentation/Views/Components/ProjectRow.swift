@@ -28,13 +28,20 @@ struct ProjectRow: View {
                 }
 
                 HStack(spacing: 8) {
-                    Label("\(project.starCount)", systemImage: "star")
-                        .tightSpacing()
-                        .font(.caption2)
-                    Label("\(project.forksCount)", systemImage: "arrow.branch")
-                        .tightSpacing()
-                        .font(.caption2)
+                    HStack {
+                        Text("\(project.starCount)")
+                        Image(systemName: "star")
+                    }
+                    .font(.caption2)
+
+                    HStack {
+                        Text("\(project.forksCount)")
+                        Image(systemName: "arrow.branch")
+                    }
+                    .font(.caption2)
+
                     Spacer()
+
                     if let date = project.lastActivityAt {
                         Text("Updated \(date, format: .relative(presentation: .named))")
                             .font(.caption2)

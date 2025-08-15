@@ -18,4 +18,3 @@ public final class ProfileService {
         return dto.toDomain()
     }
 }
-

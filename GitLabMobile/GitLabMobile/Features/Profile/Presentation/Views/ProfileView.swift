@@ -1,5 +1,5 @@
 //
-//  ProfileHomeView.swift
+//  ProfileView.swift
 //  GitLabMobile
 //
 //  Copyright © 2025 Eliomane. All rights reserved.
@@ -8,8 +8,8 @@
 
 import SwiftUI
 
-public struct ProfileHomeView: View {
-    @Bindable public var store: ProfileStore
+public struct ProfileView: View {
+    public var store: ProfileStore
 
     public var body: some View {
         List {
@@ -34,6 +34,5 @@ public struct ProfileHomeView: View {
             }
             .listSectionSeparator(.hidden, edges: .top)
         }
-        .listStyle(.plain)
     }
 }
