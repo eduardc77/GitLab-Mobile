@@ -31,6 +31,5 @@ struct GitLabMobileApp: App {
         cache.memoryStorage.config.totalCostLimit = 30 * 1024 * 1024 // 30 MB
         cache.diskStorage.config.sizeLimit = 200 * 1024 * 1024 // 200 MB
         cache.diskStorage.config.expiration = .days(7)
-        KingfisherManager.shared.downloader.downloadTimeout = 15
     }
 }

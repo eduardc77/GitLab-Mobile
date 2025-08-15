@@ -37,7 +37,6 @@ public struct AsyncImageView<Placeholder: View>: View {
             .onFailure { onFailure?($0) }
             .downsampled(to: targetSizePoints)
             .cacheOriginalImage(false)
-            .fade(duration: 0.15)
             .cancelOnDisappear(true)
             .resizable()
             .aspectRatio(contentMode: contentMode)

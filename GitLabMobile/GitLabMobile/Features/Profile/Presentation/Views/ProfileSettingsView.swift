@@ -9,12 +9,20 @@
 import SwiftUI
 
 public struct ProfileSettingsView: View {
-    public let signOut: () async -> Void
+    @Environment(AppEnvironment.self) private var appEnv
+    @Environment(ProfileCoordinator.self) private var coordinator
+
+    public init() {}
 
     public var body: some View {
         List {
             Section {
-                Button(role: .destructive) { Task { await signOut() } } label: { Text("Sign Out") }
+                Button(role: .destructive) {
+                    Task {
+                        await appEnv.authStore.signOut()
+                        coordinator.navigateBack()
+                    }
+                } label: { Text("Sign Out") }
             }
         }
         .navigationTitle("Account Settings")

@@ -11,10 +11,19 @@ import CryptoKit
 
 public enum PKCE {
     public static func generateCodeVerifier(length: Int = 64) -> String {
+        precondition(length > 0, "PKCE code verifier length must be positive")
         let allowed = Array("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~")
-        var rng = SystemRandomNumberGenerator()
-        let verifier = (0..<length).map { _ in allowed.randomElement(using: &rng)! }
-        return String(verifier)
+        var randomNumberGenerator = SystemRandomNumberGenerator()
+        var result: [Character] = []
+        result.reserveCapacity(length)
+        for _ in 0..<length {
+            if let character = allowed.randomElement(using: &randomNumberGenerator) {
+                result.append(character)
+            } else {
+                result.append(Character("a"))
+            }
+        }
+        return String(result)
     }
 
     public static func generateCodeChallenge(from verifier: String) -> String {

@@ -23,4 +23,3 @@ public struct GitLabUser: Sendable, Equatable {
         self.createdAt = createdAt
     }
 }
-

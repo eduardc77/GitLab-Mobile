@@ -17,6 +17,8 @@ public enum ProjectsAPI {
         case createdAt = "created_at"
     }
 
+    // Offset pagination only for explore use cases
+
     // Public explore
     public static func trending(page: Int = 1, perPage: Int = 20, search: String? = nil) -> Endpoint<[ProjectDTO]> {
         Endpoint(
@@ -26,9 +28,10 @@ public enum ProjectsAPI {
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "order_by", value: "last_activity_at"),
                 .init(name: "sort", value: "desc"),
-                .init(name: "visibility", value: "public")
+                .init(name: "visibility", value: "public"),
+                .init(name: "simple", value: "true")
             ].appendingSearch(search),
-            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
+            options: RequestOptions(cachePolicy: nil, timeout: 8, useETag: false, attachAuthorization: false)
         )
     }
 
@@ -40,9 +43,10 @@ public enum ProjectsAPI {
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "order_by", value: "star_count"),
                 .init(name: "sort", value: "desc"),
-                .init(name: "visibility", value: "public")
+                .init(name: "visibility", value: "public"),
+                .init(name: "simple", value: "true")
             ].appendingSearch(search),
-            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
+            options: RequestOptions(cachePolicy: nil, timeout: 8, useETag: false, attachAuthorization: false)
         )
     }
 
@@ -55,7 +59,7 @@ public enum ProjectsAPI {
                 .init(name: "search", value: query),
                 .init(name: "visibility", value: "public")
             ],
-            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
+            options: RequestOptions(cachePolicy: nil, timeout: 8, useETag: false, attachAuthorization: false)
         )
     }
 
@@ -72,9 +76,10 @@ public enum ProjectsAPI {
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "order_by", value: "last_activity_at"),
                 .init(name: "sort", value: "asc"),
-                .init(name: "visibility", value: "public")
+                .init(name: "visibility", value: "public"),
+                .init(name: "simple", value: "true")
             ].appendingSearch(search),
-            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
+            options: RequestOptions(cachePolicy: nil, timeout: 8, useETag: false, attachAuthorization: false)
         )
     }
 
@@ -84,45 +89,46 @@ public enum ProjectsAPI {
             queryItems: [
                 .init(name: "page", value: String(page)),
                 .init(name: "per_page", value: String(perPage)),
-                .init(name: "visibility", value: "public")
+                .init(name: "visibility", value: "public"),
+                .init(name: "simple", value: "true")
             ].appendingSearch(search),
             options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
         )
     }
 
     // Authenticated
-    public static func owned(page: Int = 1, perPage: Int = 20) -> Endpoint<[ProjectSummary]> {
+    public static func owned(page: Int = 1, perPage: Int = 20, search: String? = nil) -> Endpoint<[ProjectSummary]> {
         Endpoint(
             path: "/projects",
             queryItems: [
                 .init(name: "page", value: String(page)),
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "owned", value: "true")
-            ],
+            ].appendingSearch(search),
             options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
         )
     }
 
-    public static func starred(page: Int = 1, perPage: Int = 20) -> Endpoint<[ProjectSummary]> {
+    public static func starred(page: Int = 1, perPage: Int = 20, search: String? = nil) -> Endpoint<[ProjectSummary]> {
         Endpoint(
             path: "/projects",
             queryItems: [
                 .init(name: "page", value: String(page)),
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "starred", value: "true")
-            ],
+            ].appendingSearch(search),
             options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
         )
     }
 
-    public static func membership(page: Int = 1, perPage: Int = 20) -> Endpoint<[ProjectSummary]> {
+    public static func membership(page: Int = 1, perPage: Int = 20, search: String? = nil) -> Endpoint<[ProjectSummary]> {
         Endpoint(
             path: "/projects",
             queryItems: [
                 .init(name: "page", value: String(page)),
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "membership", value: "true")
-            ],
+            ].appendingSearch(search),
             options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
         )
     }
@@ -144,14 +150,16 @@ public enum ProjectsAPI {
             .init(name: "order_by", value: orderBy.rawValue)
         ]
         if publicOnly { items.append(.init(name: "visibility", value: "public")) }
+        if publicOnly { items.append(.init(name: "simple", value: "true")) }
         items = items.appendingSearch(search)
         return Endpoint(
             path: "/projects",
             queryItems: items,
             options: RequestOptions(
                 cachePolicy: nil,
-                timeout: nil,
-                useETag: false
+                timeout: 8,
+                useETag: false,
+                attachAuthorization: false
             )
         )
     }
@@ -164,4 +172,6 @@ private extension Array where Element == URLQueryItem {
         copy.append(URLQueryItem(name: "search", value: query))
         return copy
     }
+
+    // No cursor param in offset pagination
 }

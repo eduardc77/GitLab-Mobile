@@ -9,7 +9,7 @@
 import SwiftUI
 
 public struct ExploreRootView: View {
-    @Environment(AppEnvironment.self) private var appEnvironment
+    @Environment(AppEnvironment.self) private var appEnv
     @State private var coordinator = ExploreCoordinator()
 
     public init() {}
@@ -31,13 +31,12 @@ public struct ExploreRootView: View {
                 }
                 .listSectionSeparator(.hidden, edges: .top)
             }
-            .listStyle(.plain)
             .navigationBarTitleDisplayMode(.large)
-            .navigationTitle("Home")
-            .navigationDestination(for: ExploreCoordinator.Destination.self) { dest in
-                switch dest {
+            .navigationTitle("Explore")
+            .navigationDestination(for: ExploreCoordinator.Destination.self) { destination in
+                switch destination {
                 case .projects:
-                    ExploreProjectsView(store: appEnvironment.createExploreProjectsStore())
+                    ExploreProjectsView(service: appEnv.exploreService)
                 case .projectDetail(let id):
                     Text("Project #\(id)")
                 case .users:

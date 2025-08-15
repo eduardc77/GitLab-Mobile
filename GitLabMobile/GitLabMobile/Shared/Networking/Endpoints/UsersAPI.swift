@@ -11,4 +11,3 @@ enum UsersAPI {
         Endpoint(path: "/user")
     }
 }
-

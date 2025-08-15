@@ -46,17 +46,17 @@ public struct APIClient: Sendable {
     public func send<Response: Decodable>(_ endpoint: Endpoint<Response>) async throws -> Response {
         let url = try buildURL(for: endpoint)
         var request = makeRequest(url: url, endpoint: endpoint)
-        await applyAuthIfAvailable(&request)
-        let (data, http) = try await performWithConditional(request, endpoint: endpoint)
+        await applyAuthIfAvailable(&request, endpoint: endpoint)
+        let (data, http) = try await performWithRetry(request, endpoint: endpoint)
         return try decode(Response.self, data: data, http: http)
     }
 
     public func sendPaginated<Item: Decodable>(_ endpoint: Endpoint<[Item]>) async throws -> Paginated<[Item]> {
         let url = try buildURL(for: endpoint)
         var request = makeRequest(url: url, endpoint: endpoint)
-        await applyAuthIfAvailable(&request)
+        await applyAuthIfAvailable(&request, endpoint: endpoint)
         // For paginated endpoints we avoid memory cache to preserve pagination headers
-        let (data, http) = try await performWithConditional(request, endpoint: endpoint)
+        let (data, http) = try await performWithRetry(request, endpoint: endpoint)
         return try decodePaginated(Item.self, data: data, http: http)
     }
 }
@@ -87,7 +87,8 @@ private extension APIClient {
         return request
     }
 
-    func applyAuthIfAvailable(_ request: inout URLRequest) async {
+    func applyAuthIfAvailable<Response>(_ request: inout URLRequest, endpoint: Endpoint<Response>) async {
+        guard endpoint.options.attachAuthorization else { return }
         if let header = await authProvider?.authorizationHeader() {
             request.setValue(header, forHTTPHeaderField: "Authorization")
         }
@@ -125,6 +126,46 @@ private extension APIClient {
             throw NetworkError.server(statusCode: 304, data: nil)
         }
         return (data, http)
+    }
+
+    func performWithRetry<Response>(
+        _ request: URLRequest,
+        endpoint: Endpoint<Response>,
+        maxAttempts: Int = 3
+    ) async throws -> (Data, HTTPURLResponse) {
+        var lastError: Error?
+        var attempt = 1
+        while attempt <= maxAttempts {
+            do {
+                return try await performWithConditional(request, endpoint: endpoint)
+            } catch let error as NetworkError {
+                lastError = error
+                switch error {
+                case .server(let status, _):
+                    if status >= 500 && status <= 599 {
+                        // Backoff: 150ms, 300ms
+                        let delayMs = 150 * attempt
+                        try? await Task.sleep(nanoseconds: UInt64(delayMs) * 1_000_000)
+                        attempt += 1
+                        continue
+                    }
+                case .transport:
+                    let delayMs = 150 * attempt
+                    try? await Task.sleep(nanoseconds: UInt64(delayMs) * 1_000_000)
+                    attempt += 1
+                    continue
+                default:
+                    throw error
+                }
+                throw error
+            } catch {
+                lastError = error
+                let delayMs = 150 * attempt
+                try? await Task.sleep(nanoseconds: UInt64(delayMs) * 1_000_000)
+                attempt += 1
+            }
+        }
+        throw lastError ?? NetworkError.transport(URLError(.cannotLoadFromNetwork))
     }
 
     func decode<R: Decodable>(_ type: R.Type, data: Data, http: HTTPURLResponse) throws -> R {

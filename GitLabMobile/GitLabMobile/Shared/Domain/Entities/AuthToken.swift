@@ -35,6 +35,6 @@ public struct AuthToken: Codable, Sendable, Equatable {
     public var isExpired: Bool {
         guard let expiresIn, let createdAt else { return false }
         let expiry = Date(timeIntervalSince1970: createdAt).addingTimeInterval(TimeInterval(expiresIn))
-        return expiry.addingTimeInterval(-10) <= Date()
+        return expiry.addingTimeInterval(-30) <= Date()
     }
 }

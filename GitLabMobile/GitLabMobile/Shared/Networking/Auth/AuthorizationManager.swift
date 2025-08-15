@@ -51,6 +51,7 @@ public actor AuthorizationManager: AuthorizationManagerProtocol, AuthProviding {
         if let task = refreshTask { return try await task.value }
         let task = Task { () throws -> AuthToken in
             defer { refreshTask = nil }
+            // Pass clientId if needed in the future; GitLab does not require it by default.
             let refreshed = try await oauthService.refreshToken(refreshToken)
             try storage.save(refreshed)
             cached = refreshed

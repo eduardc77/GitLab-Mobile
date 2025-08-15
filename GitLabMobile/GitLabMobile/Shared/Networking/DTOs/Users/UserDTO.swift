@@ -19,4 +19,3 @@ struct UserDTO: Decodable {
         GitLabUser(id: id, username: username, name: name, avatarUrl: avatarUrl, createdAt: createdAt)
     }
 }
-
