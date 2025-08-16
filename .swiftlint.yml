@@ -27,6 +27,10 @@ excluded:
 line_length:
   warning: 130
   error: 150
+  ignores_comments: true
+  ignores_urls: true
+  ignores_function_declarations: true
+  ignores_interpolated_strings: true
 
 function_body_length:
   warning: 50

@@ -10,14 +10,17 @@ import Foundation
 
 public enum ProjectsAPI {
 
-    public enum OrderBy: String {
-        case lastActivityAt = "last_activity_at"
+    public enum SortBy: String, CaseIterable {
         case starCount = "star_count"
-        case name = "name"
+        case lastActivityAt = "last_activity_at"
         case createdAt = "created_at"
+        case name = "name"
     }
 
-    // Offset pagination only for explore use cases
+    public enum SortDirection: String, CaseIterable {
+        case descending = "desc"
+        case ascending = "asc"
+    }
 
     // Public explore
     public static func trending(page: Int = 1, perPage: Int = 20, search: String? = nil) -> Endpoint<[ProjectDTO]> {
@@ -138,7 +141,8 @@ public enum ProjectsAPI {
     }
 
     public static func list(
-        orderBy: OrderBy,
+        orderBy: SortBy,
+        sort: SortDirection,
         page: Int = 1,
         perPage: Int = 20,
         search: String? = nil,
@@ -147,7 +151,8 @@ public enum ProjectsAPI {
         var items: [URLQueryItem] = [
             .init(name: "page", value: String(page)),
             .init(name: "per_page", value: String(perPage)),
-            .init(name: "order_by", value: orderBy.rawValue)
+            .init(name: "order_by", value: orderBy.rawValue),
+            .init(name: "sort", value: sort.rawValue)
         ]
         if publicOnly { items.append(.init(name: "visibility", value: "public")) }
         if publicOnly { items.append(.init(name: "simple", value: "true")) }
@@ -162,6 +167,27 @@ public enum ProjectsAPI {
                 attachAuthorization: false
             )
         )
+    }
+}
+
+public extension ProjectsAPI.SortBy {
+
+    var displayTitle: String {
+        switch self {
+        case .starCount: return "Stars"
+        case .lastActivityAt: return "Updated date"
+        case .createdAt: return "Created date"
+        case .name: return "Name"
+        }
+    }
+}
+
+public extension ProjectsAPI.SortDirection {
+    var displayTitle: String {
+        switch self {
+        case .ascending: return "Ascending"
+        case .descending: return "Descending"
+        }
     }
 }
 

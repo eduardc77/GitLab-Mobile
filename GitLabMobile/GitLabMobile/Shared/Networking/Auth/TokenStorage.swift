@@ -10,12 +10,12 @@ import Foundation
 import Security
 
 public protocol TokenStorage: Sendable {
-    func save(_ token: AuthToken) throws
-    func load() throws -> AuthToken?
-    func clear() throws
+    func save(_ token: AuthToken) async throws
+    func load() async throws -> AuthToken?
+    func clear() async throws
 }
 
-public final class KeychainTokenStorage: TokenStorage {
+public actor KeychainTokenStorage: TokenStorage {
     private let service: String
     private let account: String
 
@@ -27,7 +27,7 @@ public final class KeychainTokenStorage: TokenStorage {
         self.account = account
     }
 
-    public func save(_ token: AuthToken) throws {
+    public func save(_ token: AuthToken) async throws {
         let data = try JSONEncoder().encode(token)
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -43,7 +43,7 @@ public final class KeychainTokenStorage: TokenStorage {
         }
     }
 
-    public func load() throws -> AuthToken? {
+    public func load() async throws -> AuthToken? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -60,7 +60,7 @@ public final class KeychainTokenStorage: TokenStorage {
         return try JSONDecoder().decode(AuthToken.self, from: data)
     }
 
-    public func clear() throws {
+    public func clear() async throws {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,

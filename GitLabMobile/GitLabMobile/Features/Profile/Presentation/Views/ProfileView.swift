@@ -15,7 +15,6 @@ public struct ProfileView: View {
         List {
             if let user = store.user {
                 ProfileHeader(user: user)
-                    .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
             } else if store.isLoading {
                 HStack { ProgressView(); Text("Loading profile...").foregroundStyle(.secondary) }
             }

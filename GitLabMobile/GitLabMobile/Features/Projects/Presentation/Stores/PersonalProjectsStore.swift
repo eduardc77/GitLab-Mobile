@@ -7,45 +7,59 @@
 //
 
 import Foundation
-import Combine
+import AsyncAlgorithms
 
 @MainActor
 @Observable
 public final class PersonalProjectsStore {
+    // MARK: - Types
     public enum Scope: Equatable { case owned, membership, starred, combined }
     private typealias Phase = LoadPhase
+    private struct QueryContext: Equatable, Hashable { let scope: Scope; let query: String? }
+    private enum LoadEvent: Equatable { case initial, refresh, contextChanged(QueryContext), search(String) }
 
+    // MARK: - Public state
     public private(set) var items: [ProjectSummary] = []
     public var errorMessage: String?
-    private var phase: Phase = .idle
+    public private(set) var recentQueries: [String] = []
+    public private(set) var hasNextPage = true
+    public private(set) var scope: Scope
+
+    // MARK: - Derived flags
     public var isLoading: Bool { phase == .initialLoading || phase == .loading || phase == .searching || phase == .reloading }
     public var isLoadingMore: Bool { phase == .loadingMore }
     public var isSearching: Bool { phase == .searching }
+    public var isReloading: Bool { phase == .reloading }
 
-    public private(set) var hasNextPage = true
-    public private(set) var recentQueries: [String] = []
-
-    // Offset pagination (page number)
-    @ObservationIgnored private var pageCursor: Int = 1
-    @ObservationIgnored private let perPage: Int = 20
-    public private(set) var scope: Scope
+    // MARK: - Services & helpers
     @ObservationIgnored private let service: PersonalProjectsServiceProtocol
     @ObservationIgnored private let listMerger = ListMerger()
-    @ObservationIgnored private let querySubject = PassthroughSubject<String, Never>()
-    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
-    @ObservationIgnored private var currentRequestID: Int = 0
-    @ObservationIgnored private var lastLoadMoreAt: Date?
-    @ObservationIgnored private var currentLoadTask: Task<Void, Never>?
-    private var currentFeedKey: String { "\(scope)|\(queryIfValid() ?? "")" }
-    private enum Constants {
-        static let prefetchDistance: Int = StoreDefaults.prefetchDistance
-        static let loadMoreThrottle: TimeInterval = StoreDefaults.loadMoreThrottle
-    }
+    @ObservationIgnored private let loadMoreThrottler = PaginationThrottler()
+    @ObservationIgnored private let queryStream = SearchQueryStream()
+    @ObservationIgnored private let eventQueue = LatestWinsEventQueue<LoadEvent>()
+    @ObservationIgnored private let recentStore = RecentQueriesStore(key: RecentQueriesStore.Keys.personalProjects)
 
+    // MARK: - Pagination state
+    @ObservationIgnored private var nextPageCursor: Int?
+    @ObservationIgnored private let perPage: Int = StoreDefaults.perPage
+    private var currentFeedID: QueryContext { QueryContext(scope: scope, query: queryIfValid()) }
+
+    // MARK: - Internal state
+    private var phase: Phase = .initialLoading {
+        willSet {
+            if newValue != self.phase {
+                AppLog.projects.debug("phase \(String(describing: self.phase)) -> \(String(describing: newValue))")
+            }
+        }
+    }
+    
+    // MARK: - Search
     public var query: String = "" {
         didSet {
             if oldValue != query {
-                querySubject.send(query)
+                let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+                if !trimmed.isEmpty { phase = .searching }
+                queryStream.yield(query)
             }
         }
     }
@@ -53,70 +67,73 @@ public final class PersonalProjectsStore {
     public init(service: PersonalProjectsServiceProtocol, scope: Scope) {
         self.service = service
         self.scope = scope
-        setupDebouncedSearch()
-        loadRecentQueries()
+        setupQueryStream()
+        setupLoadEventsPipeline()
+        Task { [weak self] in self?.recentQueries = await self?.recentStore.load() ?? [] }
     }
 
     public func setScope(_ newScope: Scope) async {
+        AppLog.projects.debug("fn=setScope called new=\(String(describing: newScope))")
         guard newScope != scope else { return }
         scope = newScope
-        currentLoadTask?.cancel()
         phase = .reloading
-        _ = await startLoadTask(page: 1, perPage: perPage).value
+        AppLog.projects.log("Scope changed -> \(String(describing: newScope))")
+        eventQueue.send(.contextChanged(currentFeedID))
     }
 
-    public func load(page: Int = 1, perPage: Int = 20) async {
-        _ = await startLoadTask(page: page, perPage: perPage).value
+    public func load() async {
+        AppLog.projects.debug("Reload requested")
+        phase = .reloading
+        eventQueue.send(.refresh)
     }
 
     public func loadMoreIfNeeded(currentItem: ProjectSummary) async {
+        // Only prefetch during steady state to avoid races with reload/search/initial load
         guard hasNextPage, phase == .idle else { return }
         guard let index = items.firstIndex(where: { $0.id == currentItem.id }) else { return }
-        let threshold = max(items.count - Constants.prefetchDistance, 0)
+        let threshold = max(items.count - StoreDefaults.prefetchDistance, 0)
         guard index >= threshold else { return }
-        // Throttle
-        let now = Date()
-        if let last = lastLoadMoreAt, now.timeIntervalSince(last) < 0.15 { return }
-        lastLoadMoreAt = now
+        // Throttle bursty load-more triggers during fast flings
+        if loadMoreThrottler.shouldLoadMore() == false { return }
 
-        currentRequestID &+= 1
-        let requestID = currentRequestID
-        let expectedFeed = currentFeedKey
+        let expectedFeed = currentFeedID
+        let next = nextPageCursor
+        AppLog.projects.debug("Load-more prefetch id=\(currentItem.id) next=\(String(describing: next))")
+        guard let nextPage = next else { return }
 
         phase = .loadingMore
         defer { if phase == .loadingMore { phase = .idle } }
         do {
-            let result = try await fetch(page: pageCursor + 1, perPage: perPage)
-            guard requestID == currentRequestID, expectedFeed == currentFeedKey else { return }
-            items = await listMerger.appendUniqueById(existing: items, newItems: result)
-            if result.count == perPage {
-                pageCursor += 1
-                hasNextPage = true
-            } else {
-                hasNextPage = false
-            }
+            let result = try await fetch(page: nextPage, perPage: perPage)
+            guard expectedFeed == self.currentFeedID else { return }
+            // Deduplicate ids to avoid transient overlaps from offset pagination
+            items = await listMerger.appendUniqueById(existing: items, newItems: result.items)
+            nextPageCursor = result.pageInfo?.nextPage
+            hasNextPage = (nextPageCursor != nil)
+            AppLog.projects.log("Load-more appended page=\(nextPage)")
+            AppLog.projects.log("totalItems=\(self.items.count) hasNext=\(self.hasNextPage ? "1" : "0")")
         } catch {
             errorMessage = error.localizedDescription
+            AppLog.projects.error("Load-more failed: \(self.errorMessage ?? "-")")
         }
     }
 
-    // MARK: - Search handling similar to Explore
     public func isNearEnd(for projectId: Int) -> Bool {
         guard let index = items.firstIndex(where: { $0.id == projectId }) else { return false }
-        let threshold = max(items.count - 3, 0)
+        let threshold = max(items.count - StoreDefaults.prefetchDistance, 0)
         return index >= threshold
     }
 
-    public func updateQuery(_ newValue: String) { querySubject.send(newValue) }
-
     public func applySearch() async {
-        currentLoadTask?.cancel()
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            AppLog.projects.debug("applySearch ignored: empty query")
+            return
+        }
+        AppLog.projects.debug("Search submitted (explicit) from applySearch")
         addRecentQueryIfNeeded()
         phase = .searching
-        items.removeAll()
-        pageCursor = 1
-        hasNextPage = true
-        _ = await startLoadTask(page: 1, perPage: perPage).value
+        eventQueue.send(.search(trimmed))
     }
 
     private func queryIfValid() -> String? {
@@ -125,61 +142,36 @@ public final class PersonalProjectsStore {
     }
 
     private func performDebouncedSearch(_ text: String) async {
-        if text != query { query = text }
-        currentLoadTask?.cancel()
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            if phase == .searching { phase = .idle }
+            return
+        }
+        AppLog.projects.debug("Search triggered (debounced change)")
+        AppLog.projects.log("Search query changed: \(text, privacy: .public)")
         addRecentQueryIfNeeded()
         phase = .searching
-        items.removeAll()
-        pageCursor = 1
-        hasNextPage = true
-        _ = await startLoadTask(page: 1, perPage: perPage).value
+        eventQueue.send(.search(text))
     }
 
     public func initialLoad() async {
-        if items.isEmpty && phase == .idle {
-            items.removeAll()
-            pageCursor = 1
-            hasNextPage = true
+        AppLog.projects.debug("Initial load requested")
+        if items.isEmpty && (phase == .idle || phase == .initialLoading) {
             phase = .initialLoading
-            _ = await startLoadTask(page: 1, perPage: perPage).value
+            eventQueue.send(.initial)
         }
     }
 
-    private func setupDebouncedSearch() {
-        querySubject
-            .removeDuplicates()
-            .debounce(for: .milliseconds(250), scheduler: DispatchQueue.main)
-            .sink { [weak self] text in
-                Task { await self?.performDebouncedSearch(text) }
-            }
-            .store(in: &cancellables)
-    }
-
-    private func addRecentQueryIfNeeded() {
-        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-        if let existingIdx = recentQueries.firstIndex(where: { $0.caseInsensitiveCompare(trimmed) == .orderedSame }) {
-            recentQueries.remove(at: existingIdx)
-        }
-        recentQueries.insert(trimmed, at: 0)
-        if recentQueries.count > 10 { recentQueries.removeLast(recentQueries.count - 10) }
-        saveRecentQueries()
-    }
-
-    private func loadRecentQueries() {
-        if let saved = UserDefaults.standard.array(forKey: Self.recentQueriesKey) as? [String] {
-            recentQueries = saved
+    /// AsyncStream-based debounce pipeline setup
+    private func setupQueryStream() {
+        queryStream.start { [weak self] trimmed in
+            await self?.performDebouncedSearch(trimmed)
         }
     }
-
-    private func saveRecentQueries() {
-        UserDefaults.standard.set(recentQueries, forKey: Self.recentQueriesKey)
-    }
-
-    private static let recentQueriesKey = "PersonalProjectsRecentQueries"
 
     // MARK: - Internals
-    private func fetch(page: Int, perPage: Int) async throws -> [ProjectSummary] {
+    private func fetch(page: Int, perPage: Int) async throws -> Paginated<[ProjectSummary]> {
+        AppLog.projects.debug("Fetch called page=\(page) perPage=\(perPage)")
         let search = queryIfValid()
         switch scope {
         case .owned:
@@ -189,55 +181,74 @@ public final class PersonalProjectsStore {
         case .starred:
             return try await service.starred(page: page, perPage: perPage, search: search)
         case .combined:
-            async let ownedProjectsTask = service.owned(page: page, perPage: perPage, search: search)
-            async let membershipProjectsTask = service.membership(page: page, perPage: perPage, search: search)
-            let (owned, membership) = try await (ownedProjectsTask, membershipProjectsTask)
-            let merged = await listMerger.appendUniqueById(existing: owned, newItems: membership)
-            return merged.sorted { ($0.lastActivityAt ?? .distantPast) > ($1.lastActivityAt ?? .distantPast) }
+            async let ownedTask = service.owned(page: page, perPage: perPage, search: search)
+            async let memberTask = service.membership(page: page, perPage: perPage, search: search)
+            let (owned, membership) = try await (ownedTask, memberTask)
+            let merged = await listMerger.appendUniqueById(existing: owned.items, newItems: membership.items)
+            let sorted = merged.sorted { ($0.lastActivityAt ?? .distantPast) > ($1.lastActivityAt ?? .distantPast) }
+            let next = [owned.pageInfo?.nextPage, membership.pageInfo?.nextPage].compactMap { $0 }.min()
+            let info = PageInfo(page: page, perPage: perPage, nextPage: next, prevPage: nil, total: nil, totalPages: nil)
+            return Paginated(items: sorted, pageInfo: info)
         }
     }
 
-    private func performLoad(page: Int, perPage: Int) async {
-        currentRequestID &+= 1
-        let requestID = currentRequestID
-        let isFirstPage = (page == 1)
-        let expectedFeed = currentFeedKey
-        errorMessage = nil
+    private func setupLoadEventsPipeline() {
+        eventQueue.start { [weak self] event in
+            guard let self else { return }
+            self.errorMessage = nil
+            switch event {
+            case .initial:
+                self.phase = .initialLoading
+                await self.fetchAndApplyFirstPage()
+            case .refresh:
+                self.phase = .reloading
+                await self.fetchAndApplyFirstPage()
+            case .contextChanged:
+                self.phase = .reloading
+                await self.fetchAndApplyFirstPage()
+            case .search:
+                self.phase = .searching
+                await self.fetchAndApplyFirstPage()
+            }
+            if self.phase != .loadingMore { self.phase = .idle }
+        }
+    }
+
+    private func fetchAndApplyFirstPage() async {
         do {
+            let paginatedResult = try await fetch(page: 1, perPage: perPage)
             if Task.isCancelled { return }
-            if isFirstPage {
-                pageCursor = 1
-                hasNextPage = true
-            }
-            let result = try await fetch(page: page, perPage: perPage)
-            if Task.isCancelled { return }
-            guard requestID == currentRequestID, expectedFeed == currentFeedKey else { return }
-            items = result
-            if result.count == perPage {
-                pageCursor = isFirstPage ? 1 : pageCursor
-                hasNextPage = true
-            } else {
-                hasNextPage = false
-            }
+            items = paginatedResult.items
+            nextPageCursor = paginatedResult.pageInfo?.nextPage
+            hasNextPage = (nextPageCursor != nil)
         } catch {
             if Task.isCancelled { return }
             errorMessage = error.localizedDescription
-            phase = .failed(error.localizedDescription)
-        }
-        if requestID == currentRequestID && !Task.isCancelled {
-            if phase != .loadingMore { phase = .idle }
+            phase = .failed(errorMessage ?? "")
         }
     }
 
-    @discardableResult
-    private func startLoadTask(page: Int, perPage: Int) -> Task<Void, Never> {
-        currentLoadTask?.cancel()
-        phase = (items.isEmpty && page == 1) ? .initialLoading : .loading
-        let task: Task<Void, Never> = Task { [weak self] in
+    public func restoreDefaultAfterSearchCancel() {
+        if !query.isEmpty { query = "" }
+        phase = .reloading
+        eventQueue.send(.refresh)
+    }
+
+    // MARK: - Recent queries
+
+    private func addRecentQueryIfNeeded() {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        Task { [weak self] in
             guard let self else { return }
-            await self.performLoad(page: page, perPage: perPage)
+            self.recentQueries = await recentStore.add(trimmed)
         }
-        currentLoadTask = task
-        return task
+    }
+
+    private func loadRecentQueries() {
+        Task { [weak self] in
+            guard let self else { return }
+            self.recentQueries = await recentStore.load()
+        }
     }
 }

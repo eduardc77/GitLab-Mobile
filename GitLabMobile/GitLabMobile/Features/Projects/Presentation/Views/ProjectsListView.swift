@@ -10,6 +10,7 @@ import SwiftUI
 
 public struct ProjectsListView: View {
     @State public var store: PersonalProjectsStore
+    @State private var searchPresented = false
 
     public init(service: PersonalProjectsService, scope: PersonalProjectsStore.Scope) {
         self._store = State(initialValue: PersonalProjectsStore(service: service, scope: scope))
@@ -31,14 +32,12 @@ public struct ProjectsListView: View {
         .navigationBarTitleDisplayMode(.large)
         .refreshable { await store.load() }
         .searchable(
-            text: Binding(
-                get: { store.query },
-                set: { newValue in if newValue != store.query { store.updateQuery(newValue) } }
-            ),
+            text: $store.query,
+            isPresented: $searchPresented,
             placement: .navigationBarDrawer(displayMode: .always)
         )
         .searchSuggestions {
-            if store.query.isEmpty {
+            if store.query.isEmpty && !(store.isLoading || store.isReloading || store.isSearching) {
                 Section("Recent searches") {
                     ForEach(store.recentQueries, id: \.self) { suggestion in
                         Text("**\(suggestion)**").searchCompletion(suggestion)
@@ -46,13 +45,19 @@ public struct ProjectsListView: View {
                 }
             }
         }
-        .onSubmit(of: .search) { Task(priority: .userInitiated) { await store.applySearch() } }
+        .onChange(of: searchPresented) { oldValue, newValue in
+            if oldValue && !newValue { store.restoreDefaultAfterSearchCancel() }
+        }
+        .onSubmit(of: .search) {
+            AppLog.projects.log("ProjectsListView.onSubmit fired")
+            Task(priority: .userInitiated) { await store.applySearch() }
+        }
         .overlay {
-            if store.isLoading && (store.items.isEmpty || store.isSearching) {
+            if store.isReloading || store.isSearching || (store.isLoading && store.items.isEmpty) {
                 ProgressView("Loading...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color(.systemGroupedBackground))
-            } else if store.items.isEmpty, !(store.isLoading || store.isSearching) {
+            } else if store.items.isEmpty, !(store.isLoading || store.isReloading || store.isSearching) {
                 ContentUnavailableView {
                     Label("No Projects", systemImage: "folder.badge.questionmark")
                 } description: {
