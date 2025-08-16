@@ -26,23 +26,30 @@ public actor AuthorizationManager: AuthorizationManagerProtocol, AuthProviding {
     }
 
     public func store(_ token: AuthToken) async throws {
-        try storage.save(token)
+        try await storage.save(token)
         cached = token
     }
 
     public func signOut() async throws {
-        try storage.clear()
+        try await storage.clear()
         cached = nil
         refreshTask?.cancel(); refreshTask = nil
     }
 
     public func getValidToken() async throws -> AuthToken {
-        if let token = cached ?? (try? storage.load()) {
-            cached = token
+        if let token = cached {
             if token.isExpired, let refresh = token.refreshToken {
                 return try await refreshIfNeeded(refreshToken: refresh)
             }
             return token
+        }
+
+        if let loaded = try await storage.load() {
+            cached = loaded
+            if loaded.isExpired, let refresh = loaded.refreshToken {
+                return try await refreshIfNeeded(refreshToken: refresh)
+            }
+            return loaded
         }
         throw NetworkError.unauthorized
     }
@@ -53,7 +60,7 @@ public actor AuthorizationManager: AuthorizationManagerProtocol, AuthProviding {
             defer { refreshTask = nil }
             // Pass clientId if needed in the future; GitLab does not require it by default.
             let refreshed = try await oauthService.refreshToken(refreshToken)
-            try storage.save(refreshed)
+            try await storage.save(refreshed)
             cached = refreshed
             return refreshed
         }

@@ -23,7 +23,7 @@ struct HomeRootView: View {
                 case .authenticated:
                     yourWorkSection
                 case .unauthenticated:
-                    SignedOutView(signIn: appEnv.authStore.signIn)
+                    SignInView()
                 }
             }
             .navigationBarTitleDisplayMode(.large)

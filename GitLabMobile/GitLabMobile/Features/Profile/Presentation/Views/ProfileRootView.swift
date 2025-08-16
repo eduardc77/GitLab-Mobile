@@ -23,7 +23,7 @@ struct ProfileRootView: View {
                 case .authenticated:
                     ProfileView(store: appEnv.profileStore)
                 case .unauthenticated:
-                    SignedOutView(signIn: appEnv.authStore.signIn)
+                    SignInView()
                 }
             }
             .navigationTitle("Profile")

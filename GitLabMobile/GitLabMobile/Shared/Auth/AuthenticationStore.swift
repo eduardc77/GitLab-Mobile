@@ -24,6 +24,7 @@ public final class AuthenticationStore {
 
     private(set) var status: Status = .authenticating
     private(set) var errorMessage: String?
+    private var didAttemptRestore = false
 
     public init(oauthService: OAuthService, authManager: AuthorizationManager, oauthConfig: OAuthAppConfig) {
         self.oauthService = oauthService
@@ -85,7 +86,9 @@ public final class AuthenticationStore {
     }
 
     public func restoreIfPossible() async {
-        // Attempt to load an existing token from keychain and mark authenticated if valid
+        if didAttemptRestore { return }
+        didAttemptRestore = true
+        if status == .authenticated { return }
         do {
             _ = try await authManager.getValidToken()
             status = .authenticated
