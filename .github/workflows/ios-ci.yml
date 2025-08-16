@@ -38,7 +38,7 @@ jobs:
         xcodebuild build \
           -project "GitLabMobile/GitLabMobile.xcodeproj" \
           -scheme "GitLabMobile" \
-          -destination "platform=iOS Simulator" \
+          -destination "platform=iOS Simulator,name=iPhone 15,OS=17.2" \
           -configuration Debug
     
     - name: Run Unit Tests
@@ -46,7 +46,7 @@ jobs:
         xcodebuild test \
           -project "GitLabMobile/GitLabMobile.xcodeproj" \
           -scheme "GitLabMobile" \
-          -destination "platform=iOS Simulator" \
+          -destination "platform=iOS Simulator,name=iPhone 15,OS=17.2" \
           -configuration Debug \
           -enableCodeCoverage YES \
           -resultBundlePath UnitTestResults.xcresult
@@ -74,7 +74,7 @@ jobs:
         xcodebuild test \
           -project "GitLabMobile/GitLabMobile.xcodeproj" \
           -scheme "GitLabMobile" \
-          -destination "platform=iOS Simulator" \
+          -destination "platform=iOS Simulator,name=iPhone 15,OS=17.2" \
           -configuration Debug \
           -only-testing:GitLabMobileUITests \
           -resultBundlePath UITestResults.xcresult
