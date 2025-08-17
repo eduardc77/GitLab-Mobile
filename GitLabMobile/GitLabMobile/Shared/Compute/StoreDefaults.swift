@@ -21,4 +21,6 @@ public enum StoreDefaults {
 
     /// Default page size for paginated project lists
     public static let perPage: Int = 20
+    /// Cache freshness window (seconds) for SwiftData-backed project caches
+    public static let cacheStaleInterval: TimeInterval = 300
 }

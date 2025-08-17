@@ -9,11 +9,12 @@
 import SwiftUI
 
 public struct ExploreProjectsView: View {
+    @Environment(\.modelContext) private var modelContext
     @State public var store: ExploreProjectsStore
     @State private var searchPresented = false
 
-    public init(service: ExploreProjectsService) {
-        self._store = State(initialValue: ExploreProjectsStore(service: service))
+    public init(repository: any ProjectsRepository) {
+        self._store = State(initialValue: ExploreProjectsStore(repository: repository))
     }
 
     public var body: some View {
@@ -30,7 +31,10 @@ public struct ExploreProjectsView: View {
         .listStyle(.plain)
         .navigationTitle("Explore Projects")
         .navigationBarTitleDisplayMode(.inline)
-        .task { await store.initialLoad() }
+        .task {
+            await store.configureLocalCache { @MainActor in ProjectsCache(modelContext: modelContext) }
+            await store.initialLoad()
+        }
         .searchable(
             text: $store.query,
             isPresented: $searchPresented,

@@ -37,7 +37,7 @@ struct ProfileRootView: View {
             .navigationDestination(for: ProfileCoordinator.Destination.self) { destination in
                 switch destination {
                 case .personalProjects:
-                    ProjectsListView(service: appEnv.personalProjectsService, scope: .owned)
+                    ProjectsListView(repository: appEnv.projectsRepository, scope: .owned)
                 case .groups:
                     Text("Groups")
                 case .assignedIssues:

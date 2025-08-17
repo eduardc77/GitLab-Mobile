@@ -108,7 +108,7 @@ public enum ProjectsAPI {
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "owned", value: "true")
             ].appendingSearch(search),
-            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
+            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: true)
         )
     }
 
@@ -120,7 +120,7 @@ public enum ProjectsAPI {
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "starred", value: "true")
             ].appendingSearch(search),
-            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
+            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: true)
         )
     }
 
@@ -132,7 +132,7 @@ public enum ProjectsAPI {
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "membership", value: "true")
             ].appendingSearch(search),
-            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
+            options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: true)
         )
     }
 
@@ -163,7 +163,7 @@ public enum ProjectsAPI {
             options: RequestOptions(
                 cachePolicy: nil,
                 timeout: 8,
-                useETag: false,
+                useETag: true,
                 attachAuthorization: false
             )
         )

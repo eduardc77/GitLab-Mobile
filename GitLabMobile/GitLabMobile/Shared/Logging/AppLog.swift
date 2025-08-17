@@ -13,4 +13,5 @@ public enum AppLog {
     // Feature-oriented categories (stable, easy to filter in Console)
     public static let explore = Logger(subsystem: subsystem, category: "Explore")
     public static let projects = Logger(subsystem: subsystem, category: "Projects")
+    public static let auth = Logger(subsystem: subsystem, category: "Auth")
 }

@@ -31,8 +31,8 @@ public final class PersonalProjectsStore {
     public var isSearching: Bool { phase == .searching }
     public var isReloading: Bool { phase == .reloading }
 
-    // MARK: - Services & helpers
-    @ObservationIgnored private let service: PersonalProjectsServiceProtocol
+    // MARK: - Dependencies & helpers
+    @ObservationIgnored private let repository: any ProjectsRepository
     @ObservationIgnored private let listMerger = ListMerger()
     @ObservationIgnored private let loadMoreThrottler = PaginationThrottler()
     @ObservationIgnored private let queryStream = SearchQueryStream()
@@ -64,12 +64,16 @@ public final class PersonalProjectsStore {
         }
     }
 
-    public init(service: PersonalProjectsServiceProtocol, scope: Scope) {
-        self.service = service
+    public init(repository: any ProjectsRepository, scope: Scope) {
+        self.repository = repository
         self.scope = scope
         setupQueryStream()
         setupLoadEventsPipeline()
         Task { [weak self] in self?.recentQueries = await self?.recentStore.load() ?? [] }
+    }
+
+    public func configureLocalCache(_ makeCache: @escaping @Sendable @MainActor () -> ProjectsCache) async {
+        await repository.configureLocalCache(makeCache: makeCache)
     }
 
     public func setScope(_ newScope: Scope) async {
@@ -81,8 +85,8 @@ public final class PersonalProjectsStore {
         eventQueue.send(.contextChanged(currentFeedID))
     }
 
-    public func load() async {
-        AppLog.projects.debug("Reload requested")
+    public func load(file: StaticString = #fileID, function: StaticString = #function, line: UInt = #line) async {
+        AppLog.projects.debug("Reload requested by \(file):\(line) \(function)")
         phase = .reloading
         eventQueue.send(.refresh)
     }
@@ -104,14 +108,19 @@ public final class PersonalProjectsStore {
         phase = .loadingMore
         defer { if phase == .loadingMore { phase = .idle } }
         do {
-            let result = try await fetch(page: nextPage, perPage: perPage)
-            guard expectedFeed == self.currentFeedID else { return }
-            // Deduplicate ids to avoid transient overlaps from offset pagination
-            items = await listMerger.appendUniqueById(existing: items, newItems: result.items)
-            nextPageCursor = result.pageInfo?.nextPage
-            hasNextPage = (nextPageCursor != nil)
-            AppLog.projects.log("Load-more appended page=\(nextPage)")
-            AppLog.projects.log("totalItems=\(self.items.count) hasNext=\(self.hasNextPage ? "1" : "0")")
+            let stream = await repository.personalPage(
+                scope: mapScope(scope),
+                page: nextPage,
+                perPage: perPage,
+                search: queryIfValid()
+            )
+            for try await event in stream {
+                guard expectedFeed == self.currentFeedID else { break }
+                items = await listMerger.appendUniqueById(existing: items, newItems: event.value.items)
+                nextPageCursor = event.value.nextPage
+                hasNextPage = (nextPageCursor != nil)
+                AppLog.projects.log("Load-more applied page=\(nextPage) stale=\(event.isStale ? "1" : "0")")
+            }
         } catch {
             errorMessage = error.localizedDescription
             AppLog.projects.error("Load-more failed: \(self.errorMessage ?? "-")")
@@ -154,8 +163,8 @@ public final class PersonalProjectsStore {
         eventQueue.send(.search(text))
     }
 
-    public func initialLoad() async {
-        AppLog.projects.debug("Initial load requested")
+    public func initialLoad(file: StaticString = #fileID, function: StaticString = #function, line: UInt = #line) async {
+        AppLog.projects.debug("Initial load requested by \(file):\(line) \(function)")
         if items.isEmpty && (phase == .idle || phase == .initialLoading) {
             phase = .initialLoading
             eventQueue.send(.initial)
@@ -170,27 +179,7 @@ public final class PersonalProjectsStore {
     }
 
     // MARK: - Internals
-    private func fetch(page: Int, perPage: Int) async throws -> Paginated<[ProjectSummary]> {
-        AppLog.projects.debug("Fetch called page=\(page) perPage=\(perPage)")
-        let search = queryIfValid()
-        switch scope {
-        case .owned:
-            return try await service.owned(page: page, perPage: perPage, search: search)
-        case .membership:
-            return try await service.membership(page: page, perPage: perPage, search: search)
-        case .starred:
-            return try await service.starred(page: page, perPage: perPage, search: search)
-        case .combined:
-            async let ownedTask = service.owned(page: page, perPage: perPage, search: search)
-            async let memberTask = service.membership(page: page, perPage: perPage, search: search)
-            let (owned, membership) = try await (ownedTask, memberTask)
-            let merged = await listMerger.appendUniqueById(existing: owned.items, newItems: membership.items)
-            let sorted = merged.sorted { ($0.lastActivityAt ?? .distantPast) > ($1.lastActivityAt ?? .distantPast) }
-            let next = [owned.pageInfo?.nextPage, membership.pageInfo?.nextPage].compactMap { $0 }.min()
-            let info = PageInfo(page: page, perPage: perPage, nextPage: next, prevPage: nil, total: nil, totalPages: nil)
-            return Paginated(items: sorted, pageInfo: info)
-        }
-    }
+    // No direct fetch; repository streams are consumed in place
 
     private func setupLoadEventsPipeline() {
         eventQueue.start { [weak self] event in
@@ -216,15 +205,35 @@ public final class PersonalProjectsStore {
 
     private func fetchAndApplyFirstPage() async {
         do {
-            let paginatedResult = try await fetch(page: 1, perPage: perPage)
-            if Task.isCancelled { return }
-            items = paginatedResult.items
-            nextPageCursor = paginatedResult.pageInfo?.nextPage
-            hasNextPage = (nextPageCursor != nil)
+            let stream = await repository.personalPage(
+                scope: mapScope(scope),
+                page: 1,
+                perPage: perPage,
+                search: queryIfValid()
+            )
+            for try await event in stream {
+                items = event.value.items
+                nextPageCursor = event.value.nextPage
+                hasNextPage = (nextPageCursor != nil)
+                if event.isStale {
+                    AppLog.projects.log("Applied cached first page")
+                } else {
+                    AppLog.projects.log("Applied fresh first page")
+                }
+            }
         } catch {
             if Task.isCancelled { return }
             errorMessage = error.localizedDescription
             phase = .failed(errorMessage ?? "")
+        }
+    }
+
+    private func mapScope(_ scope: Scope) -> PersonalProjectsScope {
+        switch scope {
+        case .owned: return .owned
+        case .membership: return .membership
+        case .starred: return .starred
+        case .combined: return .combined
         }
     }
 

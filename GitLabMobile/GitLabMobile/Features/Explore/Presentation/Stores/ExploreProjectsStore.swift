@@ -33,8 +33,8 @@ public final class ExploreProjectsStore {
     public var isSearching: Bool { phase == .searching }
     public var isReloading: Bool { phase == .reloading }
 
-    // MARK: - Services & helpers
-    @ObservationIgnored private let service: ExploreProjectsServiceProtocol
+    // MARK: - Dependencies & helpers
+    @ObservationIgnored private let repository: any ProjectsRepository
     @ObservationIgnored private let listMerger = ListMerger()
     @ObservationIgnored private let loadMoreThrottler = PaginationThrottler()
     @ObservationIgnored private let recentStore = RecentQueriesStore(key: RecentQueriesStore.Keys.exploreProjects)
@@ -86,15 +86,19 @@ public final class ExploreProjectsStore {
         }
     }
 
-    public init(service: ExploreProjectsServiceProtocol) {
-        self.service = service
+    public init(repository: any ProjectsRepository) {
+        self.repository = repository
         setupQueryStream()
         setupLoadEventsPipeline()
         Task { [weak self] in self?.recentQueries = await self?.recentStore.load() ?? [] }
     }
+
+    public func configureLocalCache(_ makeCache: @escaping @Sendable @MainActor () -> ProjectsCache) async {
+        await repository.configureLocalCache(makeCache: makeCache)
+    }
     
-    public func load() async {
-        AppLog.explore.debug("Reload requested")
+    public func load(file: StaticString = #fileID, function: StaticString = #function, line: UInt = #line) async {
+        AppLog.explore.debug("Reload requested by \(file):\(line) \(function)")
         phase = .reloading
         eventQueue.send(.refresh)
     }
@@ -114,15 +118,21 @@ public final class ExploreProjectsStore {
         defer { if phase == .loadingMore { phase = .idle } }
         do {
             let expectedSortContext = sortContext
-            let result = try await fetch(page: nextPage ?? 1, perPage: perPage)
-            guard expectedSortContext == sortContext else { return }
-            // Deduplicate ids to avoid transient overlaps from offset pagination
-            items = await listMerger.appendUniqueById(existing: items, newItems: result.items)
-            nextPageCursor = result.pageInfo?.nextPage
-            hasNextPage = (nextPageCursor != nil)
-            AppLog.explore.log("Load-more appended page=\(String(describing: nextPage))")
-            let hasNextFlag = self.hasNextPage ? "1" : "0"
-            AppLog.explore.log("totalItems=\(self.items.count) hasNext=\(hasNextFlag)")
+            let pageToLoad = nextPage ?? 1
+            let stream = await repository.explorePage(
+                orderBy: sortBy,
+                sort: sortDirection,
+                page: pageToLoad,
+                perPage: perPage,
+                search: queryIfValid()
+            )
+            for try await event in stream {
+                guard expectedSortContext == sortContext else { break }
+                items = await listMerger.appendUniqueById(existing: items, newItems: event.value.items)
+                nextPageCursor = event.value.nextPage
+                hasNextPage = (nextPageCursor != nil)
+                AppLog.explore.log("Load-more applied page=\(pageToLoad) stale=\(event.isStale ? "1" : "0")")
+            }
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -179,15 +189,19 @@ public final class ExploreProjectsStore {
             switch event {
             case .initial:
                 self.phase = .initialLoading
+                AppLog.explore.debug("FetchFirstPage trigger: event=initial key=\(self.debugKey())")
                 await self.fetchAndApplyFirstPage()
             case .refresh:
                 self.phase = .reloading
+                AppLog.explore.debug("FetchFirstPage trigger: event=refresh key=\(self.debugKey())")
                 await self.fetchAndApplyFirstPage()
             case .sortChanged:
                 self.phase = .reloading
+                AppLog.explore.debug("FetchFirstPage trigger: event=sortChanged key=\(self.debugKey())")
                 await self.fetchAndApplyFirstPage()
             case .search:
                 self.phase = .searching
+                AppLog.explore.debug("FetchFirstPage trigger: event=search key=\(self.debugKey())")
                 await self.fetchAndApplyFirstPage()
             }
             self.pendingSectionChange = false
@@ -197,16 +211,33 @@ public final class ExploreProjectsStore {
 
     private func fetchAndApplyFirstPage() async {
         do {
-            let paginatedResult = try await fetch(page: 1, perPage: perPage)
-            if Task.isCancelled { return }
-            items = paginatedResult.items
-            nextPageCursor = paginatedResult.pageInfo?.nextPage
-            hasNextPage = (nextPageCursor != nil)
+            let expectedSortContext = sortContext
+            let rid = String(UUID().uuidString.prefix(8))
+            let stream = await repository.explorePage(
+                orderBy: sortBy,
+                sort: sortDirection,
+                page: 1,
+                perPage: perPage,
+                search: queryIfValid()
+            )
+            for try await event in stream {
+                guard expectedSortContext == sortContext else { break }
+                items = event.value.items
+                nextPageCursor = event.value.nextPage
+                hasNextPage = (nextPageCursor != nil)
+                let freshness = event.isStale ? "cached" : "fresh"
+                AppLog.explore.log("[rid=\(rid)] Applied \(freshness) first page key=\(self.debugKey()) next=\(String(describing: self.nextPageCursor))")
+            }
         } catch {
             if Task.isCancelled { return }
             errorMessage = error.localizedDescription
             phase = .failed(errorMessage ?? "")
         }
+    }
+
+    private func debugKey() -> String {
+        let queryPart = sortContext.query?.lowercased() ?? "__none__"
+        return "explore:\(sortContext.sortBy.rawValue):\(sortContext.sort.rawValue):\(queryPart)"
     }
 
     public func restoreDefaultAfterSearchCancel() {
@@ -215,21 +246,7 @@ public final class ExploreProjectsStore {
         eventQueue.send(.refresh)
     }
 
-    private func fetch(
-        page: Int,
-        perPage: Int
-    ) async throws -> Paginated<[ProjectSummary]> {
-        AppLog.explore.debug("fn=fetch called page=\(page) perPage=\(perPage)")
-        return try await service.getList(
-            orderBy: sortBy,
-            sort: sortDirection,
-            page: page,
-            perPage: perPage,
-            search: queryIfValid())
-    }
-
     public func initialLoad() async {
-        AppLog.explore.debug("fn=initialLoad called")
         if items.isEmpty && (phase == .idle || phase == .initialLoading) {
             phase = .initialLoading
             eventQueue.send(.initial)

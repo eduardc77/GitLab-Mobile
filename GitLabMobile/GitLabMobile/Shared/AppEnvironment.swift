@@ -12,9 +12,8 @@ import Observation
 @Observable
 public final class AppEnvironment {
     public let apiClient: APIClient
-    public let exploreService: ExploreProjectsService
-    public let personalProjectsService: PersonalProjectsService
     public let projectDetailsService: ProjectDetailsService
+    public let projectsRepository: any ProjectsRepository
     public let authManager: AuthorizationManager
     public let authStore: AuthenticationStore
     public let profileService: ProfileService
@@ -28,13 +27,16 @@ public final class AppEnvironment {
         let sessionDelegate = PinnedSessionDelegate(pins: pins)
         let client = APIClient(config: config, sessionDelegate: sessionDelegate, authProvider: authManager)
         self.apiClient = client
-        self.exploreService = ExploreProjectsService(api: client)
-        self.personalProjectsService = PersonalProjectsService(api: client)
         self.projectDetailsService = ProjectDetailsService(api: client)
         self.authManager = authManager
         let oauthConfig = AppOAuthConfigLoader.loadFromInfoPlist()
         self.authStore = AuthenticationStore(oauthService: oauth, authManager: authManager, oauthConfig: oauthConfig)
         self.profileService = ProfileService(api: client)
         self.profileStore = ProfileStore(authStore: self.authStore, service: self.profileService)
+
+        // Repository wiring
+        let remoteDS = DefaultProjectsRemoteDataSource(api: client)
+        let localDS = DefaultProjectsLocalDataSource()
+        self.projectsRepository = DefaultProjectsRepository(remote: remoteDS, local: localDS)
     }
 }
