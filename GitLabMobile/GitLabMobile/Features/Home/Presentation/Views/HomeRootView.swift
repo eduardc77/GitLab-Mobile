@@ -31,7 +31,7 @@ struct HomeRootView: View {
             .navigationDestination(for: HomeCoordinator.Destination.self) { destination in
                 switch destination {
                 case .projects:
-                    ProjectsListView(service: appEnv.personalProjectsService, scope: .combined)
+                    ProjectsListView(repository: appEnv.projectsRepository, scope: .combined)
                 case .groups:
                     Text("Groups")
                 case .issues:

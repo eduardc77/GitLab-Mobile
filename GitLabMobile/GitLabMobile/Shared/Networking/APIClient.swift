@@ -55,9 +55,14 @@ public struct APIClient: Sendable {
         let url = try buildURL(for: endpoint)
         var request = makeRequest(url: url, endpoint: endpoint)
         await applyAuthIfAvailable(&request, endpoint: endpoint)
-        // For paginated endpoints we avoid memory cache to preserve pagination headers
-        let (data, http) = try await performWithRetry(request, endpoint: endpoint)
-        return try decodePaginated(Item.self, data: data, http: http)
+        // Use conditional GET (ETag) when enabled to avoid re-downloading unchanged pages
+        do {
+            let (data, http) = try await performWithRetry(request, endpoint: endpoint)
+            return try decodePaginated(Item.self, data: data, http: http)
+        } catch let NetworkError.server(statusCode: status, data: _) where status == 304 {
+            // Not modified: caller should use cached body (we signal via a dedicated error)
+            throw NetworkError.server(statusCode: 304, data: nil)
+        }
     }
 }
 

@@ -36,5 +36,3 @@ public final class LatestWinsEventQueue<Event: Equatable> {
 
     public func send(_ event: Event) { continuation?.yield(event) }
 }
-
-

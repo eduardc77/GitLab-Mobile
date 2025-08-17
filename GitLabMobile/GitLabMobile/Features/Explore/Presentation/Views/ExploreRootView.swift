@@ -36,7 +36,7 @@ public struct ExploreRootView: View {
             .navigationDestination(for: ExploreCoordinator.Destination.self) { destination in
                 switch destination {
                 case .projects:
-                    ExploreProjectsView(service: appEnv.exploreService)
+                    ExploreProjectsView(repository: appEnv.projectsRepository)
                 case .projectDetail(let id):
                     Text("Project #\(id)")
                 case .users:

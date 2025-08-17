@@ -9,11 +9,12 @@
 import SwiftUI
 
 public struct ProjectsListView: View {
+    @Environment(\.modelContext) private var modelContext
     @State public var store: PersonalProjectsStore
     @State private var searchPresented = false
 
-    public init(service: PersonalProjectsService, scope: PersonalProjectsStore.Scope) {
-        self._store = State(initialValue: PersonalProjectsStore(service: service, scope: scope))
+    public init(repository: any ProjectsRepository, scope: PersonalProjectsStore.Scope) {
+        self._store = State(initialValue: PersonalProjectsStore(repository: repository, scope: scope))
     }
 
     public var body: some View {
@@ -71,6 +72,9 @@ public struct ProjectsListView: View {
         )) {
             Button("OK", role: .cancel) {}
         } message: { Text(store.errorMessage ?? "") }
-        .task { await store.initialLoad() }
+        .task {
+            await store.configureLocalCache { @MainActor in ProjectsCache(modelContext: modelContext) }
+            await store.initialLoad()
+        }
     }
 }

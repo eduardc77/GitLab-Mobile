@@ -28,6 +28,7 @@ public actor AuthorizationManager: AuthorizationManagerProtocol, AuthProviding {
     public func store(_ token: AuthToken) async throws {
         try await storage.save(token)
         cached = token
+        AppLog.auth.log("store token: has_refresh=\(token.refreshToken != nil ? "1" : "0") exp=\(String(describing: token.expiresIn)) created=\(String(describing: token.createdAt))")
     }
 
     public func signOut() async throws {
@@ -39,16 +40,20 @@ public actor AuthorizationManager: AuthorizationManagerProtocol, AuthProviding {
     public func getValidToken() async throws -> AuthToken {
         if let token = cached {
             if token.isExpired, let refresh = token.refreshToken {
+                AppLog.auth.log("token expired in-memory; will refresh")
                 return try await refreshIfNeeded(refreshToken: refresh)
             }
+            AppLog.auth.debug("using cached in-memory token (valid)")
             return token
         }
 
         if let loaded = try await storage.load() {
             cached = loaded
             if loaded.isExpired, let refresh = loaded.refreshToken {
+                AppLog.auth.log("token expired from storage; will refresh")
                 return try await refreshIfNeeded(refreshToken: refresh)
             }
+            AppLog.auth.debug("using token from storage (valid)")
             return loaded
         }
         throw NetworkError.unauthorized
@@ -58,14 +63,21 @@ public actor AuthorizationManager: AuthorizationManagerProtocol, AuthProviding {
         if let task = refreshTask { return try await task.value }
         let task = Task { () throws -> AuthToken in
             defer { refreshTask = nil }
+            AppLog.auth.log("refresh start")
             // Pass clientId if needed in the future; GitLab does not require it by default.
             let refreshed = try await oauthService.refreshToken(refreshToken)
             try await storage.save(refreshed)
             cached = refreshed
+            AppLog.auth.log("refresh success: has_refresh=\(refreshed.refreshToken != nil ? "1" : "0") exp=\(String(describing: refreshed.expiresIn))")
             return refreshed
         }
         refreshTask = task
-        return try await task.value
+        do {
+            return try await task.value
+        } catch {
+            AppLog.auth.error("refresh failed: \(String(describing: error))")
+            throw error
+        }
     }
 
     // AuthProviding

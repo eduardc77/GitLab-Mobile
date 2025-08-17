@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Kingfisher
+import SwiftData
 
 @main
 struct GitLabMobileApp: App {
@@ -23,6 +24,7 @@ struct GitLabMobileApp: App {
                 .environment(appEnv)
                 .task { await appEnv.authStore.restoreIfPossible() }
         }
+        .modelContainer(for: [CachedProject.self, CachedProjectPage.self])
     }
 
     private static func configureKingfisher() {
