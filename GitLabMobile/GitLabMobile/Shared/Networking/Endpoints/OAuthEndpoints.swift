@@ -12,38 +12,51 @@ public enum OAuthEndpoints {
     case exchange(code: String, redirectURI: String, clientId: String, codeVerifier: String)
     case refresh(refreshToken: String, clientId: String? = nil)
 
-    // Raw URLRequest because OAuth uses different prefix and form encoding
-    func request(baseURL: URL) throws -> URLRequest {
-        switch self {
-        case let .exchange(code, redirectURI, clientId, codeVerifier):
-            var req = URLRequest(url: baseURL.appendingPathComponent("/oauth/token"))
-            req.httpMethod = "POST"
-            req.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-            let params: [String: String] = [
-                "grant_type": "authorization_code",
-                "code": code,
-                "redirect_uri": redirectURI,
-                "client_id": clientId,
-                "code_verifier": codeVerifier
-            ]
-            req.httpBody = formURLEncodedBody(params)
-            return req
-        case let .refresh(refreshToken, clientId):
-            var req = URLRequest(url: baseURL.appendingPathComponent("/oauth/token"))
-            req.httpMethod = "POST"
-            req.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-            var params: [String: String] = [
-                "grant_type": "refresh_token",
-                "refresh_token": refreshToken
-            ]
-            if let clientId { params["client_id"] = clientId }
-            req.httpBody = formURLEncodedBody(params)
-            return req
-        }
-    }
-
     public func refresh(refreshToken: String) async throws -> OAuthTokenDTO {
         fatalError("Use AuthorizationManager with configured OAuthEndpoints")
+    }
+
+    // MARK: - Endpoint helpers
+    public static func exchangeEndpoint(
+        code: String,
+        redirectURI: String,
+        clientId: String,
+        codeVerifier: String
+    ) -> Endpoint<OAuthTokenDTO> {
+        let params: [String: String] = [
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": redirectURI,
+            "client_id": clientId,
+            "code_verifier": codeVerifier
+        ]
+        return Endpoint(
+            path: "/oauth/token",
+            method: .post,
+            headers: ["Content-Type": "application/x-www-form-urlencoded"],
+            body: formURLEncodedBody(params),
+            isAbsolutePath: true,
+            options: RequestOptions(useETag: false, attachAuthorization: false)
+        )
+    }
+
+    public static func refreshEndpoint(
+        refreshToken: String,
+        clientId: String? = nil
+    ) -> Endpoint<OAuthTokenDTO> {
+        var params: [String: String] = [
+            "grant_type": "refresh_token",
+            "refresh_token": refreshToken
+        ]
+        if let clientId { params["client_id"] = clientId }
+        return Endpoint(
+            path: "/oauth/token",
+            method: .post,
+            headers: ["Content-Type": "application/x-www-form-urlencoded"],
+            body: formURLEncodedBody(params),
+            isAbsolutePath: true,
+            options: RequestOptions(useETag: false, attachAuthorization: false)
+        )
     }
 }
 

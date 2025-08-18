@@ -17,12 +17,18 @@ public protocol AuthorizationManagerProtocol: Sendable {
 public actor AuthorizationManager: AuthorizationManagerProtocol, AuthProviding {
     private let storage: TokenStorage
     private let oauthService: OAuthService
+    private let oauthClientId: String?
     private var cached: AuthToken?
     private var refreshTask: Task<AuthToken, Error>?
 
-    public init(storage: TokenStorage = KeychainTokenStorage(), oauthService: OAuthService) {
+    public init(
+        storage: TokenStorage = KeychainTokenStorage(),
+        oauthService: OAuthService,
+        clientId: String? = nil
+    ) {
         self.storage = storage
         self.oauthService = oauthService
+        self.oauthClientId = clientId
     }
 
     public func store(_ token: AuthToken) async throws {
@@ -39,9 +45,14 @@ public actor AuthorizationManager: AuthorizationManagerProtocol, AuthProviding {
 
     public func getValidToken() async throws -> AuthToken {
         if let token = cached {
-            if token.isExpired, let refresh = token.refreshToken {
-                AppLog.auth.log("token expired in-memory; will refresh")
-                return try await refreshIfNeeded(refreshToken: refresh)
+            if token.isExpired {
+                if let refresh = token.refreshToken {
+                    AppLog.auth.log("token expired in-memory; will refresh")
+                    return try await refreshIfNeeded(refreshToken: refresh)
+                } else {
+                    AppLog.auth.error("token expired in-memory and no refresh token; require re-auth")
+                    throw NetworkError.unauthorized
+                }
             }
             AppLog.auth.debug("using cached in-memory token (valid)")
             return token
@@ -49,9 +60,14 @@ public actor AuthorizationManager: AuthorizationManagerProtocol, AuthProviding {
 
         if let loaded = try await storage.load() {
             cached = loaded
-            if loaded.isExpired, let refresh = loaded.refreshToken {
-                AppLog.auth.log("token expired from storage; will refresh")
-                return try await refreshIfNeeded(refreshToken: refresh)
+            if loaded.isExpired {
+                if let refresh = loaded.refreshToken {
+                    AppLog.auth.log("token expired from storage; will refresh")
+                    return try await refreshIfNeeded(refreshToken: refresh)
+                } else {
+                    AppLog.auth.error("token expired from storage and no refresh token; require re-auth")
+                    throw NetworkError.unauthorized
+                }
             }
             AppLog.auth.debug("using token from storage (valid)")
             return loaded
@@ -64,8 +80,8 @@ public actor AuthorizationManager: AuthorizationManagerProtocol, AuthProviding {
         let task = Task { () throws -> AuthToken in
             defer { refreshTask = nil }
             AppLog.auth.log("refresh start")
-            // Pass clientId if needed in the future; GitLab does not require it by default.
-            let refreshed = try await oauthService.refreshToken(refreshToken)
+            // Include client_id when available (GitLab native apps may require it for refresh)
+            let refreshed = try await oauthService.refreshToken(refreshToken, clientId: oauthClientId)
             try await storage.save(refreshed)
             cached = refreshed
             AppLog.auth.log("refresh success: has_refresh=\(refreshed.refreshToken != nil ? "1" : "0") exp=\(String(describing: refreshed.expiresIn))")

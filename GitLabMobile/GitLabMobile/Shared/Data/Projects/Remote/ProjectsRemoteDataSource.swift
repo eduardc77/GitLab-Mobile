@@ -10,8 +10,8 @@ import Foundation
 
 public protocol ProjectsRemoteDataSource: Sendable {
 	func fetchExplore(
-		orderBy: ProjectsAPI.SortBy,
-		sort: ProjectsAPI.SortDirection,
+		orderBy: ProjectsEndpoints.SortBy,
+		sort: ProjectsEndpoints.SortDirection,
 		page: Int,
 		perPage: Int,
 		search: String?
@@ -28,14 +28,14 @@ public struct DefaultProjectsRemoteDataSource: ProjectsRemoteDataSource {
 	public init(api: APIClient) { self.api = api }
 
 	public func fetchExplore(
-		orderBy: ProjectsAPI.SortBy,
-		sort: ProjectsAPI.SortDirection,
+		orderBy: ProjectsEndpoints.SortBy,
+		sort: ProjectsEndpoints.SortDirection,
 		page: Int,
 		perPage: Int,
 		search: String?
 	) async throws -> Paginated<[ProjectDTO]> {
 		try await api.sendPaginated(
-			ProjectsAPI.list(
+			ProjectsEndpoints.list(
 				orderBy: orderBy,
 				sort: sort,
 				page: page,
@@ -47,14 +47,14 @@ public struct DefaultProjectsRemoteDataSource: ProjectsRemoteDataSource {
 	}
 
 	public func fetchPersonalOwned(page: Int, perPage: Int, search: String?) async throws -> Paginated<[ProjectSummary]> {
-		try await api.sendPaginated(ProjectsAPI.owned(page: page, perPage: perPage, search: search))
+		try await api.sendPaginated(ProjectsEndpoints.owned(page: page, perPage: perPage, search: search))
 	}
 
 	public func fetchPersonalMembership(page: Int, perPage: Int, search: String?) async throws -> Paginated<[ProjectSummary]> {
-		try await api.sendPaginated(ProjectsAPI.membership(page: page, perPage: perPage, search: search))
+		try await api.sendPaginated(ProjectsEndpoints.membership(page: page, perPage: perPage, search: search))
 	}
 
 	public func fetchPersonalStarred(page: Int, perPage: Int, search: String?) async throws -> Paginated<[ProjectSummary]> {
-		try await api.sendPaginated(ProjectsAPI.starred(page: page, perPage: perPage, search: search))
+		try await api.sendPaginated(ProjectsEndpoints.starred(page: page, perPage: perPage, search: search))
 	}
 }

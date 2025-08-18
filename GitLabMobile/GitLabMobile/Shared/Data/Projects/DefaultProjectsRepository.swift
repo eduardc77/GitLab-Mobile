@@ -34,8 +34,8 @@ public actor DefaultProjectsRepository: ProjectsRepository {
 	}
 
 	public func explorePage(
-		orderBy: ProjectsAPI.SortBy,
-		sort: ProjectsAPI.SortDirection,
+		orderBy: ProjectsEndpoints.SortBy,
+		sort: ProjectsEndpoints.SortDirection,
 		page: Int,
 		perPage: Int,
 		search: String?
@@ -199,8 +199,8 @@ public actor DefaultProjectsRepository: ProjectsRepository {
 
 	// MARK: - Keys
 	private func makeExploreCacheKey(
-		orderBy: ProjectsAPI.SortBy,
-		sort: ProjectsAPI.SortDirection,
+		orderBy: ProjectsEndpoints.SortBy,
+		sort: ProjectsEndpoints.SortDirection,
 		search: String?
 	) -> String {
 		let trimmed = search?.trimmingCharacters(in: .whitespacesAndNewlines)

@@ -1,5 +1,5 @@
 //
-//  ProjectsAPI.swift
+//  ProjectsEndpoints.swift
 //  GitLabMobile
 //
 //  Copyright © 2025 Eliomane. All rights reserved.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum ProjectsAPI {
+public enum ProjectsEndpoints {
 
     public enum SortBy: String, CaseIterable {
         case starCount = "star_count"
@@ -167,27 +167,6 @@ public enum ProjectsAPI {
                 attachAuthorization: false
             )
         )
-    }
-}
-
-public extension ProjectsAPI.SortBy {
-
-    var displayTitle: String {
-        switch self {
-        case .starCount: return "Stars"
-        case .lastActivityAt: return "Updated date"
-        case .createdAt: return "Created date"
-        case .name: return "Name"
-        }
-    }
-}
-
-public extension ProjectsAPI.SortDirection {
-    var displayTitle: String {
-        switch self {
-        case .ascending: return "Ascending"
-        case .descending: return "Descending"
-        }
     }
 }
 

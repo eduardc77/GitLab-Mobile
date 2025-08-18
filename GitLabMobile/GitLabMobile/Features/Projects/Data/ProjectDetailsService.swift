@@ -18,6 +18,6 @@ public struct ProjectDetailsService: ProjectDetailsServiceProtocol {
     public init(api: APIClient) { self.api = api }
 
     public func getProject(id: Int) async throws -> ProjectDTO {
-        try await api.send(ProjectsAPI.project(id: id))
+        try await api.send(ProjectsEndpoints.project(id: id))
     }
 }
