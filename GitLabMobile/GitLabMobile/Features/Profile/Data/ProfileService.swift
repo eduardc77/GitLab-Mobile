@@ -14,7 +14,7 @@ public final class ProfileService {
     public init(api: APIClient) { self.api = api }
 
     public func loadCurrentUser() async throws -> GitLabUser {
-        let dto: UserDTO = try await api.send(UsersAPI.current())
+        let dto: UserDTO = try await api.send(UsersEndpoints.current())
         return dto.toDomain()
     }
 }

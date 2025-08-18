@@ -22,14 +22,14 @@ public final class AppEnvironment {
     public init() {
         let config = AppNetworkingConfig.loadFromInfoPlist()
         let oauth = OAuthService(baseURL: config.baseURL)
-        let authManager = AuthorizationManager(oauthService: oauth)
+        let oauthConfig = AppOAuthConfigLoader.loadFromInfoPlist()
+        let authManager = AuthorizationManager(oauthService: oauth, clientId: oauthConfig.clientId)
         let pins = AppPinning.loadPinsFromInfoPlist()
         let sessionDelegate = PinnedSessionDelegate(pins: pins)
         let client = APIClient(config: config, sessionDelegate: sessionDelegate, authProvider: authManager)
         self.apiClient = client
         self.projectDetailsService = ProjectDetailsService(api: client)
         self.authManager = authManager
-        let oauthConfig = AppOAuthConfigLoader.loadFromInfoPlist()
         self.authStore = AuthenticationStore(oauthService: oauth, authManager: authManager, oauthConfig: oauthConfig)
         self.profileService = ProfileService(api: client)
         self.profileStore = ProfileStore(authStore: self.authStore, service: self.profileService)

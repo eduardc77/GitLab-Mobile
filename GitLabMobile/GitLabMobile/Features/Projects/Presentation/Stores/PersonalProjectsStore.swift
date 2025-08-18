@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import AsyncAlgorithms
 
 @MainActor
 @Observable
@@ -69,7 +68,7 @@ public final class PersonalProjectsStore {
         self.scope = scope
         setupQueryStream()
         setupLoadEventsPipeline()
-        Task { [weak self] in self?.recentQueries = await self?.recentStore.load() ?? [] }
+        Task { [weak self] in await self?.loadRecentQueries() }
     }
 
     public func configureLocalCache(_ makeCache: @escaping @Sendable @MainActor () -> ProjectsCache) async {
@@ -140,7 +139,7 @@ public final class PersonalProjectsStore {
             return
         }
         AppLog.projects.debug("Search submitted (explicit) from applySearch")
-        addRecentQueryIfNeeded()
+        await addRecentQueryIfNeeded()
         phase = .searching
         eventQueue.send(.search(trimmed))
     }
@@ -158,7 +157,7 @@ public final class PersonalProjectsStore {
         }
         AppLog.projects.debug("Search triggered (debounced change)")
         AppLog.projects.log("Search query changed: \(text, privacy: .public)")
-        addRecentQueryIfNeeded()
+        await addRecentQueryIfNeeded()
         phase = .searching
         eventQueue.send(.search(text))
     }
@@ -245,19 +244,15 @@ public final class PersonalProjectsStore {
 
     // MARK: - Recent queries
 
-    private func addRecentQueryIfNeeded() {
+    private func addRecentQueryIfNeeded() async {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
-        Task { [weak self] in
-            guard let self else { return }
-            self.recentQueries = await recentStore.add(trimmed)
-        }
+        let updated = await recentStore.add(trimmed)
+        if updated != recentQueries { recentQueries = updated }
     }
 
-    private func loadRecentQueries() {
-        Task { [weak self] in
-            guard let self else { return }
-            self.recentQueries = await recentStore.load()
-        }
+    private func loadRecentQueries() async {
+        let loaded = await recentStore.load()
+        if loaded != recentQueries { recentQueries = loaded }
     }
 }

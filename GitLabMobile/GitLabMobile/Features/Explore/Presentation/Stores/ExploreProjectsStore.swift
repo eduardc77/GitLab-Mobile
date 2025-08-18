@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import AsyncAlgorithms
 
 @MainActor
 @Observable
@@ -17,8 +16,8 @@ public final class ExploreProjectsStore {
     private typealias Phase = LoadPhase
     private struct SortContext: Equatable, Hashable {
         let query: String?
-        let sortBy: ProjectsAPI.SortBy
-        let sort: ProjectsAPI.SortDirection
+        let sortBy: ProjectsEndpoints.SortBy
+        let sort: ProjectsEndpoints.SortDirection
     }
 
     // MARK: - Public state
@@ -47,7 +46,7 @@ public final class ExploreProjectsStore {
     private var sortContext: SortContext { SortContext(query: queryIfValid(), sortBy: sortBy, sort: sortDirection) }
     @ObservationIgnored private var pendingSectionChange = false
 
-    public var sortBy: ProjectsAPI.SortBy = .starCount {
+    public var sortBy: ProjectsEndpoints.SortBy = .starCount {
         didSet {
             guard oldValue != sortBy else { return }
             AppLog.explore.log("OrderBy change applied: \(String(describing: oldValue)) -> \(String(describing: self.sortBy))")
@@ -56,7 +55,7 @@ public final class ExploreProjectsStore {
             eventQueue.send(.sortChanged(sortContext))
         }
     }
-    public var sortDirection: ProjectsAPI.SortDirection = .descending {
+    public var sortDirection: ProjectsEndpoints.SortDirection = .descending {
         didSet {
             guard oldValue != sortDirection else { return }
             AppLog.explore.log("Sort direction change applied: \(String(describing: oldValue)) -> \(String(describing: self.sortDirection))")
@@ -90,7 +89,7 @@ public final class ExploreProjectsStore {
         self.repository = repository
         setupQueryStream()
         setupLoadEventsPipeline()
-        Task { [weak self] in self?.recentQueries = await self?.recentStore.load() ?? [] }
+        Task { [weak self] in await self?.loadRecentQueries() }
     }
 
     public func configureLocalCache(_ makeCache: @escaping @Sendable @MainActor () -> ProjectsCache) async {
@@ -153,7 +152,7 @@ public final class ExploreProjectsStore {
             return
         }
         AppLog.explore.debug("Search submitted (explicit) from applySearch")
-        addRecentQueryIfNeeded()
+        await addRecentQueryIfNeeded()
         phase = .searching
         eventQueue.send(.search(trimmed))
     }
@@ -171,7 +170,7 @@ public final class ExploreProjectsStore {
         }
         AppLog.explore.debug("Search triggered (debounced change)")
         AppLog.explore.log("Search query changed: \(text, privacy: .public)")
-        addRecentQueryIfNeeded()
+        await addRecentQueryIfNeeded()
         phase = .searching
         eventQueue.send(.search(text))
     }
@@ -255,19 +254,15 @@ public final class ExploreProjectsStore {
 
     // MARK: - Recent queries
 
-    private func addRecentQueryIfNeeded() {
+    private func addRecentQueryIfNeeded() async {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
-        Task { [weak self] in
-            guard let self else { return }
-            self.recentQueries = await recentStore.add(trimmed)
-        }
+        let updated = await recentStore.add(trimmed)
+        if updated != recentQueries { recentQueries = updated }
     }
 
-    private func loadRecentQueries() {
-        Task { [weak self] in
-            guard let self else { return }
-            self.recentQueries = await recentStore.load()
-        }
+    private func loadRecentQueries() async {
+        let loaded = await recentStore.load()
+        if loaded != recentQueries { recentQueries = loaded }
     }
 }

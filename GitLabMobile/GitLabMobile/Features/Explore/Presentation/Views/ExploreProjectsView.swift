@@ -99,12 +99,12 @@ public struct ExploreProjectsView: View {
     @ViewBuilder
     private var sortMenuContent: some View {
         Picker("Sort by", selection: $store.sortBy) {
-            ForEach(ProjectsAPI.SortBy.allCases, id: \.self) { option in
+            ForEach(ProjectSortField.allCases, id: \.self) { option in
                 Text(option.displayTitle).tag(option)
             }
         }
         Picker("Direction", selection: $store.sortDirection) {
-            ForEach(ProjectsAPI.SortDirection.allCases, id: \.self) { direction in
+            ForEach(SortDirection.allCases, id: \.self) { direction in
                 Text(direction.displayTitle).tag(direction)
             }
         }

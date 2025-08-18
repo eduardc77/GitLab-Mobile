@@ -40,4 +40,9 @@ public final class ProfileStore {
             errorMessage = error.localizedDescription
         }
     }
+
+    public func onAppForegrounded() async {
+        // Lightweight revalidation: relies on ETag to be 304 if unchanged
+        await reload()
+    }
 }

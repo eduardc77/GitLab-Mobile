@@ -11,6 +11,7 @@ import SwiftUI
 struct ProfileRootView: View {
     @Environment(AppEnvironment.self) private var appEnv
     @State private var coordinator = ProfileCoordinator()
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack(path: Bindable(coordinator).navigationPath) {
@@ -51,6 +52,11 @@ struct ProfileRootView: View {
         }
         .environment(coordinator)
         .task { await appEnv.profileStore.loadIfNeeded() }
+        .onChange(of: scenePhase) { _, newValue in
+            if newValue == .active {
+                Task { await appEnv.profileStore.onAppForegrounded() }
+            }
+        }
         .alert("Error", isPresented: .constant(appEnv.authStore.errorMessage != nil), actions: {
             Button("OK") { appEnv.authStore.clearError() }
         }, message: { Text(appEnv.authStore.errorMessage ?? "") })

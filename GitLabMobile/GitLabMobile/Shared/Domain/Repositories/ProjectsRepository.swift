@@ -38,8 +38,8 @@ public protocol ProjectsRepository: Sendable {
 
 	// Explore (public)
 	func explorePage(
-		orderBy: ProjectsAPI.SortBy,
-		sort: ProjectsAPI.SortDirection,
+		orderBy: ProjectsEndpoints.SortBy,
+		sort: ProjectsEndpoints.SortDirection,
 		page: Int,
 		perPage: Int,
 		search: String?

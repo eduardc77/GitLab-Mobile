@@ -16,6 +16,7 @@ public struct APIClient: Sendable {
     private let userAgent: String
     private let acceptLanguage: String
     private let eTagCache = ETagCache()
+    private let requestBuilder: HTTPRequestBuilder
 
     public init(
         baseURL: URL,
@@ -41,19 +42,25 @@ public struct APIClient: Sendable {
         config.urlCache = urlCache
         self.urlSession = URLSession(configuration: config, delegate: sessionDelegate, delegateQueue: nil)
         self.authProvider = authProvider
+        self.requestBuilder = HTTPRequestBuilder(
+            baseURL: baseURL,
+            apiPrefix: apiPrefix,
+            userAgent: userAgent,
+            acceptLanguage: acceptLanguage
+        )
     }
 
     public func send<Response: Decodable>(_ endpoint: Endpoint<Response>) async throws -> Response {
-        let url = try buildURL(for: endpoint)
-        var request = makeRequest(url: url, endpoint: endpoint)
+        let url = try requestBuilder.buildURL(for: endpoint)
+        var request = requestBuilder.makeRequest(url: url, endpoint: endpoint)
         await applyAuthIfAvailable(&request, endpoint: endpoint)
         let (data, http) = try await performWithRetry(request, endpoint: endpoint)
         return try decode(Response.self, data: data, http: http)
     }
 
     public func sendPaginated<Item: Decodable>(_ endpoint: Endpoint<[Item]>) async throws -> Paginated<[Item]> {
-        let url = try buildURL(for: endpoint)
-        var request = makeRequest(url: url, endpoint: endpoint)
+        let url = try requestBuilder.buildURL(for: endpoint)
+        var request = requestBuilder.makeRequest(url: url, endpoint: endpoint)
         await applyAuthIfAvailable(&request, endpoint: endpoint)
         // Use conditional GET (ETag) when enabled to avoid re-downloading unchanged pages
         do {
@@ -68,30 +75,6 @@ public struct APIClient: Sendable {
 
 // MARK: - Private helpers
 private extension APIClient {
-    func buildURL<Response>(for endpoint: Endpoint<Response>) throws -> URL {
-        let fullPath = endpoint.isAbsolutePath ? endpoint.path : (apiPrefix + endpoint.path)
-        guard var components = URLComponents(url: baseURL.appendingPathComponent(fullPath),
-                                             resolvingAgainstBaseURL: false) else {
-            throw NetworkError.invalidURL
-        }
-        components.queryItems = endpoint.queryItems.isEmpty ? nil : endpoint.queryItems
-        guard let url = components.url else { throw NetworkError.invalidURL }
-        return url
-    }
-
-    func makeRequest<Response>(url: URL, endpoint: Endpoint<Response>) -> URLRequest {
-        var request = URLRequest(url: url)
-        request.httpMethod = endpoint.method.rawValue
-        request.httpBody = endpoint.body
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        request.setValue(acceptLanguage, forHTTPHeaderField: "Accept-Language")
-        if let policy = endpoint.options.cachePolicy { request.cachePolicy = policy }
-        if let timeout = endpoint.options.timeout { request.timeoutInterval = timeout }
-        endpoint.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
-        return request
-    }
-
     func applyAuthIfAvailable<Response>(_ request: inout URLRequest, endpoint: Endpoint<Response>) async {
         guard endpoint.options.attachAuthorization else { return }
         if let header = await authProvider?.authorizationHeader() {

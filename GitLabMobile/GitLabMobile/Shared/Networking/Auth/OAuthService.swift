@@ -11,10 +11,17 @@ import Foundation
 public struct OAuthService: Sendable {
     public let baseURL: URL
     private let session: URLSession
+    private let requestBuilder: HTTPRequestBuilder
 
     public init(baseURL: URL, session: URLSession = .shared) {
         self.baseURL = baseURL
         self.session = session
+        self.requestBuilder = HTTPRequestBuilder(
+            baseURL: baseURL,
+            apiPrefix: "",
+            userAgent: "GitLabMobile/1.0 (iOS)",
+            acceptLanguage: Locale.preferredLanguages.first ?? "en-US"
+        )
     }
 
     public func authorizationURL(
@@ -44,13 +51,15 @@ public struct OAuthService: Sendable {
         clientId: String,
         codeVerifier: String
     ) async throws -> AuthToken {
-        let endpoint = OAuthEndpoints.exchange(
+        let endpoint = OAuthEndpoints.exchangeEndpoint(
             code: code,
             redirectURI: redirectURI,
             clientId: clientId,
             codeVerifier: codeVerifier
         )
-        let request = try endpoint.request(baseURL: baseURL)
+        // Build URLRequest via shared RequestBuilder (OAuth uses separate URLSession; no auth attached)
+        let url = try requestBuilder.buildURL(for: endpoint)
+        let request = requestBuilder.makeRequest(url: url, endpoint: endpoint)
         let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse, 200..<300 ~= http.statusCode else {
             throw NetworkError.server(statusCode: (response as? HTTPURLResponse)?.statusCode ?? -1, data: data)
@@ -60,8 +69,9 @@ public struct OAuthService: Sendable {
     }
 
     public func refreshToken(_ refreshToken: String, clientId: String? = nil) async throws -> AuthToken {
-        let endpoint = OAuthEndpoints.refresh(refreshToken: refreshToken, clientId: clientId)
-        let request = try endpoint.request(baseURL: baseURL)
+        let endpoint = OAuthEndpoints.refreshEndpoint(refreshToken: refreshToken, clientId: clientId)
+        let url = try requestBuilder.buildURL(for: endpoint)
+        let request = requestBuilder.makeRequest(url: url, endpoint: endpoint)
         let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse, 200..<300 ~= http.statusCode else {
             throw NetworkError.server(statusCode: (response as? HTTPURLResponse)?.statusCode ?? -1, data: data)
