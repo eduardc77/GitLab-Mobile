@@ -7,31 +7,26 @@
 //
 
 import SwiftUI
-import Kingfisher
 import SwiftData
+import GitLabImageLoadingKingfisher
+import ProjectsCache
 
 @main
 struct GitLabMobileApp: App {
     @State private var appEnv = AppEnvironment()
+    private let imageLoader = KingfisherImageLoader()
 
-    init() {
-        Self.configureKingfisher()
-    }
+    init() { KingfisherImageLoader().configureDefaults() }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(appEnv)
+                .environment(\.imageLoader, imageLoader)
+                .environment(appEnv.authStore)
+                .environment(appEnv.profileStore)
+                .environment(appEnv.projectsDependencies)
                 .task { await appEnv.authStore.restoreIfPossible() }
         }
         .modelContainer(for: [CachedProject.self, CachedProjectPage.self])
-    }
-
-    private static func configureKingfisher() {
-        // Reasonable defaults; tuned for device memory headroom
-        let cache = ImageCache.default
-        cache.memoryStorage.config.totalCostLimit = 30 * 1024 * 1024 // 30 MB
-        cache.diskStorage.config.sizeLimit = 200 * 1024 * 1024 // 200 MB
-        cache.diskStorage.config.expiration = .days(7)
     }
 }

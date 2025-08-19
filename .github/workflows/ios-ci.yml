@@ -2,6 +2,7 @@ name: ios-ci
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 on:
   pull_request:
     branches: [development, main]
@@ -10,86 +11,94 @@ on:
   workflow_dispatch:
 
 jobs:
-  # Simple CI for all pushes and PRs
   ios-ci:
     runs-on: macos-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    
+
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: 'latest-stable'
-    
+
     - name: Install SwiftLint
       run: brew install swiftlint
-    
+
     - name: SwiftLint
       run: swiftlint lint --reporter github-actions-logging
       continue-on-error: ${{ !(github.ref == 'refs/heads/main' || github.base_ref == 'main') }}
-    
-    - name: Resolve Swift Packages
-      run: xcodebuild -resolvePackageDependencies -project GitLabMobile/GitLabMobile.xcodeproj
+
+    - name: Resolve Swift Packages (app + local packages at repo root)
+      run: |
+        xcodebuild -resolvePackageDependencies -project GitLabMobile/GitLabMobile.xcodeproj
+        for dir in Core Features Kits; do
+          [ -d "$dir" ] || continue
+          for package in "$dir"/*/; do
+            [ -f "${package}Package.swift" ] || continue
+            echo "Resolving package: $package"
+            (cd "$package" && swift package resolve)
+          done
+        done
 
     - name: Build App
       run: |
         xcodebuild build \
           -project "GitLabMobile/GitLabMobile.xcodeproj" \
           -scheme "GitLabMobile" \
-          -destination "platform=iOS Simulator,name=iPhone 15,OS=17.2" \
-          -configuration Debug
-    
-    - name: Run Unit Tests
+          -destination "platform=iOS Simulator,name=iPhone 15" \
+          -configuration Debug \
+          -derivedDataPath build
+
+    - name: Run Unit Tests (optional)
       run: |
         xcodebuild test \
           -project "GitLabMobile/GitLabMobile.xcodeproj" \
           -scheme "GitLabMobile" \
-          -destination "platform=iOS Simulator,name=iPhone 15,OS=17.2" \
+          -destination "platform=iOS Simulator,name=iPhone 15" \
           -configuration Debug \
           -enableCodeCoverage YES \
           -resultBundlePath UnitTestResults.xcresult
-      continue-on-error: true  # Continue even if no tests exist yet
-    
-    - name: Run Package Tests
+      continue-on-error: true
+
+    - name: Run Package Tests (optional)
       run: |
-        # Run tests for all packages in the Packages directory (if they exist)
-        if [ -d "Packages" ]; then
-          for package in Packages/*/; do
-            if [ -f "$package/Package.swift" ]; then
-              echo "Testing package: $package"
-              cd "$package"
-              swift test
-              cd ../..
+        for dir in Core Features Kits; do
+          [ -d "$dir" ] || continue
+          for package in "$dir"/*/; do
+            [ -f "${package}Package.swift" ] || continue
+            echo "Testing package: $package"
+            if (cd "$package" && swift package describe | grep -q "Tests"); then
+              (cd "$package" && swift test)
+            else
+              echo "No tests found in $package, skipping"
             fi
           done
-        else
-          echo "No Packages directory found, skipping package tests"
-        fi
-      continue-on-error: true  # Continue even if no packages exist yet
-    
+        done
+      continue-on-error: true
+
     - name: Run UI Tests (optional)
       run: |
         xcodebuild test \
           -project "GitLabMobile/GitLabMobile.xcodeproj" \
           -scheme "GitLabMobile" \
-          -destination "platform=iOS Simulator,name=iPhone 15,OS=17.2" \
+          -destination "platform=iOS Simulator,name=iPhone 15" \
           -configuration Debug \
           -only-testing:GitLabMobileUITests \
           -resultBundlePath UITestResults.xcresult
       continue-on-error: true
-      
+
     - name: Upload Unit Test Results
       uses: actions/upload-artifact@v4
-      if: always()  # Upload even if tests fail
+      if: always()
       with:
         name: unit-test-results-${{ github.run_number }}
         path: UnitTestResults.xcresult
-    
+
     - name: Upload UI Test Results
       uses: actions/upload-artifact@v4
-      if: always()  # Upload even if tests fail
+      if: always()
       with:
         name: ui-test-results-${{ github.run_number }}
         path: UITestResults.xcresult
