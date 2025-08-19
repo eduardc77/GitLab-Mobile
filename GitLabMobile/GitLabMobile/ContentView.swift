@@ -7,10 +7,11 @@
 //
 
 import SwiftUI
+import HomeFeature
+import ExploreFeature
+import ProfileFeature
 
 struct ContentView: View {
-    @Environment(AppEnvironment.self) private var appEnv
-
     var body: some View {
         TabView {
             HomeRootView()
