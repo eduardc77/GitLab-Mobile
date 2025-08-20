@@ -6,8 +6,30 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CE3536012E53CFCD00B479D7 /* ProjectsCache in Frameworks */ = {isa = PBXBuildFile; productRef = CE3536002E53CFCD00B479D7 /* ProjectsCache */; };
+		CE3536032E53CFCD00B479D7 /* ProjectsData in Frameworks */ = {isa = PBXBuildFile; productRef = CE3536022E53CFCD00B479D7 /* ProjectsData */; };
+		CE3536052E53CFCD00B479D7 /* ProjectsDomain in Frameworks */ = {isa = PBXBuildFile; productRef = CE3536042E53CFCD00B479D7 /* ProjectsDomain */; };
+		CE77B2A32E53C56B00AA55AF /* AuthFeature in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2A22E53C56B00AA55AF /* AuthFeature */; };
+		CE77B2A52E53C56E00AA55AF /* ExploreFeature in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2A42E53C56E00AA55AF /* ExploreFeature */; };
+		CE77B2A92E53C57700AA55AF /* GitLabLogging in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2A82E53C57700AA55AF /* GitLabLogging */; };
+		CE77B2AB2E53C57B00AA55AF /* GitLabNetwork in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2AA2E53C57B00AA55AF /* GitLabNetwork */; };
+		CE77B2AD2E53C57E00AA55AF /* GitLabPersistence in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2AC2E53C57E00AA55AF /* GitLabPersistence */; };
+		CE77B2AF2E53C58200AA55AF /* GitLabUtilities in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2AE2E53C58200AA55AF /* GitLabUtilities */; };
+		CE77B2B12E53C58600AA55AF /* HomeFeature in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2B02E53C58600AA55AF /* HomeFeature */; };
+		CE77B2B32E53C58B00AA55AF /* ProfileFeature in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2B22E53C58B00AA55AF /* ProfileFeature */; };
+		CE77B2B52E53C59700AA55AF /* ProjectDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2B42E53C59700AA55AF /* ProjectDetailsFeature */; };
+		CE7E159B2E53D5AA00C3FD3E /* GitLabDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = CE7E159A2E53D5AA00C3FD3E /* GitLabDesignSystem */; };
+		CEBA20532E551A350004A2E1 /* UsersData in Frameworks */ = {isa = PBXBuildFile; productRef = CEBA20522E551A350004A2E1 /* UsersData */; };
+		CEBA20552E551A350004A2E1 /* UsersDomain in Frameworks */ = {isa = PBXBuildFile; productRef = CEBA20542E551A350004A2E1 /* UsersDomain */; };
+		CEF49D392E54A7D500E6D38C /* GitLabImageLoading in Frameworks */ = {isa = PBXBuildFile; productRef = CEF49D382E54A7D500E6D38C /* GitLabImageLoading */; };
+		CEF49D3B2E54A7D500E6D38C /* GitLabImageLoadingKingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = CEF49D3A2E54A7D500E6D38C /* GitLabImageLoadingKingfisher */; };
+		CEF49D422E54AA5900E6D38C /* UserProjectsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = CEF49D412E54AA5900E6D38C /* UserProjectsFeature */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		CE8494CD2E4B783300B03BD6 /* GitLabMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitLabMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEDB7CAB2E4D564900A7583B /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -15,6 +37,35 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+			);
+			target = CE8494CC2E4B783300B03BD6 /* GitLabMobile */;
+		};
+		CEBA21A82E5538B40004A2E1 /* Exceptions for "Core" folder in "GitLabMobile" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				GitLabDesignSystem,
+				GitLabImageLoading,
+				GitLabLogging,
+				GitLabNetwork,
+				GitLabPersistence,
+				GitLabUtilities,
+			);
+			target = CE8494CC2E4B783300B03BD6 /* GitLabMobile */;
+		};
+		CEBA21A92E5538B40004A2E1 /* Exceptions for "Features" folder in "GitLabMobile" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AuthFeature,
+				ExploreFeature,
+				HomeFeature,
+				ProfileFeature,
+			);
+			target = CE8494CC2E4B783300B03BD6 /* GitLabMobile */;
+		};
+		CEBA21AA2E5538B40004A2E1 /* Exceptions for "Kits" folder in "GitLabMobile" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ProjectsKit,
 			);
 			target = CE8494CC2E4B783300B03BD6 /* GitLabMobile */;
 		};
@@ -29,6 +80,30 @@
 			path = GitLabMobile;
 			sourceTree = "<group>";
 		};
+		CEBA21982E5538B40004A2E1 /* Core */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CEBA21A82E5538B40004A2E1 /* Exceptions for "Core" folder in "GitLabMobile" target */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		CEBA219F2E5538B40004A2E1 /* Features */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CEBA21A92E5538B40004A2E1 /* Exceptions for "Features" folder in "GitLabMobile" target */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		CEBA21A22E5538B40004A2E1 /* Kits */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CEBA21AA2E5538B40004A2E1 /* Exceptions for "Kits" folder in "GitLabMobile" target */,
+			);
+			path = Kits;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,17 +111,47 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE3536032E53CFCD00B479D7 /* ProjectsData in Frameworks */,
+				CEBA20552E551A350004A2E1 /* UsersDomain in Frameworks */,
+				CE77B2B32E53C58B00AA55AF /* ProfileFeature in Frameworks */,
+				CEF49D422E54AA5900E6D38C /* UserProjectsFeature in Frameworks */,
+				CE77B2A32E53C56B00AA55AF /* AuthFeature in Frameworks */,
+				CEF49D3B2E54A7D500E6D38C /* GitLabImageLoadingKingfisher in Frameworks */,
+				CEF49D392E54A7D500E6D38C /* GitLabImageLoading in Frameworks */,
+				CE7E159B2E53D5AA00C3FD3E /* GitLabDesignSystem in Frameworks */,
+				CE77B2AD2E53C57E00AA55AF /* GitLabPersistence in Frameworks */,
+				CE77B2B12E53C58600AA55AF /* HomeFeature in Frameworks */,
+				CE77B2A52E53C56E00AA55AF /* ExploreFeature in Frameworks */,
+				CE3536012E53CFCD00B479D7 /* ProjectsCache in Frameworks */,
+				CE77B2AB2E53C57B00AA55AF /* GitLabNetwork in Frameworks */,
+				CE77B2AF2E53C58200AA55AF /* GitLabUtilities in Frameworks */,
+				CE3536052E53CFCD00B479D7 /* ProjectsDomain in Frameworks */,
+				CEBA20532E551A350004A2E1 /* UsersData in Frameworks */,
+				CE77B2B52E53C59700AA55AF /* ProjectDetailsFeature in Frameworks */,
+				CE77B2A92E53C57700AA55AF /* GitLabLogging in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CE77B2A12E53C56B00AA55AF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		CE8494C42E4B783300B03BD6 = {
 			isa = PBXGroup;
 			children = (
 				CE8494CF2E4B783300B03BD6 /* GitLabMobile */,
 				CE8494CE2E4B783300B03BD6 /* Products */,
+				CEDB7CAB2E4D564900A7583B /* LICENSE */,
+				CE77B2A12E53C56B00AA55AF /* Frameworks */,
+				CEBA21982E5538B40004A2E1 /* Core */,
+				CEBA219F2E5538B40004A2E1 /* Features */,
+				CEBA21A22E5538B40004A2E1 /* Kits */,
 			);
 			sourceTree = "<group>";
 		};
@@ -76,9 +181,28 @@
 			);
 			fileSystemSynchronizedGroups = (
 				CE8494CF2E4B783300B03BD6 /* GitLabMobile */,
+				CEBA21982E5538B40004A2E1 /* Core */,
 			);
 			name = GitLabMobile;
 			packageProductDependencies = (
+				CE77B2A22E53C56B00AA55AF /* AuthFeature */,
+				CE77B2A42E53C56E00AA55AF /* ExploreFeature */,
+				CE77B2A82E53C57700AA55AF /* GitLabLogging */,
+				CE77B2AA2E53C57B00AA55AF /* GitLabNetwork */,
+				CE77B2AC2E53C57E00AA55AF /* GitLabPersistence */,
+				CE77B2AE2E53C58200AA55AF /* GitLabUtilities */,
+				CE77B2B02E53C58600AA55AF /* HomeFeature */,
+				CE77B2B22E53C58B00AA55AF /* ProfileFeature */,
+				CE77B2B42E53C59700AA55AF /* ProjectDetailsFeature */,
+				CE3536002E53CFCD00B479D7 /* ProjectsCache */,
+				CE3536022E53CFCD00B479D7 /* ProjectsData */,
+				CE3536042E53CFCD00B479D7 /* ProjectsDomain */,
+				CE7E159A2E53D5AA00C3FD3E /* GitLabDesignSystem */,
+				CEF49D382E54A7D500E6D38C /* GitLabImageLoading */,
+				CEF49D3A2E54A7D500E6D38C /* GitLabImageLoadingKingfisher */,
+				CEF49D412E54AA5900E6D38C /* UserProjectsFeature */,
+				CEBA20522E551A350004A2E1 /* UsersData */,
+				CEBA20542E551A350004A2E1 /* UsersDomain */,
 			);
 			productName = GitLabMobile;
 			productReference = CE8494CD2E4B783300B03BD6 /* GitLabMobile.app */;
@@ -93,6 +217,7 @@
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
+				ORGANIZATIONNAME = Eliomane;
 				TargetAttributes = {
 					CE8494CC2E4B783300B03BD6 = {
 						CreatedOnToolsVersion = 16.2;
@@ -108,6 +233,8 @@
 			);
 			mainGroup = CE8494C42E4B783300B03BD6;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CE8494CE2E4B783300B03BD6 /* Products */;
 			projectDirPath = "";
@@ -146,7 +273,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nCONFIG_PATH=\"$SRCROOT/../.swiftlint.yml\"\n\nif which swiftlint > /dev/null; then\n    swiftlint --config \"$CONFIG_PATH\"\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -289,6 +416,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GitLabMobile/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -299,12 +427,12 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.1;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.team.GitLabMobile.GitLabMobile;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eliomane.GitLabMobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -328,6 +456,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GitLabMobile/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -338,12 +467,12 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.1;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.team.GitLabMobile.GitLabMobile;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eliomane.GitLabMobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -376,6 +505,81 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CE3536002E53CFCD00B479D7 /* ProjectsCache */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ProjectsCache;
+		};
+		CE3536022E53CFCD00B479D7 /* ProjectsData */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ProjectsData;
+		};
+		CE3536042E53CFCD00B479D7 /* ProjectsDomain */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ProjectsDomain;
+		};
+		CE77B2A22E53C56B00AA55AF /* AuthFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AuthFeature;
+		};
+		CE77B2A42E53C56E00AA55AF /* ExploreFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ExploreFeature;
+		};
+		CE77B2A82E53C57700AA55AF /* GitLabLogging */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GitLabLogging;
+		};
+		CE77B2AA2E53C57B00AA55AF /* GitLabNetwork */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GitLabNetwork;
+		};
+		CE77B2AC2E53C57E00AA55AF /* GitLabPersistence */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GitLabPersistence;
+		};
+		CE77B2AE2E53C58200AA55AF /* GitLabUtilities */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GitLabUtilities;
+		};
+		CE77B2B02E53C58600AA55AF /* HomeFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HomeFeature;
+		};
+		CE77B2B22E53C58B00AA55AF /* ProfileFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ProfileFeature;
+		};
+		CE77B2B42E53C59700AA55AF /* ProjectDetailsFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ProjectDetailsFeature;
+		};
+		CE7E159A2E53D5AA00C3FD3E /* GitLabDesignSystem */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GitLabDesignSystem;
+		};
+		CEBA20522E551A350004A2E1 /* UsersData */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UsersData;
+		};
+		CEBA20542E551A350004A2E1 /* UsersDomain */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UsersDomain;
+		};
+		CEF49D382E54A7D500E6D38C /* GitLabImageLoading */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GitLabImageLoading;
+		};
+		CEF49D3A2E54A7D500E6D38C /* GitLabImageLoadingKingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GitLabImageLoadingKingfisher;
+		};
+		CEF49D412E54AA5900E6D38C /* UserProjectsFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UserProjectsFeature;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CE8494C52E4B783300B03BD6 /* Project object */;
 }

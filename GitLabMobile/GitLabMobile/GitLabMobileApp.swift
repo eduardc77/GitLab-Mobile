@@ -2,33 +2,31 @@
 //  GitLabMobileApp.swift
 //  GitLabMobile
 //
-//  Created by User on 8/12/25.
+//  Copyright © 2025 Eliomane. All rights reserved.
+//  Licensed under Apache License v2.0. See LICENSE file.
 //
 
 import SwiftUI
+import SwiftData
+import GitLabImageLoadingKingfisher
+import ProjectsCache
 
 @main
 struct GitLabMobileApp: App {
+    @State private var appEnv = AppEnvironment()
+    private let imageLoader = KingfisherImageLoader()
+
+    init() { KingfisherImageLoader().configureDefaults() }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(\.appEnvironment, Self.makeEnvironment())
+                .environment(\.imageLoader, imageLoader)
+                .environment(appEnv.authStore)
+                .environment(appEnv.profileStore)
+                .environment(appEnv.projectsDependencies)
+                .task { await appEnv.authStore.restoreIfPossible() }
         }
-    }
-
-    private static func makeEnvironment() -> AppEnvironment {
-        let config = AppNetworkingConfig.loadFromInfoPlist()
-        let oauth = OAuthService(baseURL: config.baseURL)
-        let authManager = AuthorizationManager(oauthService: oauth)
-        let pins = AppPinning.loadPinsFromInfoPlist()
-        let sessionDelegate = PinnedSessionDelegate(pins: pins)
-        let client = APIClient(config: config, sessionDelegate: sessionDelegate, authProvider: authManager)
-        return AppEnvironment(
-            apiClient: client,
-            exploreService: ExploreProjectsService(api: client),
-            personalProjectsService: PersonalProjectsService(api: client),
-            projectDetailsService: ProjectDetailsService(api: client),
-            authManager: authManager
-        )
+        .modelContainer(for: [CachedProject.self, CachedProjectPage.self])
     }
 }

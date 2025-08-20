@@ -9,5 +9,23 @@
 		<key>GitLabBaseURL</key>
 		<string>https://gitlab.com</string>
 	</dict>
+	<key>GitLabOAuth</key>
+	<dict>
+		<key>ClientID</key>
+		<string>588b734872344e66e565dc111d37af1293179756bd1d67ea71aedd52d0e9d6a5</string>
+		<key>RedirectURI</key>
+		<string>gitlabmobile://oauth-callback</string>
+		<key>Scopes</key>
+		<string>api read_user</string>
+	</dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>gitlabmobile</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

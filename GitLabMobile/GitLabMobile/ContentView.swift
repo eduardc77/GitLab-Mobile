@@ -2,23 +2,29 @@
 //  ContentView.swift
 //  GitLabMobile
 //
-//  Created by User on 8/12/25.
+//  Copyright © 2025 Eliomane. All rights reserved.
+//  Licensed under Apache License v2.0. See LICENSE file.
 //
 
 import SwiftUI
+import HomeFeature
+import ExploreFeature
+import ProfileFeature
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-    }
-}
+        TabView {
+            HomeRootView()
+                .tabItem { Label("Home", systemImage: "house") }
 
-#Preview {
-    ContentView()
+            NavigationStack { Text("Notifications") }
+                .tabItem { Label("Notifications", systemImage: "bell") }
+
+            ExploreRootView()
+                .tabItem { Label("Explore", systemImage: "binoculars") }
+
+            ProfileRootView()
+                .tabItem { Label("Profile", systemImage: "person") }
+        }
+    }
 }
