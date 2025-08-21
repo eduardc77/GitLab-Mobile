@@ -27,6 +27,9 @@ let package = Package(
             name: "GitLabDesignSystem",
             dependencies: [
                 .product(name: "GitLabImageLoading", package: "GitLabImageLoading")
+            ],
+            resources: [
+                .process("Resources")
             ])
     ]
 )

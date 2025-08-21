@@ -17,7 +17,10 @@ public struct ProfileView: View {
             if let user = store.user {
                 ProfileHeader(user: user)
             } else if store.isLoading {
-                HStack { ProgressView(); Text("Loading profile...").foregroundStyle(.secondary) }
+                HStack {
+                    ProgressView()
+                    Text(.ProfileLoadingL10n.profile).foregroundStyle(.secondary)
+                }
             }
 
             Section {

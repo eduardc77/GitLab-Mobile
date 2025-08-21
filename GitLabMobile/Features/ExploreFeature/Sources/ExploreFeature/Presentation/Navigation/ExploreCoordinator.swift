@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Observation
 import ProjectsDomain
 
 @Observable
@@ -26,23 +25,23 @@ public final class ExploreCoordinator {
     public enum Entry: CaseIterable {
         case projects, users, groups, topics, snippets
 
-        var title: String {
+        var title: LocalizedStringResource {
             switch self {
-            case .projects: return "Projects"
-            case .users: return "Users"
-            case .groups: return "Groups"
-            case .topics: return "Topics"
-            case .snippets: return "Snippets"
+            case .projects: return .ExploreDestinationsL10n.projects
+            case .users: return .ExploreDestinationsL10n.users
+            case .groups: return .ExploreDestinationsL10n.groups
+            case .topics: return .ExploreDestinationsL10n.topics
+            case .snippets: return .ExploreDestinationsL10n.snippets
             }
         }
 
-        var subtitle: String {
+        var subtitle: LocalizedStringResource {
             switch self {
-            case .projects: return "Explore repositories and codebases"
-            case .users: return "Discover developers and contributors"
-            case .groups: return "Browse organizations and teams"
-            case .topics: return "Explore projects by technology and interests"
-            case .snippets: return "Explore code snippets from other users"
+            case .projects: return .ExploreEntriesL10n.projectsSubtitle
+            case .users: return .ExploreEntriesL10n.usersSubtitle
+            case .groups: return .ExploreEntriesL10n.groupsSubtitle
+            case .topics: return .ExploreEntriesL10n.topicsSubtitle
+            case .snippets: return .ExploreEntriesL10n.snippetsSubtitle
             }
         }
 
@@ -60,9 +59,9 @@ public final class ExploreCoordinator {
             switch self {
             case .projects: return .blue
             case .users: return .green
-            case .groups: return .orange
-            case .topics: return .purple
-            case .snippets: return .indigo
+            case .groups: return .purple
+            case .topics: return .pink
+            case .snippets: return .teal
             }
         }
 

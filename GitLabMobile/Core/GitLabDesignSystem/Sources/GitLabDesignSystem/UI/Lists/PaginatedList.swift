@@ -43,7 +43,11 @@ public struct PaginatedList<Item: Identifiable, Row: View>: View {
                 HStack {
                     ProgressView()
                         .scaleEffect(0.8)
-                    Text("Loading more...")
+                    Text(String(localized: LocalizedStringResource(
+                        "ds.loading_more",
+                        table: "DesignSystem",
+                        bundle: .atURL(Bundle.module.bundleURL)
+                    )))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }

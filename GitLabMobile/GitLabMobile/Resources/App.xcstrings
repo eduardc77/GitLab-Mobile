@@ -1,0 +1,12 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "app.tabs.home" : { "comment" : "Tab title for Home.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Home" } } } },
+    "app.tabs.notifications" : { "comment" : "Tab title for Notifications.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Notifications" } } } },
+    "app.tabs.explore" : { "comment" : "Tab title for Explore.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Explore" } } } },
+    "app.tabs.profile" : { "comment" : "Tab title for Profile.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Profile" } } } }
+  },
+  "version" : "1.0"
+}
+
+

@@ -27,7 +27,7 @@ public struct ProfileRootView: View {
             Group {
                 switch authStore.status {
                 case .authenticating:
-                    ProgressView("Loading...")
+                    ProgressView(String(localized: .ProfileLoadingL10n.profile))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color(.systemGroupedBackground))
                 case .authenticated:
@@ -36,7 +36,7 @@ public struct ProfileRootView: View {
                     SignInView()
                 }
             }
-            .navigationTitle("Profile")
+            .navigationTitle(String(localized: .ProfileL10n.title))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     if authStore.status == .authenticated {
@@ -46,14 +46,22 @@ public struct ProfileRootView: View {
             }
             .navigationDestination(for: ProfileCoordinator.Destination.self) { destination in
                 switch destination {
+                case .activity:
+                    Text(.ProfileDestinationsL10n.activity)
+                case .groups:
+                    Text(.ProfileDestinationsL10n.groups)
+                case .contributedProjects:
+                    Text(.ProfileDestinationsL10n.contributedProjects)
                 case .personalProjects:
                     ProjectsListView(repository: projectsDependencies.repository, scope: .owned)
-                case .groups:
-                    Text("Groups")
-                case .assignedIssues:
-                    Text("Assigned Issues")
-                case .mergeRequests:
-                    Text("Merge Requests")
+                case .starredProjects:
+                    Text(.ProfileDestinationsL10n.starredProjects)
+                case .snippets:
+                    Text(.ProfileDestinationsL10n.snippets)
+                case .followers:
+                    Text(.ProfileDestinationsL10n.followers)
+                case .following:
+                    Text(.ProfileDestinationsL10n.following)
                 case .settings:
                     ProfileSettingsView()
                 }
@@ -66,8 +74,15 @@ public struct ProfileRootView: View {
                 Task { await profileStore.onAppForegrounded() }
             }
         }
-        .alert("Error", isPresented: .constant(authStore.errorMessage != nil), actions: {
-            Button("OK") { authStore.clearError() }
-        }, message: { Text(authStore.errorMessage ?? "") })
+        .alert(String(
+            localized: .ProfileAlertsL10n.error),
+               isPresented: .constant(authStore.errorMessage != nil),
+               actions: {
+            Button(String(localized: .ProfileAlertsL10n.okButtonTitle)) {
+                authStore.clearError()
+            }
+        }, message: {
+            Text(authStore.errorMessage ?? "")
+        })
     }
 }

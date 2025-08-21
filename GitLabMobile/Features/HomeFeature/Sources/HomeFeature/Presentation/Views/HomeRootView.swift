@@ -25,7 +25,7 @@ public struct HomeRootView: View {
             Group {
                 switch authStore.status {
                 case .authenticating:
-                    ProgressView("Loading...")
+                    ProgressView(String(localized: .HomeLoadingL10n.loading))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color(.systemGroupedBackground))
                 case .authenticated:
@@ -35,36 +35,36 @@ public struct HomeRootView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.large)
-            .navigationTitle("Home")
+            .navigationTitle(String(localized: .HomeL10n.title))
             .navigationDestination(for: HomeCoordinator.Destination.self) { destination in
                 switch destination {
                 case .projects:
                     ProjectsListView(repository: projectsDependencies.repository, scope: .combined)
                 case .groups:
-                    Text("Groups")
+                    Text(.HomeDestinationsL10n.groups)
                 case .issues:
-                    Text("Issues")
+                    Text(.HomeDestinationsL10n.issues)
                 case .mergeRequests:
-                    Text("Merge Requests")
+                    Text(.HomeDestinationsL10n.mergeRequests)
                 case .todo:
-                    Text("To‑Do")
+                    Text(.HomeDestinationsL10n.todo)
                 case .milestones:
-                    Text("Milestones")
+                    Text(.HomeDestinationsL10n.milestones)
                 case .snippets:
-                    Text("Snippets")
+                    Text(.HomeDestinationsL10n.snippets)
                 case .activity:
-                    Text("Activity")
+                    Text(.HomeDestinationsL10n.activity)
                 }
             }
-            .alert("Error", isPresented: .constant(authStore.errorMessage != nil), actions: {
-                Button("OK") { authStore.clearError() }
+            .alert(String(localized: .HomeAlertsL10n.error), isPresented: .constant(authStore.errorMessage != nil), actions: {
+                Button(String(localized: .HomeAlertsL10n.okButtonTitle)) { authStore.clearError() }
             }, message: { Text(authStore.errorMessage ?? "") })
         }
     }
 
     private var yourWorkSection: List<Never, some View> {
         return List {
-            Section("Your Work") {
+            Section(String(localized: .HomeSectionsL10n.yourWork)) {
                 ForEach(HomeCoordinator.Entry.allCases, id: \.self) { entry in
                     NavigationLink(value: entry.destination) {
                         NavigationRow(

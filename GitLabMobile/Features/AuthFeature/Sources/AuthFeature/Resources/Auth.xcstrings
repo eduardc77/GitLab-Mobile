@@ -1,0 +1,13 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "auth.connect_title" : { "comment" : "Title prompting the user to connect their GitLab account.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Connect to GitLab" } } } },
+    "auth.loading" : { "comment" : "Shown while an authentication-related action is in progress.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Loading..." } } } },
+    "auth.sign_in_with_gitlab" : { "comment" : "Button label for starting the sign-in flow.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Sign in with GitLab" } } } },
+    "auth.error.title" : { "comment" : "Generic error alert title in the authentication flow.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Error" } } } },
+    "auth.error.ok" : { "comment" : "OK button label in error alerts.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "OK" } } } }
+  },
+  "version" : "1.0"
+}
+
+

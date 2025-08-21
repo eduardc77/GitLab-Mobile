@@ -27,6 +27,9 @@ let package = Package(
             name: "AuthFeature",
             dependencies: [
                 .product(name: "GitLabNetwork", package: "GitLabNetwork")
+            ],
+            resources: [
+                .process("Resources")
             ]),
         .testTarget(
             name: "AuthFeatureTests",

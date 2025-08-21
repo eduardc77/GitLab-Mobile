@@ -34,7 +34,7 @@ public struct ExploreRootView: View {
                 .listSectionSeparator(.hidden, edges: .top)
             }
             .navigationBarTitleDisplayMode(.large)
-            .navigationTitle("Explore")
+            .navigationTitle(String(localized: .ExploreL10n.title))
             .navigationDestination(for: ExploreCoordinator.Destination.self) { destination in
                 switch destination {
                 case .projects:
@@ -42,13 +42,13 @@ public struct ExploreRootView: View {
                 case .projectDetail(let id):
                     Text("Project #\(id)")
                 case .users:
-                    Text("Users")
+                    Text(.ExploreDestinationsL10n.users)
                 case .groups:
-                    Text("Groups")
+                    Text(.ExploreDestinationsL10n.groups)
                 case .topics:
-                    Text("Topics")
+                    Text(.ExploreDestinationsL10n.topics)
                 case .snippets:
-                    Text("Snippets")
+                    Text(.ExploreDestinationsL10n.snippets)
                 }
             }
         }

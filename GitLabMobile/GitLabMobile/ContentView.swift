@@ -15,16 +15,16 @@ struct ContentView: View {
     var body: some View {
         TabView {
             HomeRootView()
-                .tabItem { Label("Home", systemImage: "house") }
+                .tabItem { Label(String(localized: .AppTabsL10n.home), systemImage: "house") }
 
-            NavigationStack { Text("Notifications") }
-                .tabItem { Label("Notifications", systemImage: "bell") }
+            NavigationStack { Text(String(localized: .AppTabsL10n.notifications)) }
+                .tabItem { Label(String(localized: .AppTabsL10n.notifications), systemImage: "bell") }
 
             ExploreRootView()
-                .tabItem { Label("Explore", systemImage: "binoculars") }
+                .tabItem { Label(String(localized: .AppTabsL10n.explore), systemImage: "binoculars") }
 
             ProfileRootView()
-                .tabItem { Label("Profile", systemImage: "person") }
+                .tabItem { Label(String(localized: .AppTabsL10n.profile), systemImage: "person") }
         }
     }
 }

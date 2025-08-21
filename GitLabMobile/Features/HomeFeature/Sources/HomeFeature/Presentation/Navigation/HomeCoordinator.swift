@@ -26,36 +26,36 @@ final class HomeCoordinator {
     enum Entry: CaseIterable {
         case projects, groups, issues, mergeRequests, todo, milestones, snippets, activity
 
-        var title: String {
+        var title: LocalizedStringResource {
             switch self {
-            case .projects: return "Projects"
-            case .groups: return "Groups"
-            case .issues: return "Issues"
-            case .mergeRequests: return "Merge Requests"
-            case .todo: return "To‑Do"
-            case .milestones: return "Milestones"
-            case .snippets: return "Snippets"
-            case .activity: return "Activity"
+            case .projects: return .HomeDestinationsL10n.projects
+            case .groups: return .HomeDestinationsL10n.groups
+            case .issues: return .HomeDestinationsL10n.issues
+            case .mergeRequests: return .HomeDestinationsL10n.mergeRequests
+            case .todo: return .HomeDestinationsL10n.todo
+            case .milestones: return .HomeDestinationsL10n.milestones
+            case .snippets: return .HomeDestinationsL10n.snippets
+            case .activity: return .HomeDestinationsL10n.activity
             }
         }
 
-        var subtitle: String {
+        var subtitle: LocalizedStringResource {
             switch self {
-            case .projects: return "Owned + membership"
-            case .groups: return "Your groups"
-            case .issues: return "Assigned to you"
-            case .mergeRequests: return "Assigned / review requested"
-            case .todo: return "Your GitLab To‑Do"
-            case .milestones: return "From your projects and groups"
-            case .snippets: return "Your snippets"
-            case .activity: return "Recent activity from memberships"
+            case .projects: return .HomeEntriesL10n.projectsSubtitle
+            case .groups: return .HomeEntriesL10n.groupsSubtitle
+            case .issues: return .HomeEntriesL10n.issuesSubtitle
+            case .mergeRequests: return .HomeEntriesL10n.mergeRequestsSubtitle
+            case .todo: return .HomeEntriesL10n.todoSubtitle
+            case .milestones: return .HomeEntriesL10n.milestonesSubtitle
+            case .snippets: return .HomeEntriesL10n.snippetsSubtitle
+            case .activity: return .HomeEntriesL10n.activitySubtitle
             }
         }
 
         var systemImage: String {
             switch self {
             case .projects: return "folder.fill"
-            case .groups: return "person.2.fill"
+            case .groups: return "person.3.fill"
             case .issues: return "exclamationmark.circle.fill"
             case .mergeRequests: return "arrow.merge"
             case .todo: return "checklist"
