@@ -30,6 +30,14 @@ let package = Package(
         .target(
             name: "UsersDomain",
             path: "Sources/UsersDomain"
+        ),
+        .target(
+            name: "UsersKitTestDoubles",
+            dependencies: ["UsersData", "UsersDomain"]
+        ),
+        .testTarget(
+            name: "UsersKitUnitTests",
+            dependencies: ["UsersData", "UsersDomain", "UsersKitTestDoubles"]
         )
     ]
 )

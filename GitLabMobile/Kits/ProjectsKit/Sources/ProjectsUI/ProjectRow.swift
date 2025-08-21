@@ -77,7 +77,7 @@ private struct AvatarView: View {
         .clipShape(.rect(cornerRadius: 4))
         .overlay(
             RoundedRectangle(cornerRadius: 4)
-                .stroke(Color(.systemGray4), lineWidth: 0.5)
+                .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
         )
     }
 }

@@ -57,6 +57,14 @@ let package = Package(
                 .product(name: "GitLabDesignSystem", package: "GitLabDesignSystem")
             ],
             path: "Sources/ProjectsUI"
+        ),
+        .target(
+            name: "ProjectsKitTestDoubles",
+            dependencies: ["ProjectsData", "ProjectsDomain"]
+        ),
+        .testTarget(
+            name: "ProjectsKitUnitTests",
+            dependencies: ["ProjectsData", "ProjectsDomain", "ProjectsKitTestDoubles"]
         )
     ]
 )

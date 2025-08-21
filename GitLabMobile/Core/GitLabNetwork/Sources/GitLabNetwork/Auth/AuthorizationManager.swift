@@ -32,7 +32,7 @@ public actor AuthorizationManager: AuthorizationManagerProtocol, AuthProviding {
         self.oauthService = oauthService
         self.oauthClientId = clientId
     }
-    
+
     public func store(_ token: OAuthTokenDTO) async throws {
         try await storage.save(token)
         cached = token

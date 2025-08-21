@@ -42,9 +42,9 @@ public protocol ProjectsRemoteDataSource: Sendable {
 }
 
 public struct DefaultProjectsRemoteDataSource: ProjectsRemoteDataSource {
-	private let api: APIClient
+	private let api: APIClientProtocol
 
-	public init(api: APIClient) { self.api = api }
+	public init(api: APIClientProtocol) { self.api = api }
 
 	public func fetchExplore(
 		orderBy: ProjectsEndpoints.SortBy,

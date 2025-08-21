@@ -1,27 +1,42 @@
 # SwiftLint Configuration for GitLab Mobile
 
-# Disable rules that are too strict for development
-disabled_rules:
-  - trailing_whitespace
+# Lint sources and tests
+included:
+  - GitLabMobile/**/Sources/**
+  - GitLabMobile/GitLabMobile/**
+
+# Globally exclude build artifacts
+excluded:
+  - .build
+  - build
+  - DerivedData
+  - SourcePackages
+  - Pods
+  - Carthage
+  - "**/checkouts/**"
+  - "**/*.xcodeproj/**"
+  - "**/*.xcworkspace/**"
+  - "**/.swiftpm/**"
+  - "**/ModuleCache.noindex/**"
+  - "**/Index.noindex/**"
+  - "**/Tests/**"
+  - "**/*Tests*/**"
 
 # Opt-in rules for better code quality
 opt_in_rules:
   - empty_count
-  - force_unwrapping
   - implicitly_unwrapped_optional
   - overridden_super_call
   - redundant_nil_coalescing
+  - unused_optional_binding
+  - no_space_in_method_call
+  - force_unwrapping
+  - large_tuple
+  - weak_delegate
 
 # Analyzer rules (for unused_import)
 analyzer_rules:
   - unused_import
-
-# Exclude files/directories
-excluded:
-  - Pods
-  - Carthage
-  - .build
-  - DerivedData
 
 # Custom rules
 line_length:
@@ -42,4 +57,19 @@ type_body_length:
 
 file_length:
   warning: 500
-  error: 1000 
+  error: 1000
+
+trailing_comma:
+  mandatory_comma: true
+
+identifier_name:
+  min_length: 3
+  max_length: 40
+  excluded: [id, URL, API, URLSession]
+
+todo:
+  severity: warning
+
+cyclomatic_complexity:
+  warning: 10
+  error: 20
