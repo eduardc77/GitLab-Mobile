@@ -13,7 +13,8 @@ let package = Package(
     ],
     products: [
         .library(name: "GitLabImageLoading", targets: ["GitLabImageLoading"]),
-        .library(name: "GitLabImageLoadingKingfisher", targets: ["GitLabImageLoadingKingfisher"])        
+        .library(name: "GitLabImageLoadingKingfisher", targets: ["GitLabImageLoadingKingfisher"]),
+        .library(name: "GitLabImageLoadingTestDoubles", targets: ["GitLabImageLoadingTestDoubles"])
     ],
     dependencies: [
         .package(url: "https://github.com/onevcat/Kingfisher", from: "8.5.0")
@@ -25,6 +26,18 @@ let package = Package(
             dependencies: [
                 "GitLabImageLoading",
                 .product(name: "Kingfisher", package: "Kingfisher")
+            ]
+        ),
+        .target(
+            name: "GitLabImageLoadingTestDoubles",
+            dependencies: ["GitLabImageLoading"],
+            path: "Sources/GitLabImageLoadingTestDoubles"
+        ),
+        .testTarget(
+            name: "GitLabImageLoadingTests",
+            dependencies: [
+                "GitLabImageLoading",
+                "GitLabImageLoadingTestDoubles"
             ]
         )
     ]

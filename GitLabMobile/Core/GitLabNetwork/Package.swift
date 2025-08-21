@@ -15,7 +15,10 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "GitLabNetwork",
-            targets: ["GitLabNetwork"])
+            targets: ["GitLabNetwork"]),
+        .library(
+            name: "GitLabNetworkTestDoubles",
+            targets: ["GitLabNetworkTestDoubles"])
     ],
     dependencies: [
         .package(path: "../GitLabPersistence"),
@@ -30,9 +33,17 @@ let package = Package(
                 .product(name: "GitLabPersistence", package: "GitLabPersistence"),
                 .product(name: "GitLabLogging", package: "GitLabLogging")
             ]),
-        .testTarget(
-            name: "GitLabNetworkTests",
+        .target(
+            name: "GitLabNetworkTestDoubles",
             dependencies: ["GitLabNetwork"]
+        ),
+        .testTarget(
+            name: "GitLabNetworkUnitTests",
+            dependencies: ["GitLabNetwork", "GitLabNetworkTestDoubles"]
+        ),
+        .testTarget(
+            name: "GitLabNetworkIntegrationTests",
+            dependencies: ["GitLabNetwork", "GitLabNetworkTestDoubles"]
         )
     ]
 )

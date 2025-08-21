@@ -21,28 +21,57 @@ public protocol SecureStore: Sendable {
 
 /// Abstraction over secure storage (Keychain-backed implementation provided).
 public actor KeychainSecureStore: SecureStore {
-    public init() {}
+    private let accessible: CFString
+    private let synchronizable: Bool
+
+    public init(
+        accessible: CFString = kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+        synchronizable: Bool = false
+    ) {
+        self.accessible = accessible
+        self.synchronizable = synchronizable
+    }
 
     public func save(_ data: Data, service: String, account: String) async throws {
-        let query: [String: Any] = [
+        // Match any existing item (do not include kSecAttrAccessible in the match)
+        var match: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: account,
-            kSecValueData as String: data
         ]
-        SecItemDelete(query as CFDictionary)
-        let status = SecItemAdd(query as CFDictionary, nil)
+        if synchronizable {
+            match[kSecAttrSynchronizable as String] = kSecAttrSynchronizableAny
+        }
+
+        // Delete old value, fail on unexpected errors
+        let deleteStatus = SecItemDelete(match as CFDictionary)
+        if deleteStatus != errSecSuccess && deleteStatus != errSecItemNotFound {
+            throw SecureStoreError.osStatus(deleteStatus)
+        }
+
+        // Add new value with explicit accessibility (and optional sync)
+        var add = match
+        add[kSecValueData as String] = data
+        add[kSecAttrAccessible as String] = accessible
+        if synchronizable {
+            add[kSecAttrSynchronizable as String] = kCFBooleanTrue
+        }
+
+        let status = SecItemAdd(add as CFDictionary, nil)
         guard status == errSecSuccess else { throw SecureStoreError.osStatus(status) }
     }
 
     public func load(service: String, account: String) async throws -> Data? {
-        let query: [String: Any] = [
+        var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: account,
             kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
+            kSecMatchLimit as String: kSecMatchLimitOne,
         ]
+        if synchronizable {
+            query[kSecAttrSynchronizable as String] = kSecAttrSynchronizableAny
+        }
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         if status == errSecItemNotFound { return nil }
@@ -51,11 +80,17 @@ public actor KeychainSecureStore: SecureStore {
     }
 
     public func clear(service: String, account: String) async throws {
-        let query: [String: Any] = [
+        var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
-            kSecAttrAccount as String: account
+            kSecAttrAccount as String: account,
         ]
-        SecItemDelete(query as CFDictionary)
+        if synchronizable {
+            query[kSecAttrSynchronizable as String] = kSecAttrSynchronizableAny
+        }
+        let status = SecItemDelete(query as CFDictionary)
+        if status != errSecSuccess && status != errSecItemNotFound {
+            throw SecureStoreError.osStatus(status)
+        }
     }
 }

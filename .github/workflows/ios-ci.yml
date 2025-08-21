@@ -23,11 +23,29 @@ jobs:
       with:
         xcode-version: 'latest-stable'
 
+    - name: Cache SwiftPM and DerivedData
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/Library/Developer/Xcode/DerivedData
+          ~/.swiftpm
+          ~/Library/Caches/org.swift.swiftpm
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+
+    - name: Determine latest available iOS runtime (with fallback)
+      run: |
+        RUNTIME=$(xcrun simctl list runtimes | grep -E "iOS.*com.apple.CoreSimulator.SimRuntime.iOS" | grep -oE '[0-9]+\.[0-9]+' | sort -V | tail -1)
+        if [ -z "$RUNTIME" ]; then RUNTIME="17.2"; fi
+        echo "IOS_RUNTIME=$RUNTIME" >> $GITHUB_ENV
+        echo "Using iOS runtime: $RUNTIME"
+
     - name: Install SwiftLint
       run: brew install swiftlint
 
     - name: SwiftLint
-      run: swiftlint lint --reporter github-actions-logging
+      run: swiftlint lint --reporter github-actions-logging --config .swiftlint.yml
       continue-on-error: ${{ !(github.ref == 'refs/heads/main' || github.base_ref == 'main') }}
 
     - name: Resolve Swift Packages (app + local packages at repo root)
@@ -47,7 +65,7 @@ jobs:
         xcodebuild build \
           -project "GitLabMobile/GitLabMobile.xcodeproj" \
           -scheme "GitLabMobile" \
-          -destination "platform=iOS Simulator,name=iPhone 15,OS=17.2" \
+          -destination "platform=iOS Simulator,name=iPhone 15,OS=${{ env.IOS_RUNTIME }}" \
           -configuration Debug \
           -derivedDataPath build
 
@@ -56,34 +74,34 @@ jobs:
         xcodebuild test \
           -project "GitLabMobile/GitLabMobile.xcodeproj" \
           -scheme "GitLabMobile" \
-          -destination "platform=iOS Simulator,name=iPhone 15,OS=17.2" \
+          -destination "platform=iOS Simulator,name=iPhone 15,OS=${{ env.IOS_RUNTIME }}" \
           -configuration Debug \
           -enableCodeCoverage YES \
           -resultBundlePath UnitTestResults.xcresult
       continue-on-error: true
 
-    - name: Run Package Tests (optional)
+    - name: Run Package Tests (gate if present, parallel with coverage)
       run: |
+        set -euo pipefail
         for dir in Core Features Kits; do
           [ -d "$dir" ] || continue
           for package in "$dir"/*/; do
             [ -f "${package}Package.swift" ] || continue
             echo "Testing package: $package"
             if (cd "$package" && swift package describe | grep -q "Tests"); then
-              (cd "$package" && swift test)
+              (cd "$package" && swift test --parallel --enable-code-coverage)
             else
               echo "No tests found in $package, skipping"
             fi
           done
         done
-      continue-on-error: true
 
     - name: Run UI Tests (optional)
       run: |
         xcodebuild test \
           -project "GitLabMobile/GitLabMobile.xcodeproj" \
           -scheme "GitLabMobile" \
-          -destination "platform=iOS Simulator,name=iPhone 15,OS=17.2" \
+          -destination "platform=iOS Simulator,name=iPhone 15,OS=${{ env.IOS_RUNTIME }}" \
           -configuration Debug \
           -only-testing:GitLabMobileUITests \
           -resultBundlePath UITestResults.xcresult

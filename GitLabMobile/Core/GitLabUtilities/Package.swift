@@ -24,7 +24,7 @@ let package = Package(
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
+        // Targets can define a module or a test suite.
         .target(
             name: "GitLabUtilities",
             dependencies: [
@@ -32,9 +32,13 @@ let package = Package(
                 .product(name: "GitLabPersistence", package: "GitLabPersistence"),
                 .product(name: "AsyncAlgorithms", package: "swift-async-algorithms")
             ]),
-        .testTarget(
-            name: "GitLabUtilitiesTests",
+        .target(
+            name: "GitLabUtilitiesTestDoubles",
             dependencies: ["GitLabUtilities"]
+        ),
+        .testTarget(
+            name: "GitLabUtilitiesUnitTests",
+            dependencies: ["GitLabUtilities", "GitLabUtilitiesTestDoubles"]
         )
     ]
 )

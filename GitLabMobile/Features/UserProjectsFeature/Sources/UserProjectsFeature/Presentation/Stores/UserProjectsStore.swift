@@ -55,7 +55,7 @@ public final class UserProjectsStore {
             }
         }
     }
-    
+
     // MARK: - Search
     public var query: String = "" {
         didSet {

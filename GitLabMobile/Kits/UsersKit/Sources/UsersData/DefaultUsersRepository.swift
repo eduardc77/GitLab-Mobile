@@ -10,8 +10,8 @@ import UsersDomain
 import GitLabNetwork
 
 public struct DefaultUsersRepository: UsersRepository {
-    private let api: APIClient
-    public init(api: APIClient) { self.api = api }
+    private let api: APIClientProtocol
+    public init(api: APIClientProtocol) { self.api = api }
 
     public func currentUser() async throws -> GitLabUser {
         let dto: UserDTO = try await api.send(UsersEndpoints.current())

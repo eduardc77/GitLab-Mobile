@@ -99,7 +99,7 @@ public final class ExploreProjectsStore {
     public func configureLocalCache(_ makeCache: @escaping @Sendable @MainActor () -> ProjectsCache) async {
         await repository.configureLocalCache(makeCache: makeCache)
     }
-    
+
     public func load(file: StaticString = #fileID, function: StaticString = #function, line: UInt = #line) async {
         AppLog.explore.debug("Reload requested by \(file):\(line) \(function)")
         phase = .reloading
@@ -184,7 +184,7 @@ public final class ExploreProjectsStore {
             await self?.performDebouncedSearch(trimmed)
         }
     }
-    
+
     private func setupLoadEventsPipeline() {
         eventQueue.start { [weak self] event in
             guard let self else { return }

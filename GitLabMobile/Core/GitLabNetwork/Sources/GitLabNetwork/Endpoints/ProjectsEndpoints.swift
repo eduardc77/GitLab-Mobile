@@ -32,7 +32,7 @@ public enum ProjectsEndpoints {
                 .init(name: "order_by", value: "last_activity_at"),
                 .init(name: "sort", value: "desc"),
                 .init(name: "visibility", value: "public"),
-                .init(name: "simple", value: "true")
+                .init(name: "simple", value: "true"),
             ].appendingSearch(search),
             options: RequestOptions(cachePolicy: nil, timeout: 8, useETag: false, attachAuthorization: false)
         )
@@ -47,7 +47,7 @@ public enum ProjectsEndpoints {
                 .init(name: "order_by", value: "star_count"),
                 .init(name: "sort", value: "desc"),
                 .init(name: "visibility", value: "public"),
-                .init(name: "simple", value: "true")
+                .init(name: "simple", value: "true"),
             ].appendingSearch(search),
             options: RequestOptions(cachePolicy: nil, timeout: 8, useETag: false, attachAuthorization: false)
         )
@@ -60,7 +60,7 @@ public enum ProjectsEndpoints {
                 .init(name: "page", value: String(page)),
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "search", value: query),
-                .init(name: "visibility", value: "public")
+                .init(name: "visibility", value: "public"),
             ],
             options: RequestOptions(cachePolicy: nil, timeout: 8, useETag: false, attachAuthorization: false)
         )
@@ -80,7 +80,7 @@ public enum ProjectsEndpoints {
                 .init(name: "order_by", value: "last_activity_at"),
                 .init(name: "sort", value: "asc"),
                 .init(name: "visibility", value: "public"),
-                .init(name: "simple", value: "true")
+                .init(name: "simple", value: "true"),
             ].appendingSearch(search),
             options: RequestOptions(cachePolicy: nil, timeout: 8, useETag: false, attachAuthorization: false)
         )
@@ -93,7 +93,7 @@ public enum ProjectsEndpoints {
                 .init(name: "page", value: String(page)),
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "visibility", value: "public"),
-                .init(name: "simple", value: "true")
+                .init(name: "simple", value: "true"),
             ].appendingSearch(search),
             options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: false)
         )
@@ -106,7 +106,7 @@ public enum ProjectsEndpoints {
             queryItems: [
                 .init(name: "page", value: String(page)),
                 .init(name: "per_page", value: String(perPage)),
-                .init(name: "owned", value: "true")
+                .init(name: "owned", value: "true"),
             ].appendingSearch(search),
             options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: true)
         )
@@ -118,7 +118,7 @@ public enum ProjectsEndpoints {
             queryItems: [
                 .init(name: "page", value: String(page)),
                 .init(name: "per_page", value: String(perPage)),
-                .init(name: "starred", value: "true")
+                .init(name: "starred", value: "true"),
             ].appendingSearch(search),
             options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: true)
         )
@@ -130,7 +130,7 @@ public enum ProjectsEndpoints {
             queryItems: [
                 .init(name: "page", value: String(page)),
                 .init(name: "per_page", value: String(perPage)),
-                .init(name: "membership", value: "true")
+                .init(name: "membership", value: "true"),
             ].appendingSearch(search),
             options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: true)
         )
@@ -144,7 +144,7 @@ public enum ProjectsEndpoints {
                 .init(name: "per_page", value: String(perPage)),
                 .init(name: "with_programming_language", value: "true"),
                 // placeholder param; adjust to real contributed filter if available
-                .init(name: "min_access_level", value: "10")
+                .init(name: "min_access_level", value: "10"),
                 // ensures user-visible contributions; server-side supported filters may vary
             ].appendingSearch(search),
             options: RequestOptions(cachePolicy: nil, timeout: nil, useETag: true)
@@ -167,7 +167,7 @@ public enum ProjectsEndpoints {
             .init(name: "page", value: String(page)),
             .init(name: "per_page", value: String(perPage)),
             .init(name: "order_by", value: orderBy.rawValue),
-            .init(name: "sort", value: sort.rawValue)
+            .init(name: "sort", value: sort.rawValue),
         ]
         if publicOnly { items.append(.init(name: "visibility", value: "public")) }
         if publicOnly { items.append(.init(name: "simple", value: "true")) }

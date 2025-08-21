@@ -7,15 +7,21 @@
 //
 
 import SwiftUI
+#if os(iOS) || os(tvOS) || os(watchOS)
+import UIKit
+#elseif os(macOS)
+import AppKit
+#endif
 import Kingfisher
 import GitLabImageLoading
 
 public actor KingfisherImageLoader: ImageLoadingClient {
     private var currentTask: DownloadTask?
+
     public init() {}
 
     public func loadImage(url: URL?, targetSizePoints: CGSize?) async throws -> Image {
-        let scale = await MainActor.run { UIScreen.main.scale }
+        let scale = await currentScreenScale()
         guard let url = url else { throw URLError(.badURL) }
         return try await withTaskCancellationHandler(operation: {
             try await withCheckedThrowingContinuation { continuation in
@@ -27,7 +33,14 @@ public actor KingfisherImageLoader: ImageLoadingClient {
                 }
                 let task = KingfisherManager.shared.retrieveImage(with: source, options: options) { result in
                     switch result {
-                    case .success(let value): continuation.resume(returning: Image(uiImage: value.image))
+                    case .success(let value):
+                        #if os(iOS) || os(tvOS) || os(watchOS)
+                        continuation.resume(returning: Image(uiImage: value.image))
+                        #elseif os(macOS)
+                        continuation.resume(returning: Image(nsImage: value.image))
+                        #else
+                        continuation.resume(throwing: URLError(.cannotDecodeContentData))
+                        #endif
                     case .failure(let error): continuation.resume(throwing: error)
                     }
                 }
@@ -49,4 +62,16 @@ public actor KingfisherImageLoader: ImageLoadingClient {
     private func cancelTask() { currentTask?.cancel(); currentTask = nil }
 }
 
-// no helpers needed; scale resolved on MainActor in loadImage
+// MARK: - Platform helpers
+
+@inline(__always)
+@MainActor
+private func currentScreenScale() -> CGFloat {
+#if os(iOS) || os(tvOS) || os(watchOS)
+    return UIScreen.main.scale
+#elseif os(macOS)
+    return NSScreen.main?.backingScaleFactor ?? 1.0
+#else
+    return 1.0
+#endif
+}

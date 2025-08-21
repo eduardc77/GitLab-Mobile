@@ -8,7 +8,12 @@
 
 import Foundation
 
-public struct APIClient: Sendable {
+public protocol APIClientProtocol: Sendable {
+    func send<Response: Decodable>(_ endpoint: Endpoint<Response>) async throws -> Response
+    func sendPaginated<Item: Decodable>(_ endpoint: Endpoint<[Item]>) async throws -> Paginated<[Item]>
+}
+
+public struct APIClient: Sendable, APIClientProtocol {
     public let baseURL: URL
     public let apiPrefix: String
     public let urlSession: URLSession
@@ -24,22 +29,19 @@ public struct APIClient: Sendable {
         sessionDelegate: URLSessionDelegate? = nil,
         authProvider: AuthProviding? = nil,
         userAgent: String = "GitLabMobile/1.0 (iOS)",
-        acceptLanguage: String = Locale.preferredLanguages.first ?? "en-US"
+        acceptLanguage: String = Locale.preferredLanguages.first ?? "en-US",
+        sessionConfiguration: URLSessionConfiguration? = nil
     ) {
         self.baseURL = baseURL
         self.apiPrefix = apiPrefix
         self.userAgent = userAgent
         self.acceptLanguage = acceptLanguage
-        let config = URLSessionConfiguration.default
+        let config = sessionConfiguration ?? URLSessionConfiguration.default
         config.waitsForConnectivity = true
-        // Use URLCache with protocol-directed caching
+        // Respect protocol-directed caching but avoid writing package-local disk files by default
         config.requestCachePolicy = .useProtocolCachePolicy
-        let urlCache = URLCache(
-            memoryCapacity: 20 * 1024 * 1024,   // 20 MB
-            diskCapacity: 100 * 1024 * 1024,    // 100 MB
-            diskPath: "com.gitlabmobile.urlcache"
-        )
-        config.urlCache = urlCache
+        // Use memory-only cache (no disk path) to prevent creating on-disk cache directories
+        config.urlCache = URLCache(memoryCapacity: 20 * 1024 * 1024, diskCapacity: 0, diskPath: nil)
         self.urlSession = URLSession(configuration: config, delegate: sessionDelegate, delegateQueue: nil)
         self.authProvider = authProvider
         self.requestBuilder = HTTPRequestBuilder(
@@ -125,7 +127,12 @@ private extension APIClient {
         var attempt = 1
         while attempt <= maxAttempts {
             do {
-                return try await performWithConditional(request, endpoint: endpoint)
+                let (data, http) = try await performWithConditional(request, endpoint: endpoint)
+                // Treat 5xx as retryable before decoding
+                if (500...599).contains(http.statusCode) {
+                    throw NetworkError.server(statusCode: http.statusCode, data: data)
+                }
+                return (data, http)
             } catch let error as NetworkError {
                 lastError = error
                 switch error {
