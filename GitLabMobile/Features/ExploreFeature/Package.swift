@@ -35,6 +35,10 @@ let package = Package(
                 .product(name: "ProjectsDomain", package: "ProjectsKit"),
                 .product(name: "ProjectsCache", package: "ProjectsKit"),
                 .product(name: "ProjectsUI", package: "ProjectsKit")
+            ],
+            resources: [
+                // Process Resources directory for localization catalogs and assets
+                .process("Resources")
             ]),
         .testTarget(
             name: "ExploreFeatureTests",

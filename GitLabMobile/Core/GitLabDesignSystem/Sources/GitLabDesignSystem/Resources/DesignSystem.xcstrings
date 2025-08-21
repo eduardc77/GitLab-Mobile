@@ -1,0 +1,20 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "ds.updated" : {
+      "comment" : "Full sentence shown under items to indicate last activity. Replace %1$@ with a localized relative time, for example '2 hours ago'.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Updated %1$@"
+          }
+        }
+      }
+    },
+    "ds.loading_more" : { "comment" : "Short status text shown at the bottom of lists while more items are loading.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Loading more..." } } } },
+  },
+  "version" : "1.0"
+}
+
+

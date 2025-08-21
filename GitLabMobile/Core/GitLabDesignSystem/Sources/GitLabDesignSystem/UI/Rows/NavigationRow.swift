@@ -11,10 +11,15 @@ import SwiftUI
 public struct NavigationRow: View {
     private let systemImage: String
     private let iconColor: Color
-    private let title: String
-    private let subtitle: String
+    private let title: LocalizedStringResource
+    private let subtitle: LocalizedStringResource
 
-    public init(systemImage: String, iconColor: Color, title: String, subtitle: String) {
+    public init(
+        systemImage: String,
+        iconColor: Color,
+        title: LocalizedStringResource,
+        subtitle: LocalizedStringResource
+    ) {
         self.systemImage = systemImage
         self.iconColor = iconColor
         self.title = title

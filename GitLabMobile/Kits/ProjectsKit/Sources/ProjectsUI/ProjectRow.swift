@@ -49,7 +49,9 @@ public struct ProjectRow: View {
                     Spacer()
 
                     if let date = project.lastActivityAt {
-                        Text("Updated \(date, format: .relative(presentation: .named))")
+                        let relative = date.formatted(.relative(presentation: .named))
+                        let format = String(localized: .DesignSystem.updated)
+                        Text(String(format: format, relative))
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                     }

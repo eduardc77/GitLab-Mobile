@@ -13,58 +13,82 @@ final class ProfileCoordinator {
     var navigationPath = NavigationPath()
 
     enum Destination: Hashable {
-        case personalProjects
+        case activity
         case groups
-        case assignedIssues
-        case mergeRequests
+        case contributedProjects
+        case personalProjects
+        case starredProjects
+        case snippets
+        case followers
+        case following
         case settings
     }
 
     enum Entry: CaseIterable {
-        case personalProjects, groups, assignedIssues, mergeRequests
+        case activity, personalProjects, contributedProjects, starredProjects, groups, snippets, followers, following
 
-        var title: String {
+        var title: LocalizedStringResource {
             switch self {
-            case .personalProjects: return "Personal Projects"
-            case .groups: return "Groups"
-            case .assignedIssues: return "Assigned Issues"
-            case .mergeRequests: return "Merge Requests"
+            case .activity: return .ProfileDestinationsL10n.activity
+            case .personalProjects: return .ProfileDestinationsL10n.personalProjects
+            case .contributedProjects: return .ProfileDestinationsL10n.contributedProjects
+            case .starredProjects: return .ProfileDestinationsL10n.starredProjects
+            case .groups: return .ProfileDestinationsL10n.groups
+            case .snippets: return .ProfileDestinationsL10n.snippets
+            case .followers: return .ProfileDestinationsL10n.followers
+            case .following: return .ProfileDestinationsL10n.following
             }
         }
 
-        var subtitle: String {
+        var subtitle: LocalizedStringResource {
             switch self {
-            case .personalProjects: return "Projects you own or maintain"
-            case .groups: return "Groups you are a member of"
-            case .assignedIssues: return "Issues assigned to you or created by you"
-            case .mergeRequests: return "Merge requests you created or need to review"
+            case .activity: return .ProfileEntriesL10n.activitySubtitle
+            case .personalProjects: return .ProfileEntriesL10n.personalProjectsSubtitle
+            case .contributedProjects: return .ProfileEntriesL10n.contributedProjectsSubtitle
+            case .starredProjects: return .ProfileEntriesL10n.starredProjectsSubtitle
+            case .groups: return .ProfileEntriesL10n.groupsSubtitle
+            case .snippets: return .ProfileEntriesL10n.snippetsSubtitle
+            case .followers: return .ProfileEntriesL10n.followersSubtitle
+            case .following: return .ProfileEntriesL10n.followingSubtitle
             }
         }
 
         var systemImage: String {
             switch self {
+            case .activity: return "clock.fill"
             case .personalProjects: return "folder.fill"
-            case .groups: return "person.2.fill"
-            case .assignedIssues: return "exclamationmark.circle.fill"
-            case .mergeRequests: return "arrow.merge"
+            case .contributedProjects: return "tray.and.arrow.up"
+            case .starredProjects: return "star.fill"
+            case .groups: return "person.3.fill"
+            case .snippets: return "scissors"
+            case .followers: return "person.2.fill"
+            case .following: return "person.fill"
             }
         }
 
         var iconColor: Color {
             switch self {
+            case .activity: return .pink
+            case .groups: return .purple
+            case .contributedProjects: return .teal
             case .personalProjects: return .blue
-            case .groups: return .green
-            case .assignedIssues: return .orange
-            case .mergeRequests: return .purple
+            case .starredProjects: return .yellow
+            case .snippets: return .indigo
+            case .followers: return .green
+            case .following: return .mint
             }
         }
 
         var destination: Destination {
             switch self {
-            case .personalProjects: return .personalProjects
+            case .activity: return .activity
             case .groups: return .groups
-            case .assignedIssues: return .assignedIssues
-            case .mergeRequests: return .mergeRequests
+            case .contributedProjects: return .contributedProjects
+            case .personalProjects: return .personalProjects
+            case .starredProjects: return .starredProjects
+            case .snippets: return .snippets
+            case .followers: return .followers
+            case .following: return .following
             }
         }
     }

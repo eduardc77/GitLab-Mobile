@@ -35,6 +35,9 @@ let package = Package(
                 .product(name: "ProjectsDomain", package: "ProjectsKit"),
                 .product(name: "ProjectsCache", package: "ProjectsKit"),
                 .product(name: "ProjectsUI", package: "ProjectsKit")
+            ],
+            resources: [
+                .process("Resources")
             ]),
         .testTarget(
             name: "UserProjectsFeatureTests",

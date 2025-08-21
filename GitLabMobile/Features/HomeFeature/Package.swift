@@ -33,6 +33,9 @@ let package = Package(
                 .product(name: "UserProjectsFeature", package: "UserProjectsFeature"),
                 .product(name: "GitLabDesignSystem", package: "GitLabDesignSystem"),
                 .product(name: "ProjectsDomain", package: "ProjectsKit")
+            ],
+            resources: [
+                .process("Resources")
             ]),
         .testTarget(
             name: "HomeFeatureTests",

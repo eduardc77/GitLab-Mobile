@@ -23,9 +23,11 @@ public struct ProfileSettingsView: View {
                         await authStore.signOut()
                         coordinator.navigateBack()
                     }
-                } label: { Text("Sign Out") }
+                } label: {
+                    Text(.ProfileSettingsL10n.signOut)
+                }
             }
         }
-        .navigationTitle("Account Settings")
+        .navigationTitle(String(localized: .ProfileSettingsL10n.accountSettings))
     }
 }
