@@ -18,4 +18,7 @@ public struct ProjectDTO: Decodable, Sendable, Equatable {
     public let avatarUrl: String?
     public let webUrl: String
     public let lastActivityAt: Date?
+    public let defaultBranch: String?
+    public let visibility: String?
+    public let topics: [String]?
 }

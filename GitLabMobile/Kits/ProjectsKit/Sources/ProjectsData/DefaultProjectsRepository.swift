@@ -245,7 +245,10 @@ public actor DefaultProjectsRepository: ProjectsRepository {
 			forksCount: dto.forksCount ?? 0,
 			avatarUrl: dto.avatarUrl.flatMap(URL.init),
 			webUrl: URL(string: dto.webUrl) ?? URL(string: "https://gitlab.com") ?? URL(fileURLWithPath: "/"),
-			lastActivityAt: dto.lastActivityAt
+			lastActivityAt: dto.lastActivityAt,
+			defaultBranch: dto.defaultBranch,
+			visibility: dto.visibility,
+			topics: dto.topics ?? []
 		)
 	}
 }

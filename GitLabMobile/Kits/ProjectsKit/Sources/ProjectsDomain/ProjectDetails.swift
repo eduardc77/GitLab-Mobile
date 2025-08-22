@@ -20,6 +20,9 @@ public struct ProjectDetails: Identifiable, Equatable, Sendable {
     public let avatarUrl: URL?
     public let webUrl: URL
     public let lastActivityAt: Date?
+    public let defaultBranch: String?
+    public let visibility: String?
+    public let topics: [String]
 
     public init(
         id: Int,
@@ -30,7 +33,10 @@ public struct ProjectDetails: Identifiable, Equatable, Sendable {
         forksCount: Int,
         avatarUrl: URL?,
         webUrl: URL,
-        lastActivityAt: Date?
+        lastActivityAt: Date?,
+        defaultBranch: String?,
+        visibility: String?,
+        topics: [String]
     ) {
         self.id = id
         self.name = name
@@ -41,6 +47,9 @@ public struct ProjectDetails: Identifiable, Equatable, Sendable {
         self.avatarUrl = avatarUrl
         self.webUrl = webUrl
         self.lastActivityAt = lastActivityAt
+        self.defaultBranch = defaultBranch
+        self.visibility = visibility
+        self.topics = topics
     }
 }
 

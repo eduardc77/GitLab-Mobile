@@ -22,6 +22,19 @@ public struct ProjectDetailsView: View {
             VStack(alignment: .leading, spacing: 12) {
                 header
                 meta
+                if let topics = store.details?.topics, topics.isEmpty == false {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(topics, id: \.self) { topic in
+                                Text(topic)
+                                    .font(.caption2)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Capsule().fill(Color(.secondarySystemFill)))
+                            }
+                        }
+                    }
+                }
                 if let description = store.details?.description, !description.isEmpty {
                     Text(description)
                         .font(.body)
@@ -40,11 +53,11 @@ public struct ProjectDetailsView: View {
                     .background(Color(.systemGroupedBackground))
             }
         }
-        .alert("Error", isPresented: Binding(
+        .alert(String(localized: .ProjectDetailsL10n.error), isPresented: Binding(
             get: { (store.errorMessage ?? "").isEmpty == false },
             set: { _ in store.errorMessage = nil }
         )) {
-            Button("OK", role: .cancel) {}
+            Button(String(localized: .ProjectDetailsL10n.okButtonTitle), role: .cancel) {}
         } message: {
             Text(store.errorMessage ?? "")
         }
@@ -80,6 +93,12 @@ public struct ProjectDetailsView: View {
             }
             if let forks = store.details?.forksCount {
                 Label("\(forks)", systemImage: "arrow.branch").font(.footnote)
+            }
+            if let branch = store.details?.defaultBranch, !branch.isEmpty {
+                Label(branch, systemImage: "arrow.triangle.branch").font(.footnote)
+            }
+            if let visibility = store.details?.visibility, !visibility.isEmpty {
+                Label(visibility.capitalized, systemImage: "eye").font(.footnote)
             }
             if let date = store.details?.lastActivityAt {
                 let relative = date.formatted(.relative(presentation: .named))
