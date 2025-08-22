@@ -32,7 +32,11 @@ public struct ExploreProjectsView: View {
                     Task(priority: .utility) { await store.loadMoreIfNeeded(currentItem: project) }
                 }
             },
-            row: { project in ProjectRow(project: project) }
+            row: { project in
+                NavigationLink(value: ExploreCoordinator.Destination.projectDetail(project)) {
+                    ProjectRow(project: project)
+                }
+            }
         )
         .listStyle(.plain)
         .navigationTitle(String(localized: .ExploreProjectsL10n.title))

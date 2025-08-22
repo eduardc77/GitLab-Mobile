@@ -152,7 +152,10 @@ public enum ProjectsEndpoints {
     }
 
     public static func project(id: Int) -> Endpoint<ProjectDTO> {
-        Endpoint(path: "/projects/\(id)")
+        Endpoint(
+            path: "/projects/\(id)",
+            options: RequestOptions(cachePolicy: nil, timeout: 8, useETag: true)
+        )
     }
 
     public static func list(

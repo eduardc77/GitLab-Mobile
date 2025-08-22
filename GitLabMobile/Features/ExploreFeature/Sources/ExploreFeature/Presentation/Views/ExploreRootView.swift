@@ -8,6 +8,7 @@
 
 import SwiftUI
 import GitLabDesignSystem
+import ProjectDetailsFeature
 import ProjectsDomain
 
 public struct ExploreRootView: View {
@@ -39,8 +40,8 @@ public struct ExploreRootView: View {
                 switch destination {
                 case .projects:
                     ExploreProjectsView(repository: projectsDependencies.repository)
-                case .projectDetail(let id):
-                    Text("Project #\(id)")
+                case .projectDetail(let project):
+                    ProjectDetailsView(projectId: project.id, repository: projectsDependencies.repository)
                 case .users:
                     Text(.ExploreDestinationsL10n.users)
                 case .groups:
