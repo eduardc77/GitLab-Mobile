@@ -8,10 +8,11 @@
 
 import SwiftUI
 import AuthFeature
+import GitLabNavigation
 
 public struct ProfileSettingsView: View {
     @Environment(AuthenticationStore.self) private var authStore
-    @Environment(ProfileCoordinator.self) private var coordinator
+    @Environment(ProfileRouter.self) private var router
 
     public init() {}
 
@@ -21,7 +22,7 @@ public struct ProfileSettingsView: View {
                 Button(role: .destructive) {
                     Task {
                         await authStore.signOut()
-                        coordinator.navigateBack()
+                        router.navigateBack()
                     }
                 } label: {
                     Text(.ProfileSettingsL10n.signOut)

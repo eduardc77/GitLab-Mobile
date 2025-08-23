@@ -54,4 +54,7 @@ public protocol ProjectsRepository: Sendable {
 		perPage: Int,
 		search: String?
 	) async -> AsyncThrowingStream<RepositoryResult<RepositoryPage<[ProjectSummary]>>, Error>
+
+	// Details (single project)
+	func projectDetails(id: Int) async throws -> ProjectDetails
 }

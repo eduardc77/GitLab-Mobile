@@ -233,4 +233,22 @@ public actor DefaultProjectsRepository: ProjectsRepository {
 		let queryPart = (lowered?.isEmpty == false) ? (lowered ?? "__none__") : "__none__"
 		return "personal:\(scopePart):\(queryPart)"
 	}
+
+	public func projectDetails(id: Int) async throws -> ProjectDetails {
+		let dto = try await remote.fetchProjectDetails(id: id)
+		return ProjectDetails(
+			id: dto.id,
+			name: dto.name,
+			pathWithNamespace: dto.pathWithNamespace,
+			description: dto.description,
+			starCount: dto.starCount ?? 0,
+			forksCount: dto.forksCount ?? 0,
+			avatarUrl: dto.avatarUrl.flatMap(URL.init),
+			webUrl: URL(string: dto.webUrl) ?? URL(string: "https://gitlab.com") ?? URL(fileURLWithPath: "/"),
+			lastActivityAt: dto.lastActivityAt,
+			defaultBranch: dto.defaultBranch,
+			visibility: dto.visibility,
+			topics: dto.topics ?? []
+		)
+	}
 }

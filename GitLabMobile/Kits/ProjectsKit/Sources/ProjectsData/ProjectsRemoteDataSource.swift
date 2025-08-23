@@ -39,6 +39,8 @@ public protocol ProjectsRemoteDataSource: Sendable {
 	func fetchPersonalMembership(page: Int, perPage: Int, search: String?) async throws -> Paginated<[ProjectSummary]>
 	func fetchPersonalStarred(page: Int, perPage: Int, search: String?) async throws -> Paginated<[ProjectSummary]>
 	func fetchPersonalContributed(page: Int, perPage: Int, search: String?) async throws -> Paginated<[ProjectSummary]>
+
+	func fetchProjectDetails(id: Int) async throws -> ProjectDTO
 }
 
 public struct DefaultProjectsRemoteDataSource: ProjectsRemoteDataSource {
@@ -104,4 +106,8 @@ public struct DefaultProjectsRemoteDataSource: ProjectsRemoteDataSource {
         let dto: Paginated<[ProjectDTO]> = try await api.sendPaginated(endpoint)
         return Paginated(items: dto.items.map { $0.toDomain() }, pageInfo: dto.pageInfo)
     }
+
+	public func fetchProjectDetails(id: Int) async throws -> ProjectDTO {
+		try await api.send(ProjectsEndpoints.project(id: id))
+	}
 }
