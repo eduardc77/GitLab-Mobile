@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE30893D2E59384800B3F40D /* ProjectDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2B42E53C59700AA55AF /* ProjectDetailsFeature */; };
+		CE3089832E59462500B3F40D /* GitLabNavigation in Frameworks */ = {isa = PBXBuildFile; productRef = CE3089822E59462500B3F40D /* GitLabNavigation */; };
 		CE3536012E53CFCD00B479D7 /* ProjectsCache in Frameworks */ = {isa = PBXBuildFile; productRef = CE3536002E53CFCD00B479D7 /* ProjectsCache */; };
 		CE3536032E53CFCD00B479D7 /* ProjectsData in Frameworks */ = {isa = PBXBuildFile; productRef = CE3536022E53CFCD00B479D7 /* ProjectsData */; };
 		CE3536052E53CFCD00B479D7 /* ProjectsDomain in Frameworks */ = {isa = PBXBuildFile; productRef = CE3536042E53CFCD00B479D7 /* ProjectsDomain */; };
@@ -18,7 +20,6 @@
 		CE77B2AF2E53C58200AA55AF /* GitLabUtilities in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2AE2E53C58200AA55AF /* GitLabUtilities */; };
 		CE77B2B12E53C58600AA55AF /* HomeFeature in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2B02E53C58600AA55AF /* HomeFeature */; };
 		CE77B2B32E53C58B00AA55AF /* ProfileFeature in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2B22E53C58B00AA55AF /* ProfileFeature */; };
-		CE77B2B52E53C59700AA55AF /* ProjectDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2B42E53C59700AA55AF /* ProjectDetailsFeature */; };
 		CE7E159B2E53D5AA00C3FD3E /* GitLabDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = CE7E159A2E53D5AA00C3FD3E /* GitLabDesignSystem */; };
 		CEBA20532E551A350004A2E1 /* UsersData in Frameworks */ = {isa = PBXBuildFile; productRef = CEBA20522E551A350004A2E1 /* UsersData */; };
 		CEBA20552E551A350004A2E1 /* UsersDomain in Frameworks */ = {isa = PBXBuildFile; productRef = CEBA20542E551A350004A2E1 /* UsersDomain */; };
@@ -46,6 +47,7 @@
 				GitLabDesignSystem,
 				GitLabImageLoading,
 				GitLabLogging,
+				GitLabNavigation,
 				GitLabNetwork,
 				GitLabPersistence,
 				GitLabUtilities,
@@ -111,12 +113,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE30893D2E59384800B3F40D /* ProjectDetailsFeature in Frameworks */,
 				CE3536032E53CFCD00B479D7 /* ProjectsData in Frameworks */,
 				CEBA20552E551A350004A2E1 /* UsersDomain in Frameworks */,
 				CE77B2B32E53C58B00AA55AF /* ProfileFeature in Frameworks */,
 				CEF49D422E54AA5900E6D38C /* UserProjectsFeature in Frameworks */,
 				CE77B2A32E53C56B00AA55AF /* AuthFeature in Frameworks */,
 				CEF49D3B2E54A7D500E6D38C /* GitLabImageLoadingKingfisher in Frameworks */,
+				CE3089832E59462500B3F40D /* GitLabNavigation in Frameworks */,
 				CEF49D392E54A7D500E6D38C /* GitLabImageLoading in Frameworks */,
 				CE7E159B2E53D5AA00C3FD3E /* GitLabDesignSystem in Frameworks */,
 				CE77B2AD2E53C57E00AA55AF /* GitLabPersistence in Frameworks */,
@@ -127,7 +131,6 @@
 				CE77B2AF2E53C58200AA55AF /* GitLabUtilities in Frameworks */,
 				CE3536052E53CFCD00B479D7 /* ProjectsDomain in Frameworks */,
 				CEBA20532E551A350004A2E1 /* UsersData in Frameworks */,
-				CE77B2B52E53C59700AA55AF /* ProjectDetailsFeature in Frameworks */,
 				CE77B2A92E53C57700AA55AF /* GitLabLogging in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -203,6 +206,7 @@
 				CEF49D412E54AA5900E6D38C /* UserProjectsFeature */,
 				CEBA20522E551A350004A2E1 /* UsersData */,
 				CEBA20542E551A350004A2E1 /* UsersDomain */,
+				CE3089822E59462500B3F40D /* GitLabNavigation */,
 			);
 			productName = GitLabMobile;
 			productReference = CE8494CD2E4B783300B03BD6 /* GitLabMobile.app */;
@@ -507,6 +511,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		CE3089822E59462500B3F40D /* GitLabNavigation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GitLabNavigation;
+		};
 		CE3536002E53CFCD00B479D7 /* ProjectsCache */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ProjectsCache;

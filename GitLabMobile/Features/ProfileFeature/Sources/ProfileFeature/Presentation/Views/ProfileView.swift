@@ -8,6 +8,7 @@
 
 import SwiftUI
 import GitLabDesignSystem
+import GitLabNavigation
 
 public struct ProfileView: View {
     public var store: ProfileStore
@@ -24,7 +25,7 @@ public struct ProfileView: View {
             }
 
             Section {
-                ForEach(ProfileCoordinator.Entry.allCases, id: \.self) { entry in
+                ForEach(ProfileEntry.allCases, id: \.self) { entry in
                     NavigationLink(value: entry.destination) {
                         NavigationRow(
                             systemImage: entry.systemImage,

@@ -9,6 +9,7 @@
 import SwiftUI
 import SwiftData
 import ProjectsDomain
+import GitLabNavigation
 import GitLabDesignSystem
 import ProjectsUI
 import ProjectsCache
@@ -18,6 +19,7 @@ public struct ExploreProjectsView: View {
     @Environment(\.modelContext) private var modelContext
     @State public var store: ExploreProjectsStore
     @State private var searchPresented = false
+    @Environment(ExploreRouter.self) private var router
 
     public init(repository: any ProjectsRepository) {
         self._store = State(initialValue: ExploreProjectsStore(repository: repository))
@@ -33,7 +35,9 @@ public struct ExploreProjectsView: View {
                 }
             },
             row: { project in
-                NavigationLink(value: ExploreCoordinator.Destination.projectDetail(project)) {
+                Button {
+                    router.navigate(to: .projectDetail(project))
+                } label: {
                     ProjectRow(project: project)
                 }
             }

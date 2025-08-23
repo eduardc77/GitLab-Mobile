@@ -1,3 +1,11 @@
+//
+//  ProjectDetailsStrings.swift
+//  ProjectDetailsFeature
+//
+//  Copyright © 2025 Eliomane. All rights reserved.
+//  Licensed under Apache License v2.0. See LICENSE file.
+//
+
 import Foundation
 
 public enum ProjectDetailsL10n {
@@ -12,5 +20,3 @@ public enum ProjectDetailsL10n {
         bundle: .atURL(Bundle.module.bundleURL)
     )
 }
-
-

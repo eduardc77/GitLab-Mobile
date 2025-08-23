@@ -53,14 +53,7 @@ public struct ProjectDetailsView: View {
                     .background(Color(.systemGroupedBackground))
             }
         }
-        .alert(String(localized: .ProjectDetailsL10n.error), isPresented: Binding(
-            get: { (store.errorMessage ?? "").isEmpty == false },
-            set: { _ in store.errorMessage = nil }
-        )) {
-            Button(String(localized: .ProjectDetailsL10n.okButtonTitle), role: .cancel) {}
-        } message: {
-            Text(store.errorMessage ?? "")
-        }
+
     }
 
     @ViewBuilder private var header: some View {
@@ -109,5 +102,3 @@ public struct ProjectDetailsView: View {
         .foregroundStyle(.secondary)
     }
 }
-
-

@@ -52,5 +52,3 @@ public struct ProjectDetails: Identifiable, Equatable, Sendable {
         self.topics = topics
     }
 }
-
-

@@ -13,14 +13,26 @@ import GitLabDesignSystem
 import ProjectsUI
 import GitLabLogging
 import ProjectsCache
+import GitLabNavigation
 
 public struct ProjectsListView: View {
     @Environment(\.modelContext) private var modelContext
     @State public var store: UserProjectsStore
     @State private var searchPresented = false
+    private let navigationContext: NavigationContext
 
-    public init(repository: any ProjectsRepository, scope: UserProjectsStore.Scope) {
+    public enum NavigationContext {
+        case home(HomeRouter)
+        case profile(ProfileRouter)
+    }
+
+    public init(
+        repository: any ProjectsRepository,
+        scope: UserProjectsStore.Scope,
+        navigationContext: NavigationContext
+    ) {
         self._store = State(initialValue: UserProjectsStore(repository: repository, scope: scope))
+        self.navigationContext = navigationContext
     }
 
     public var body: some View {
@@ -32,7 +44,14 @@ public struct ProjectsListView: View {
                     Task(priority: .utility) { await store.loadMoreIfNeeded(currentItem: project) }
                 }
             },
-            row: { project in ProjectRow(project: project) }
+            row: { project in
+                switch navigationContext {
+                case .home(let router):
+                    Button { router.navigate(to: .projectDetail(project)) } label: { ProjectRow(project: project) }
+                case .profile(let router):
+                    Button { router.navigate(to: .projectDetail(project)) } label: { ProjectRow(project: project) }
+                }
+            }
         )
         .listStyle(.plain)
         .navigationTitle(String(localized: .UserProjectsL10n.title))
