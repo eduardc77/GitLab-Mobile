@@ -28,7 +28,7 @@ public enum OAuthEndpoints {
             "code": code,
             "redirect_uri": redirectURI,
             "client_id": clientId,
-            "code_verifier": codeVerifier
+            "code_verifier": codeVerifier,
         ]
         return Endpoint(
             path: "/oauth/token",
@@ -46,7 +46,7 @@ public enum OAuthEndpoints {
     ) -> Endpoint<OAuthTokenDTO> {
         var params: [String: String] = [
             "grant_type": "refresh_token",
-            "refresh_token": refreshToken
+            "refresh_token": refreshToken,
         ]
         if let clientId { params["client_id"] = clientId }
         return Endpoint(

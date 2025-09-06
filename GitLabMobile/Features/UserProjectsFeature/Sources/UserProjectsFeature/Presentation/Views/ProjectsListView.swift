@@ -13,14 +13,26 @@ import GitLabDesignSystem
 import ProjectsUI
 import GitLabLogging
 import ProjectsCache
+import GitLabNavigation
 
 public struct ProjectsListView: View {
     @Environment(\.modelContext) private var modelContext
-    @State public var store: UserProjectsStore
+    @State private var store: UserProjectsStore
     @State private var searchPresented = false
+    private let navigationContext: NavigationContext
 
-    public init(repository: any ProjectsRepository, scope: UserProjectsStore.Scope) {
+    public enum NavigationContext {
+        case home(HomeRouter)
+        case profile(ProfileRouter)
+    }
+
+    public init(
+        repository: any ProjectsRepository,
+        scope: UserProjectsStore.Scope,
+        navigationContext: NavigationContext
+    ) {
         self._store = State(initialValue: UserProjectsStore(repository: repository, scope: scope))
+        self.navigationContext = navigationContext
     }
 
     public var body: some View {
@@ -28,14 +40,23 @@ public struct ProjectsListView: View {
             items: store.items,
             isLoadingMore: store.isLoadingMore,
             onItemAppear: { project in
-                if store.isNearEnd(for: project.id) {
-                    Task(priority: .utility) { await store.loadMoreIfNeeded(currentItem: project) }
+                Task(priority: .utility) { @MainActor in
+                    if store.isNearEnd(for: project.id) {
+                        await store.loadMoreIfNeeded(currentItem: project)
+                    }
                 }
             },
-            row: { project in ProjectRow(project: project) }
+            row: { project in
+                switch navigationContext {
+                case .home(let router):
+                    Button { router.navigate(to: .projectDetail(project)) } label: { ProjectRow(project: project) }
+                case .profile(let router):
+                    Button { router.navigate(to: .projectDetail(project)) } label: { ProjectRow(project: project) }
+                }
+            }
         )
         .listStyle(.plain)
-        .navigationTitle("Projects")
+        .navigationTitle(String(localized: .UserProjectsL10n.title))
         .navigationBarTitleDisplayMode(.large)
         .refreshable { await store.load() }
         .searchable(
@@ -45,7 +66,7 @@ public struct ProjectsListView: View {
         )
         .searchSuggestions {
             if store.query.isEmpty && !(store.isLoading || store.isReloading || store.isSearching) {
-                Section("Recent searches") {
+                Section(String(localized: .UserProjectsL10n.recentSearches)) {
                     ForEach(store.recentQueries, id: \.self) { suggestion in
                         Text("**\\(suggestion)**").searchCompletion(suggestion)
                     }
@@ -61,22 +82,20 @@ public struct ProjectsListView: View {
         }
         .overlay {
             if store.isReloading || store.isSearching || (store.isLoading && store.items.isEmpty) {
-                ProgressView("Loading...")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(.systemGroupedBackground))
+                LoadingView()
             } else if store.items.isEmpty, !(store.isLoading || store.isReloading || store.isSearching) {
                 ContentUnavailableView {
-                    Label("No Projects", systemImage: "folder.badge.questionmark")
+                    Label(String(localized: .UserProjectsL10n.emptyTitle), systemImage: "folder.badge.questionmark")
                 } description: {
-                    Text("No projects found. Try refreshing or check your connection.")
+                    Text(.UserProjectsL10n.emptyDescription)
                 }
             }
         }
-        .alert("Error", isPresented: Binding(
+        .alert(String(localized: .UserProjectsL10n.errorTitle), isPresented: Binding(
             get: { (store.errorMessage ?? "").isEmpty == false },
             set: { _ in store.errorMessage = nil }
         )) {
-            Button("OK", role: .cancel) {}
+            Button(String(localized: .UserProjectsL10n.okButtonTitle), role: .cancel) {}
         } message: { Text(store.errorMessage ?? "") }
         .task {
             await store.configureLocalCache { @MainActor in ProjectsCache(modelContext: modelContext) }

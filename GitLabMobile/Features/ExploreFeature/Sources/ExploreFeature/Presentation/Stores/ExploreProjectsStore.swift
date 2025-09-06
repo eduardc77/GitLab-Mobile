@@ -47,7 +47,9 @@ public final class ExploreProjectsStore {
     // MARK: - Pagination state
     @ObservationIgnored private var nextPageCursor: Int?
     @ObservationIgnored private let perPage = StoreDefaults.perPage
-    private var sortContext: SortContext { SortContext(query: queryIfValid(), sortBy: sortBy, sort: sortDirection) }
+    @ObservationIgnored private var sortContext: SortContext {
+        SortContext(query: queryIfValid(), sortBy: sortBy, sort: sortDirection)
+    }
     @ObservationIgnored private var pendingSectionChange = false
 
     public var sortBy: ProjectSortField = .starCount {
@@ -99,7 +101,7 @@ public final class ExploreProjectsStore {
     public func configureLocalCache(_ makeCache: @escaping @Sendable @MainActor () -> ProjectsCache) async {
         await repository.configureLocalCache(makeCache: makeCache)
     }
-    
+
     public func load(file: StaticString = #fileID, function: StaticString = #function, line: UInt = #line) async {
         AppLog.explore.debug("Reload requested by \(file):\(line) \(function)")
         phase = .reloading
@@ -184,7 +186,7 @@ public final class ExploreProjectsStore {
             await self?.performDebouncedSearch(trimmed)
         }
     }
-    
+
     private func setupLoadEventsPipeline() {
         eventQueue.start { [weak self] event in
             guard let self else { return }

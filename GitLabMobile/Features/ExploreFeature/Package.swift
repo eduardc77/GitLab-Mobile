@@ -21,6 +21,7 @@ let package = Package(
         .package(path: "../../Core/GitLabUtilities"),
         .package(path: "../../Core/GitLabLogging"),
         .package(path: "../../Core/GitLabDesignSystem"),
+        .package(path: "../../Core/GitLabNavigation"),
         .package(path: "../../Kits/ProjectsKit")
     ],
     targets: [
@@ -32,9 +33,14 @@ let package = Package(
                 .product(name: "GitLabUtilities", package: "GitLabUtilities"),
                 .product(name: "GitLabLogging", package: "GitLabLogging"),
                 .product(name: "GitLabDesignSystem", package: "GitLabDesignSystem"),
+                .product(name: "GitLabNavigation", package: "GitLabNavigation"),
                 .product(name: "ProjectsDomain", package: "ProjectsKit"),
                 .product(name: "ProjectsCache", package: "ProjectsKit"),
                 .product(name: "ProjectsUI", package: "ProjectsKit")
+            ],
+            resources: [
+                // Process Resources directory for localization catalogs and assets
+                .process("Resources")
             ]),
         .testTarget(
             name: "ExploreFeatureTests",

@@ -23,8 +23,9 @@ let package = Package(
         .target(
             name: "GitLabPersistence"),
         .testTarget(
-            name: "GitLabPersistenceTests",
+            name: "GitLabPersistenceUnitTests",
             dependencies: ["GitLabPersistence"]
         )
+
     ]
 )

@@ -10,21 +10,10 @@ import SwiftUI
 import HomeFeature
 import ExploreFeature
 import ProfileFeature
+import GitLabNavigation
 
 struct ContentView: View {
     var body: some View {
-        TabView {
-            HomeRootView()
-                .tabItem { Label("Home", systemImage: "house") }
-
-            NavigationStack { Text("Notifications") }
-                .tabItem { Label("Notifications", systemImage: "bell") }
-
-            ExploreRootView()
-                .tabItem { Label("Explore", systemImage: "binoculars") }
-
-            ProfileRootView()
-                .tabItem { Label("Profile", systemImage: "person") }
-        }
+        AppTabView()
     }
 }

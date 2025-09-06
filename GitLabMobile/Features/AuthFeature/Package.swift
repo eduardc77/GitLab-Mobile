@@ -18,6 +18,7 @@ let package = Package(
             targets: ["AuthFeature"])
     ],
     dependencies: [
+        .package(path: "../../Core/GitLabDesignSystem"),
         .package(path: "../../Core/GitLabNetwork")
     ],
     targets: [
@@ -26,7 +27,11 @@ let package = Package(
         .target(
             name: "AuthFeature",
             dependencies: [
+                .product(name: "GitLabDesignSystem", package: "GitLabDesignSystem"),
                 .product(name: "GitLabNetwork", package: "GitLabNetwork")
+            ],
+            resources: [
+                .process("Resources")
             ]),
         .testTarget(
             name: "AuthFeatureTests",

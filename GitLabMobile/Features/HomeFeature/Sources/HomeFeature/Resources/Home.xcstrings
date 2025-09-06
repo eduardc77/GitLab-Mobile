@@ -1,0 +1,226 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "home.alerts.error" : {
+      "comment" : "Generic error alert title.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        }
+      }
+    },
+    "home.alerts.ok" : {
+      "comment" : "OK button label.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "home.destinations.activity" : {
+      "comment" : "Destination label in Home for Activity.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activity"
+          }
+        }
+      }
+    },
+    "home.destinations.groups" : {
+      "comment" : "Destination label in Home for Groups.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Groups"
+          }
+        }
+      }
+    },
+    "home.destinations.issues" : {
+      "comment" : "Destination label in Home for Issues.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Issues"
+          }
+        }
+      }
+    },
+    "home.destinations.merge_requests" : {
+      "comment" : "Destination label in Home for Merge Requests.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Merge Requests"
+          }
+        }
+      }
+    },
+    "home.destinations.milestones" : {
+      "comment" : "Destination label in Home for Milestones.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Milestones"
+          }
+        }
+      }
+    },
+    "home.destinations.projects" : {
+      "comment" : "Destination label in Home for Projects.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Projects"
+          }
+        }
+      }
+    },
+    "home.destinations.snippets" : {
+      "comment" : "Destination label in Home for Snippets.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Snippets"
+          }
+        }
+      }
+    },
+    "home.destinations.todo" : {
+      "comment" : "Destination label in Home for To‑Do.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To‑Do"
+          }
+        }
+      }
+    },
+    "home.entries.activity.subtitle" : {
+      "comment" : "Subtitle under Activity in Home: your recent work across memberships.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your recent work"
+          }
+        }
+      }
+    },
+    "home.entries.groups.subtitle" : {
+      "comment" : "Subtitle under Groups in Home: your teams and organizations (membership).",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teams and organizations you belong to"
+          }
+        }
+      }
+    },
+    "home.entries.issues.subtitle" : {
+      "comment" : "Subtitle under Issues in Home: issues assigned to you.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Issues assigned to you"
+          }
+        }
+      }
+    },
+    "home.entries.merge_requests.subtitle" : {
+      "comment" : "Subtitle under Merge Requests in Home: merge requests waiting for your review (assignee or reviewer).",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Merge requests waiting for your review"
+          }
+        }
+      }
+    },
+    "home.entries.milestones.subtitle" : {
+      "comment" : "Subtitle under Milestones in Home: goals and deadlines across your work.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Goals and deadlines"
+          }
+        }
+      }
+    },
+    "home.entries.projects.subtitle" : {
+      "comment" : "Subtitle under Projects in Home: aggregated projects you work on (owned + member).",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Projects you work on"
+          }
+        }
+      }
+    },
+    "home.entries.snippets.subtitle" : {
+      "comment" : "Subtitle under Snippets in Home: code snippets you’re working with.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Snippets you’re working with"
+          }
+        }
+      }
+    },
+    "home.entries.todo.subtitle" : {
+      "comment" : "Subtitle under To‑Do in Home: tasks you need to follow up on (single GitLab to‑do list).",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tasks you need to complete"
+          }
+        }
+      }
+    },
+    "home.sections.your_work" : {
+      "comment" : "Header for the user's work shortcuts section.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your Work"
+          }
+        }
+      }
+    },
+    "home.title" : {
+      "comment" : "Navigation bar title for the Home screen.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

@@ -1,0 +1,14 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "userprojects.title" : { "comment" : "Navigation title for the user's projects list.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Projects" } } } },
+    "userprojects.recent_searches" : { "comment" : "Header for the recent searches suggestions list.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Recent searches" } } } },
+    "userprojects.empty.title" : { "comment" : "Title for empty state when no projects are found.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "No Projects" } } } },
+    "userprojects.empty.description" : { "comment" : "Description for empty state when no projects are found.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "No projects found. Try refreshing or check your connection." } } } },
+    "userprojects.error.title" : { "comment" : "Generic error alert title in projects list.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Error" } } } },
+    "userprojects.ok" : { "comment" : "OK button title.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "OK" } } } }
+  },
+  "version" : "1.0"
+}
+
+

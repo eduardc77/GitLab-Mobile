@@ -59,7 +59,7 @@ public struct OAuthService: Sendable, OAuthServicing {
             URLQueryItem(name: "scope", value: scopes),
             URLQueryItem(name: "state", value: state),
             URLQueryItem(name: "code_challenge", value: codeChallenge),
-            URLQueryItem(name: "code_challenge_method", value: "S256")
+            URLQueryItem(name: "code_challenge_method", value: "S256"),
         ]
         return components?.url
     }

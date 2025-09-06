@@ -9,6 +9,7 @@
 import Testing
 @testable import ProjectDetailsFeature
 
-@Test func example() async throws {
-    // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+@Test func projectDetailsFeatureCanBeImported() {
+    // Test that the module can be imported successfully
+    #expect(true)
 }

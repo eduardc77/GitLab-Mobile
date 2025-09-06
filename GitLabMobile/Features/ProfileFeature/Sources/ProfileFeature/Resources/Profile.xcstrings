@@ -1,0 +1,31 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "profile.destinations.personal_projects" : { "comment" : "Destination label for Personal Projects.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Personal Projects" } } } },
+    "profile.entries.personal_projects.subtitle" : { "comment" : "Subtitle under Personal Projects in Profile: projects you own.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Projects you own" } } } },
+    "profile.entries.groups.subtitle" : { "comment" : "Subtitle under Groups in Profile: your groups.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Your groups" } } } },
+    "profile.entries.activity.subtitle" : { "comment" : "Subtitle under Activity in Profile: your contributions and events.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Your contributions and events" } } } },
+    "profile.entries.contributed_projects.subtitle" : { "comment" : "Subtitle under Contributed Projects in Profile: projects you’ve contributed to.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Projects you’ve contributed to" } } } },
+    "profile.entries.starred_projects.subtitle" : { "comment" : "Subtitle under Starred Projects in Profile: projects you’ve starred.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Projects you’ve starred" } } } },
+    "profile.entries.snippets.subtitle" : { "comment" : "Subtitle under Snippets in Profile: your shared code snippets.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Your shared code snippets" } } } },
+    "profile.entries.followers.subtitle" : { "comment" : "Subtitle under Followers in Profile: people who follow you.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "People who follow you" } } } },
+    "profile.entries.following.subtitle" : { "comment" : "Subtitle under Following in Profile: people you follow.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "People you follow" } } } },
+    "profile.title" : { "comment" : "Navigation bar title for the Profile screen.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Profile" } } } },
+    "profile.destinations.groups" : { "comment" : "Destination label.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Groups" } } } },
+    "profile.destinations.activity" : { "comment" : "Destination label for Activity in Profile.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Activity" } } } },
+    "profile.destinations.contributed_projects" : { "comment" : "Destination label for Contributed Projects in Profile.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Contributed Projects" } } } },
+    "profile.destinations.starred_projects" : { "comment" : "Destination label for Starred Projects in Profile.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Starred Projects" } } } },
+    "profile.destinations.snippets" : { "comment" : "Destination label for Snippets in Profile.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Snippets" } } } },
+    "profile.destinations.followers" : { "comment" : "Destination label for Followers in Profile.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Followers" } } } },
+    "profile.destinations.following" : { "comment" : "Destination label for Following in Profile.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Following" } } } },
+    "profile.destinations.settings" : { "comment" : "Destination label.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Settings" } } } },
+    "profile.settings.account_settings" : { "comment" : "Navigation bar title for the Account Settings screen.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Account Settings" } } } },
+    "profile.settings.sign_out" : { "comment" : "Title of the sign-out button.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Sign Out" } } } },
+    "profile.header.member_since" : { "comment" : "Sentence shown under the user's name. Replace %@ with a localized date.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Member since %@" } } } },
+    "profile.alerts.error" : { "comment" : "Generic error alert title.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Error" } } } },
+    "profile.alerts.ok" : { "comment" : "OK button label.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "OK" } } } }
+  },
+  "version" : "1.0"
+}
+
+

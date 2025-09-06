@@ -12,60 +12,37 @@ import AuthFeature
 import ProjectsDomain
 import ProjectsUI
 import UserProjectsFeature
+import GitLabNavigation
 
 public struct HomeRootView: View {
     @Environment(AuthenticationStore.self) private var authStore
     @Environment(ProjectsDependencies.self) private var projectsDependencies
-    @State private var coordinator = HomeCoordinator()
+    @Environment(HomeRouter.self) private var router
 
     public init() {}
 
     public var body: some View {
-        NavigationStack(path: Bindable(coordinator).navigationPath) {
-            Group {
-                switch authStore.status {
-                case .authenticating:
-                    ProgressView("Loading...")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color(.systemGroupedBackground))
-                case .authenticated:
-                    yourWorkSection
-                case .unauthenticated:
-                    SignInView()
-                }
+        Group {
+            switch authStore.status {
+            case .authenticating:
+                LoadingView()
+            case .authenticated:
+                yourWorkSection
+            case .unauthenticated:
+                SignInView()
             }
-            .navigationBarTitleDisplayMode(.large)
-            .navigationTitle("Home")
-            .navigationDestination(for: HomeCoordinator.Destination.self) { destination in
-                switch destination {
-                case .projects:
-                    ProjectsListView(repository: projectsDependencies.repository, scope: .combined)
-                case .groups:
-                    Text("Groups")
-                case .issues:
-                    Text("Issues")
-                case .mergeRequests:
-                    Text("Merge Requests")
-                case .todo:
-                    Text("To‑Do")
-                case .milestones:
-                    Text("Milestones")
-                case .snippets:
-                    Text("Snippets")
-                case .activity:
-                    Text("Activity")
-                }
-            }
-            .alert("Error", isPresented: .constant(authStore.errorMessage != nil), actions: {
-                Button("OK") { authStore.clearError() }
-            }, message: { Text(authStore.errorMessage ?? "") })
         }
+        .navigationBarTitleDisplayMode(.large)
+        .navigationTitle(String(localized: .HomeL10n.title))
+        .alert(String(localized: .HomeAlertsL10n.error), isPresented: .constant(authStore.errorMessage != nil), actions: {
+            Button(String(localized: .HomeAlertsL10n.okButtonTitle)) { authStore.clearError() }
+        }, message: { Text(authStore.errorMessage ?? "") })
     }
 
     private var yourWorkSection: List<Never, some View> {
         return List {
-            Section("Your Work") {
-                ForEach(HomeCoordinator.Entry.allCases, id: \.self) { entry in
+            Section(String(localized: .HomeSectionsL10n.yourWork)) {
+                ForEach(HomeEntry.allCases, id: \.self) { entry in
                     NavigationLink(value: entry.destination) {
                         NavigationRow(
                             systemImage: entry.systemImage,

@@ -18,5 +18,3 @@ public enum AppPinning {
         return Set(pins)
     }
 }
-
-// trailing newline intentional

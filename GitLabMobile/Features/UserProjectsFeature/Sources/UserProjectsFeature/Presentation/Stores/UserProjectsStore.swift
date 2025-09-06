@@ -45,7 +45,7 @@ public final class UserProjectsStore {
     // MARK: - Pagination state
     @ObservationIgnored private var nextPageCursor: Int?
     @ObservationIgnored private let perPage: Int = StoreDefaults.perPage
-    private var currentFeedID: QueryContext { QueryContext(scope: scope, query: queryIfValid()) }
+    @ObservationIgnored private var currentFeedID: QueryContext { QueryContext(scope: scope, query: queryIfValid()) }
 
     // MARK: - Internal state
     private var phase: Phase = .initialLoading {
@@ -55,7 +55,7 @@ public final class UserProjectsStore {
             }
         }
     }
-    
+
     // MARK: - Search
     public var query: String = "" {
         didSet {

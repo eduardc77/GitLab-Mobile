@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum NetworkError: Error, LocalizedError {
+public enum NetworkError: Error, LocalizedError, Equatable {
     case invalidURL
     case transport(Error)
     case server(statusCode: Int, data: Data?)
@@ -30,6 +30,25 @@ public enum NetworkError: Error, LocalizedError {
             return "Unauthorized"
         case .trustEvaluationFailed:
             return "Certificate pinning failed"
+        }
+    }
+
+    public static func == (lhs: NetworkError, rhs: NetworkError) -> Bool {
+        switch (lhs, rhs) {
+        case (.invalidURL, .invalidURL):
+            return true
+        case (.transport, .transport):
+            return true // Can't compare Error instances, but we consider them equal if both are transport errors
+        case (.server(let lhsCode, _), .server(let rhsCode, _)):
+            return lhsCode == rhsCode // Compare status codes only
+        case (.decoding, .decoding):
+            return true // Can't compare Error instances, but we consider them equal if both are decoding errors
+        case (.unauthorized, .unauthorized):
+            return true
+        case (.trustEvaluationFailed, .trustEvaluationFailed):
+            return true
+        default:
+            return false
         }
     }
 }

@@ -13,18 +13,35 @@ let package = Package(
     ],
     products: [
         .library(name: "GitLabImageLoading", targets: ["GitLabImageLoading"]),
-        .library(name: "GitLabImageLoadingKingfisher", targets: ["GitLabImageLoadingKingfisher"])        
+        .library(name: "GitLabImageLoadingSDWebImage", targets: ["GitLabImageLoadingSDWebImage"]),
+        .library(name: "GitLabImageLoadingTestDoubles", targets: ["GitLabImageLoadingTestDoubles"])
     ],
     dependencies: [
-        .package(url: "https://github.com/onevcat/Kingfisher", from: "8.5.0")
+        .package(path: "../../Core/GitLabNetwork"),
+        .package(path: "../../Core/GitLabLogging"),
+        .package(url: "https://github.com/SDWebImage/SDWebImage", from: "5.18.0")
     ],
     targets: [
         .target(name: "GitLabImageLoading"),
         .target(
-            name: "GitLabImageLoadingKingfisher",
+            name: "GitLabImageLoadingSDWebImage",
             dependencies: [
                 "GitLabImageLoading",
-                .product(name: "Kingfisher", package: "Kingfisher")
+                .product(name: "GitLabNetwork", package: "GitLabNetwork"),
+                .product(name: "GitLabLogging", package: "GitLabLogging"),
+                .product(name: "SDWebImage", package: "SDWebImage")
+            ]
+        ),
+        .target(
+            name: "GitLabImageLoadingTestDoubles",
+            dependencies: ["GitLabImageLoading"],
+            path: "Sources/GitLabImageLoadingTestDoubles"
+        ),
+        .testTarget(
+            name: "GitLabImageLoadingTests",
+            dependencies: [
+                "GitLabImageLoading",
+                "GitLabImageLoadingTestDoubles"
             ]
         )
     ]

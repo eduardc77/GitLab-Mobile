@@ -11,13 +11,13 @@ import SwiftUI
 public struct PaginatedList<Item: Identifiable, Row: View>: View {
     public let items: [Item]
     public let isLoadingMore: Bool
-    public let onItemAppear: (Item) -> Void
+    public let onItemAppear: @MainActor (Item) -> Void
     @ViewBuilder public var row: (Item) -> Row
 
     public init(
         items: [Item],
         isLoadingMore: Bool,
-        onItemAppear: @escaping (Item) -> Void,
+        onItemAppear: @MainActor @escaping (Item) -> Void,
         row: @escaping (Item) -> Row
     ) {
         self.items = items
@@ -43,7 +43,11 @@ public struct PaginatedList<Item: Identifiable, Row: View>: View {
                 HStack {
                     ProgressView()
                         .scaleEffect(0.8)
-                    Text("Loading more...")
+                    Text(String(localized: LocalizedStringResource(
+                        "ds.loading_more",
+                        table: "DesignSystem",
+                        bundle: .atURL(Bundle.module.bundleURL)
+                    )))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }

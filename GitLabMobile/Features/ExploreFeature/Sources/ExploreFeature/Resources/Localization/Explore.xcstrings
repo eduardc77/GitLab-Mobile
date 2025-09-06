@@ -1,0 +1,168 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "explore.destinations.projects" : {
+      "comment" : "Label for the 'Projects' destination in the Explore section.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Projects"
+          }
+        }
+      }
+    },
+    "explore.entries.projects.subtitle" : {
+      "comment" : "Subtitle describing the Projects entry in Explore.",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Browse repositories and codebases" } }
+      }
+    },
+    "explore.entries.users.subtitle" : {
+      "comment" : "Subtitle describing the Users entry in Explore.",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Discover developers and contributors" } }
+      }
+    },
+    "explore.entries.groups.subtitle" : {
+      "comment" : "Subtitle describing the Groups entry in Explore.",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Explore organizations and teams" } }
+      }
+    },
+    "explore.entries.topics.subtitle" : {
+      "comment" : "Subtitle describing the Topics entry in Explore.",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Explore projects by topic" } }
+      }
+    },
+    "explore.entries.snippets.subtitle" : {
+      "comment" : "Subtitle describing the Snippets entry in Explore.",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Browse code snippets" } }
+      }
+    },
+    "explore.destinations.groups" : {
+      "comment" : "Label for the 'Groups' destination in the Explore section.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Groups"
+          }
+        }
+      }
+    },
+    "explore.destinations.snippets" : {
+      "comment" : "Label for the 'Snippets' destination in the Explore section.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Snippets"
+          }
+        }
+      }
+    },
+    "explore.destinations.topics" : {
+      "comment" : "Label for the 'Topics' destination in the Explore section.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Topics"
+          }
+        }
+      }
+    },
+    "explore.destinations.users" : {
+      "comment" : "Label for the 'Users' destination in the Explore section.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Users"
+          }
+        }
+      }
+    },
+    "explore.projects.direction" : {
+      "comment" : "Title for the picker that selects sort direction.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Direction"
+          }
+        }
+      }
+    },
+    "explore.projects.empty.description" : {
+      "comment" : "Description shown when no projects are available in the list.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No projects found. Try refreshing or check your connection."
+          }
+        }
+      }
+    },
+    "explore.projects.empty.title" : {
+      "comment" : "Title shown when no projects are available in the list.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Projects"
+          }
+        }
+      }
+    },
+    "explore.projects.recent_searches" : {
+      "comment" : "Header for the section that displays recent searches.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent Searches"
+          }
+        }
+      }
+    },
+    "explore.projects.sort_by" : {
+      "comment" : "Title for the picker that selects the sort field.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sort by"
+          }
+        }
+      }
+    },
+    "explore.projects.title" : {
+      "comment" : "Navigation bar title for the Explore Projects screen.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explore Projects"
+          }
+        }
+      }
+    },
+    "explore.title" : {
+      "comment" : "Navigation bar title for the Explore screen.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explore"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

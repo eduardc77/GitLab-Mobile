@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import GitLabDesignSystem
 
 public struct SignInView: View {
     @Environment(AuthenticationStore.self) private var authStore
@@ -18,23 +19,23 @@ public struct SignInView: View {
             Image(systemName: "globe")
                 .font(.system(size: 64))
                 .foregroundStyle(.secondary)
-            Text("Connect to GitLab")
+            Text(.AuthL10n.connectTitle)
                 .font(.headline)
 
             switch authStore.status {
             case .authenticating:
-                ProgressView("Loading...")
+                LoadingView()
             case .unauthenticated, .authenticated:
                 Button {
                     authStore.signIn()
                 } label: {
-                    Label("Sign in with GitLab", systemImage: "person.crop.circle.badge.plus")
+                    Label(String(localized: .AuthL10n.signInWithGitLab), systemImage: "person.crop.circle.badge.plus")
                 }
                 .buttonStyle(.borderedProminent)
             }
         }
-        .alert("Error", isPresented: .constant(authStore.errorMessage != nil), actions: {
-            Button("OK") { authStore.clearError() }
+        .alert(String(localized: .AuthL10n.errorTitle), isPresented: .constant(authStore.errorMessage != nil), actions: {
+            Button(String(localized: .AuthL10n.okButtonTitle)) { authStore.clearError() }
         }, message: { Text(authStore.errorMessage ?? "") })
     }
 }

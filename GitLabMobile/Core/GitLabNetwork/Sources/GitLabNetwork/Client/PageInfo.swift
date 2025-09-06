@@ -49,13 +49,13 @@ public enum PaginationParser {
             page: page ?? 1,
             perPage: perPage ?? 20,
             nextPage: (((headers["x-next-page"] as? String)
-                ?? (headers["X-Next-Page"] as? String)).flatMap(Int.init)) ?? linkNextPage,
+                        ?? (headers["X-Next-Page"] as? String)).flatMap(Int.init)) ?? linkNextPage,
             prevPage: (((headers["x-prev-page"] as? String)
-                ?? (headers["X-Prev-Page"] as? String)).flatMap(Int.init)) ?? linkPrevPage,
+                        ?? (headers["X-Prev-Page"] as? String)).flatMap(Int.init)) ?? linkPrevPage,
             total: ((headers["x-total"] as? String)
-                ?? (headers["X-Total"] as? String)).flatMap(Int.init),
+                    ?? (headers["X-Total"] as? String)).flatMap(Int.init),
             totalPages: ((headers["x-total-pages"] as? String)
-                ?? (headers["X-Total-Pages"] as? String)).flatMap(Int.init)
+                         ?? (headers["X-Total-Pages"] as? String)).flatMap(Int.init)
         )
     }
 

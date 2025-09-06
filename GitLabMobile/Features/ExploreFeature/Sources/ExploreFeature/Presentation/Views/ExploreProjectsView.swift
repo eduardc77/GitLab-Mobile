@@ -13,11 +13,13 @@ import GitLabDesignSystem
 import ProjectsUI
 import ProjectsCache
 import GitLabLogging
+import GitLabNavigation
 
 public struct ExploreProjectsView: View {
     @Environment(\.modelContext) private var modelContext
-    @State public var store: ExploreProjectsStore
+    @State private var store: ExploreProjectsStore
     @State private var searchPresented = false
+    @Environment(ExploreRouter.self) private var router
 
     public init(repository: any ProjectsRepository) {
         self._store = State(initialValue: ExploreProjectsStore(repository: repository))
@@ -28,15 +30,25 @@ public struct ExploreProjectsView: View {
             items: store.items,
             isLoadingMore: store.isLoadingMore,
             onItemAppear: { project in
-                if store.isNearEnd(for: project.id) {
-                    Task(priority: .utility) { await store.loadMoreIfNeeded(currentItem: project) }
+                Task { @MainActor in
+                    if store.isNearEnd(for: project.id) {
+                        Task(priority: .utility) { await store.loadMoreIfNeeded(currentItem: project) }
+                    }
                 }
             },
-            row: { project in ProjectRow(project: project) }
+            row: { project in
+                Button {
+                    router.navigate(to: .projectDetail(project))
+                } label: {
+                    ProjectRow(project: project)
+                }
+            }
         )
         .listStyle(.plain)
-        .navigationTitle("Explore Projects")
+        .navigationTitle(String(localized: .ExploreProjectsL10n.title))
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .task {
             await store.configureLocalCache { @MainActor in ProjectsCache(modelContext: modelContext) }
             await store.initialLoad()
@@ -48,7 +60,7 @@ public struct ExploreProjectsView: View {
         )
         .searchSuggestions {
             if store.query.isEmpty && !(store.isLoading || store.isReloading || store.isSearching) {
-                Section("Recent Searches") {
+                Section(String(localized: .ExploreProjectsL10n.recentSearches)) {
                     ForEach(store.recentQueries, id: \.self) { suggestion in
                         Text(suggestion)
                             .lineLimit(1)
@@ -68,14 +80,12 @@ public struct ExploreProjectsView: View {
         .refreshable { await store.load() }
         .overlay {
             if store.isReloading || store.isSearching || (store.isLoading && store.items.isEmpty) {
-                ProgressView("Loading...")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(.systemGroupedBackground))
+                LoadingView()
             } else if store.items.isEmpty, !(store.isLoading || store.isSearching) {
                 ContentUnavailableView {
-                    Label("No Projects", systemImage: "folder.badge.questionmark")
+                    Label(String(localized: .ExploreProjectsL10n.emptyTitle), systemImage: "folder.badge.questionmark")
                 } description: {
-                    Text("No projects found. Try refreshing or check your connection.")
+                    Text(.ExploreProjectsL10n.emptyDescription)
                 }
             }
         }
@@ -94,22 +104,22 @@ public struct ExploreProjectsView: View {
             }
         }
         .searchPresentationToolbarBehavior(.avoidHidingContent)
-        .alert("Error", isPresented: Binding(
+        .alert(String(localized: .ExploreAlertsL10n.errorTitle), isPresented: Binding(
             get: { (store.errorMessage ?? "").isEmpty == false },
             set: { _ in store.errorMessage = nil }
         )) {
-            Button("OK", role: .cancel) {}
+            Button(String(localized: .ExploreAlertsL10n.okButtonTitle), role: .cancel) {}
         } message: { Text(store.errorMessage ?? "") }
     }
 
     @ViewBuilder
     private var sortMenuContent: some View {
-        Picker("Sort by", selection: $store.sortBy) {
+        Picker(String(localized: .ExploreProjectsL10n.sortBy), selection: $store.sortBy) {
             ForEach(ProjectSortField.allCases, id: \.self) { option in
                 Text(option.displayTitle).tag(option)
             }
         }
-        Picker("Direction", selection: $store.sortDirection) {
+        Picker(String(localized: .ExploreProjectsL10n.direction), selection: $store.sortDirection) {
             ForEach(SortDirection.allCases, id: \.self) { direction in
                 Text(direction.displayTitle).tag(direction)
             }

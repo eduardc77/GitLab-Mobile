@@ -18,14 +18,15 @@ public struct ProfileHeader: View {
             AsyncImageView(url: user.avatarUrl, contentMode: .fill, targetSize: CGSize(width: 56, height: 56)) {
                 Circle().fill(Color(.secondarySystemFill))
             }
-            .frame(width: 56, height: 56)
             .clipShape(Circle())
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(user.name).font(.headline)
                 Text("@\(user.username)").font(.subheadline).foregroundStyle(.secondary)
                 if let created = user.createdAt {
-                    Text("Member since \(created, format: .dateTime.year().month().day())")
+                    let dateString = created.formatted(.dateTime.year().month().day())
+                    let format = String(localized: .ProfileHeaderL10n.memberSince)
+                    Text(String(format: format, dateString))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

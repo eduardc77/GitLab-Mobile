@@ -41,6 +41,9 @@ let package = Package(
                 .product(name: "ProjectsDomain", package: "ProjectsKit"),
                 .product(name: "ProjectsCache", package: "ProjectsKit"),
                 .product(name: "UserProjectsFeature", package: "UserProjectsFeature")
+            ],
+            resources: [
+                .process("Resources")
             ]),
         .testTarget(
             name: "ProfileFeatureTests",
