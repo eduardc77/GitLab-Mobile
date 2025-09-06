@@ -21,7 +21,8 @@ let package = Package(
         .package(path: "../../Core/GitLabUtilities"),
         .package(path: "../../Core/GitLabLogging"),
         .package(path: "../../Core/GitLabDesignSystem"),
-        .package(path: "../../Kits/ProjectsKit")
+        .package(path: "../../Kits/ProjectsKit"),
+        .package(path: "../../Core/GitLabNavigation")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -34,7 +35,8 @@ let package = Package(
                 .product(name: "GitLabDesignSystem", package: "GitLabDesignSystem"),
                 .product(name: "ProjectsDomain", package: "ProjectsKit"),
                 .product(name: "ProjectsCache", package: "ProjectsKit"),
-                .product(name: "ProjectsUI", package: "ProjectsKit")
+                .product(name: "ProjectsUI", package: "ProjectsKit"),
+                .product(name: "GitLabNavigation", package: "GitLabNavigation")
             ],
             resources: [
                 .process("Resources")

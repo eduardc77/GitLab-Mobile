@@ -99,8 +99,18 @@ public actor AuthorizationManager: AuthorizationManagerProtocol, AuthProviding {
 
     private func isExpired(_ token: OAuthTokenDTO) -> Bool {
         guard let expiresIn = token.expiresIn, let createdAt = token.createdAt else { return false }
-        let expiry = Date(timeIntervalSince1970: createdAt).addingTimeInterval(TimeInterval(expiresIn))
-        return expiry.addingTimeInterval(-30) <= Date()
+
+        // Handle both seconds and milliseconds timestamps
+        // GitLab typically returns timestamps in seconds, but some OAuth providers may use milliseconds
+        let createdDate: Date
+        if createdAt > 1_000_000_000_000 { // If timestamp is > 1 trillion, it's likely milliseconds
+            createdDate = Date(timeIntervalSince1970: createdAt / 1000)
+        } else {
+            createdDate = Date(timeIntervalSince1970: createdAt)
+        }
+
+        let expiry = createdDate.addingTimeInterval(TimeInterval(expiresIn))
+        return expiry.addingTimeInterval(-30) <= Date() // 30 second buffer
     }
 
     // AuthProviding

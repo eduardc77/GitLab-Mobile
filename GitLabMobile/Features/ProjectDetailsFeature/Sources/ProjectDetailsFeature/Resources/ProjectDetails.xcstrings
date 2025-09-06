@@ -1,6 +1,61 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "pd.open_files" : {
+      "comment" : "Label for browsing project code and files.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Files"
+          }
+        }
+      }
+    },
+    "pd.open_contributors" : {
+      "comment" : "Label for project contributors count.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contributors"
+          }
+        }
+      }
+    },
+    "pd.open_commits" : {
+      "comment" : "Label for project commits count.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commits"
+          }
+        }
+      }
+    },
+    "pd.change_branch" : {
+      "comment" : "Button text for changing the repository branch.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change branch"
+          }
+        }
+      }
+    },
+    "pd.default_branch" : {
+      "comment" : "Short label used near the repository's default branch name.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default branch"
+          }
+        }
+      }
+    },
     "pd.error" : {
       "comment" : "Generic error alert title on the project details screen.",
       "localizations" : {
@@ -8,6 +63,292 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error"
+          }
+        }
+      }
+    },
+    "pd.error.network" : {
+      "comment" : "Error message for network connection failures.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network connection failed. Check your internet connection."
+          }
+        }
+      }
+    },
+    "pd.error.readme_invalid" : {
+      "comment" : "Error message when README content is invalid.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "README file contains invalid content."
+          }
+        }
+      }
+    },
+    "pd.error.readme_not_found" : {
+      "comment" : "Error message when README file is not found.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No README file found for this project."
+          }
+        }
+      }
+    },
+    "pd.error.readme_rendering" : {
+      "comment" : "Error message when README cannot be rendered.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "README file couldn't be displayed."
+          }
+        }
+      }
+    },
+    "pd.error.unauthorized" : {
+      "comment" : "Error message for authentication failures.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authentication required. Please sign in again."
+          }
+        }
+      }
+    },
+    "pd.error.decoding" : {
+      "comment" : "Error message for data parsing failures.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data parsing error."
+          }
+        }
+      }
+    },
+    "pd.error.not_found" : {
+      "comment" : "Error message when a resource is not found.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resource not found."
+          }
+        }
+      }
+    },
+    "pd.error.parsing" : {
+      "comment" : "Error message for data parsing failures.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to parse data."
+          }
+        }
+      }
+    },
+    "pd.error.server" : {
+      "comment" : "Error message for server failures.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server error."
+          }
+        }
+      }
+    },
+    "pd.error.unknown" : {
+      "comment" : "Error message for unknown failures.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown error."
+          }
+        }
+      }
+    },
+    "pd.fork" : {
+      "comment" : "Button text for forking the project.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fork"
+          }
+        }
+      }
+    },
+    "pd.forks" : {
+      "comment" : "Short label for the forks count.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forks"
+          }
+        }
+      }
+    },
+    "pd.open_issues" : {
+      "comment" : "Label for project issues count.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Issues"
+          }
+        }
+      }
+    },
+    "pd.license" : {
+      "comment" : "Row label for the project license type.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "License"
+          }
+        }
+      }
+    },
+    "pd.license.load_error" : {
+      "comment" : "Error message when license fails to load.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to load license."
+          }
+        }
+      }
+    },
+    "pd.license.not_available" : {
+      "comment" : "Message when license is not available.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "License not available."
+          }
+        }
+      }
+    },
+    "pd.meta.branch" : {
+      "comment" : "Label for branch name in meta information.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Branch"
+          }
+        }
+      }
+    },
+    "pd.meta.created" : {
+      "comment" : "Label for project creation date in meta information.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Created"
+          }
+        }
+      }
+    },
+    "pd.meta.forks" : {
+      "comment" : "Label for fork count in meta information.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forks"
+          }
+        }
+      }
+    },
+    "pd.meta.stars" : {
+      "comment" : "Label for star count in meta information.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stars"
+          }
+        }
+      }
+    },
+    "pd.meta.updated" : {
+      "comment" : "Label for last activity date in meta information.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Updated"
+          }
+        }
+      }
+    },
+    "pd.meta.visibility" : {
+      "comment" : "Label for project visibility in meta information.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visibility"
+          }
+        }
+      }
+    },
+    "pd.merge_requests" : {
+      "comment" : "Label for project merge requests count.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Merge Requests"
+          }
+        }
+      }
+    },
+    "pd.more_actions" : {
+      "comment" : "Menu button title for additional project actions.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More"
+          }
+        }
+      }
+    },
+    "pd.none" : {
+      "comment" : "Text shown when no value is available (e.g., no license).",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "None"
+          }
+        }
+      }
+    },
+    "pd.no_description" : {
+      "comment" : "Text shown when project has no description.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No description available"
           }
         }
       }
@@ -22,8 +363,216 @@
           }
         }
       }
-    }
+    },
+    "pd.open_in_browser" : {
+      "comment" : "Menu item for opening the project in a web browser.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open in Browser"
+          }
+        }
+      }
+    },
+    "pd.open_in_gitlab" : {
+      "comment" : "Menu item for opening the project in GitLab web interface.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open in GitLab"
+          }
+        }
+      }
+    },
+    "pd.show_issues" : {
+      "comment" : "Label for showing project issues.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Issues"
+          }
+        }
+      }
+    },
+    "pd.open_license" : {
+      "comment" : "Label for viewing project license.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "License"
+          }
+        }
+      }
+    },
+    "pd.open_merge_requests" : {
+      "comment" : "Label for showing project merge requests.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Merge Requests"
+          }
+        }
+      }
+    },
+    "pd.open_milestones" : {
+      "comment" : "Label for project milestones count.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Milestones"
+          }
+        }
+      }
+    },
+    "pd.open_releases" : {
+      "comment" : "Label for project releases count.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Releases"
+          }
+        }
+      }
+    },
+    "pd.open_readme" : {
+      "comment" : "Label for viewing project README.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "README"
+          }
+        }
+      }
+    },
+    "pd.visibility" : {
+      "comment" : "Label for project visibility status.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visibility"
+          }
+        }
+      }
+    },
+    "pd.repository.branch" : {
+      "comment" : "Label for the repository branch section.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Branch"
+          }
+        }
+      }
+    },
+    "pd.retry" : {
+      "comment" : "Retry button title for alerts.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        }
+      }
+    },
+    "pd.section.overview" : {
+      "comment" : "Section title for general project information.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Overview"
+          }
+        }
+      }
+    },
+    "pd.section.activity" : {
+      "comment" : "Section title for project activity information.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activity"
+          }
+        }
+      }
+    },
+    "pd.cancel" : {
+      "comment" : "Cancel button text.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "pd.select_branch" : {
+      "comment" : "Navigation title for branch selection screen.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Branch"
+          }
+        }
+      }
+    },
+    "pd.share_project" : {
+      "comment" : "Menu item for sharing the project.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share Project"
+          }
+        }
+      }
+    },
+    "pd.star" : {
+      "comment" : "Button text for starring/favoriting the project.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Star"
+          }
+        }
+      }
+    },
+    "pd.stars" : {
+      "comment" : "Short label for the stars count.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stars"
+          }
+        }
+      }
+    },
+    "pd.topics" : {
+      "comment" : "Section header shown above the list of project topics.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Topics"
+          }
+        }
+      }
+    },
   },
   "version" : "1.0"
 }
-

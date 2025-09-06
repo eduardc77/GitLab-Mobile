@@ -9,15 +9,15 @@
 import SwiftUI
 import SwiftData
 import ProjectsDomain
-import GitLabNavigation
 import GitLabDesignSystem
 import ProjectsUI
 import ProjectsCache
 import GitLabLogging
+import GitLabNavigation
 
 public struct ExploreProjectsView: View {
     @Environment(\.modelContext) private var modelContext
-    @State public var store: ExploreProjectsStore
+    @State private var store: ExploreProjectsStore
     @State private var searchPresented = false
     @Environment(ExploreRouter.self) private var router
 
@@ -30,8 +30,10 @@ public struct ExploreProjectsView: View {
             items: store.items,
             isLoadingMore: store.isLoadingMore,
             onItemAppear: { project in
-                if store.isNearEnd(for: project.id) {
-                    Task(priority: .utility) { await store.loadMoreIfNeeded(currentItem: project) }
+                Task { @MainActor in
+                    if store.isNearEnd(for: project.id) {
+                        Task(priority: .utility) { await store.loadMoreIfNeeded(currentItem: project) }
+                    }
                 }
             },
             row: { project in
@@ -44,7 +46,9 @@ public struct ExploreProjectsView: View {
         )
         .listStyle(.plain)
         .navigationTitle(String(localized: .ExploreProjectsL10n.title))
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .task {
             await store.configureLocalCache { @MainActor in ProjectsCache(modelContext: modelContext) }
             await store.initialLoad()
@@ -76,9 +80,7 @@ public struct ExploreProjectsView: View {
         .refreshable { await store.load() }
         .overlay {
             if store.isReloading || store.isSearching || (store.isLoading && store.items.isEmpty) {
-                ProgressView(String(localized: .ExploreProjectsL10n.loading))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(.systemGroupedBackground))
+                LoadingView()
             } else if store.items.isEmpty, !(store.isLoading || store.isSearching) {
                 ContentUnavailableView {
                     Label(String(localized: .ExploreProjectsL10n.emptyTitle), systemImage: "folder.badge.questionmark")

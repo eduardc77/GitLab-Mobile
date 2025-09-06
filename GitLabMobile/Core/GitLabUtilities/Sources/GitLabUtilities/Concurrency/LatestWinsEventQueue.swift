@@ -11,27 +11,46 @@ import Foundation
 public final class LatestWinsEventQueue<Event: Equatable & Sendable> {
     public typealias Handler = @MainActor @Sendable (Event) async -> Void
 
-    private var continuation: AsyncStream<Event>.Continuation?
+    // Use a separate holder to avoid retain cycles
+    private final class ContinuationHolder {
+        var continuation: AsyncStream<Event>.Continuation?
+
+        func finish() {
+            continuation?.finish()
+            continuation = nil
+        }
+    }
+
+    private let continuationHolder = ContinuationHolder()
     private var driver: Task<Void, Never>?
 
     public init() {}
 
-    deinit { driver?.cancel() }
+    deinit {
+        driver?.cancel()
+        continuationHolder.finish()
+    }
 
     public func start(handler: @escaping Handler) {
-        let stream = AsyncStream(Event.self, bufferingPolicy: .bufferingNewest(1)) { continuation in
-            self.continuation = continuation
-        }
+        // Cancel existing driver and finish old continuation
         driver?.cancel()
-        driver = Task {
-            var active: Task<Void, Never>?
+        continuationHolder.finish()
+
+        // Create new stream using the holder to avoid retain cycle
+        let stream = AsyncStream(Event.self, bufferingPolicy: .bufferingNewest(1)) { continuation in
+            continuationHolder.continuation = continuation
+        }
+
+        // Start the driver task - handler is already @MainActor
+        driver = Task { @MainActor in
             for await event in stream {
-                active?.cancel()
-                active = Task { @MainActor in await handler(event) }
-                _ = await active?.value
+                // Call handler directly since we're on main actor
+                await handler(event)
             }
         }
     }
 
-    public func send(_ event: Event) { continuation?.yield(event) }
+    public func send(_ event: Event) {
+        continuationHolder.continuation?.yield(event)
+    }
 }

@@ -1,3 +1,13 @@
+//
+//  MockImageLoader.swift
+//  GitLabImageLoadingTestDoubles
+//
+//  Copyright © 2025 Eliomane. All rights reserved.
+//  Licensed under Apache License v2.0. See LICENSE file.
+//
+//  Mock implementation of ImageLoadingClient for testing
+//
+
 import SwiftUI
 import GitLabImageLoading
 
@@ -16,4 +26,12 @@ public struct StubImageLoader: ImageLoadingClient {
     }
 
     public func configureDefaults() {}
+
+    public func cancelLoad(for url: URL) async {}
+
+    public func cancelAllLoads() async {}
+
+    public func clearMemoryCache() async {}
+
+    public func clearDiskCache() async {}
 }

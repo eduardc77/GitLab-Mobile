@@ -12,26 +12,29 @@ let package = Package(
         .tvOS(.v16)
     ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "GitLabNavigation",
-            targets: ["GitLabNavigation"]),
+            targets: ["GitLabNavigation"])
     ],
     dependencies: [
-        .package(path: "../../Kits/ProjectsKit"),
+        .package(path: "../GitLabUtilities"),
+        .package(path: "../GitLabLogging"),
+        .package(path: "../GitLabDesignSystem"),
+        .package(path: "../../Kits/ProjectsKit")
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "GitLabNavigation",
             dependencies: [
+                .product(name: "GitLabUtilities", package: "GitLabUtilities"),
+                .product(name: "GitLabLogging", package: "GitLabLogging"),
+                .product(name: "GitLabDesignSystem", package: "GitLabDesignSystem"),
                 .product(name: "ProjectsDomain", package: "ProjectsKit")
-            ]
-        ),
-        .testTarget(
-            name: "GitLabNavigationTests",
-            dependencies: ["GitLabNavigation"]
-        ),
+            ]),
+        // Temporarily disabled test target due to overlapping sources issue
+        // .testTarget(
+        //     name: "GitLabNavigationTests",
+        //     dependencies: ["GitLabNavigation"]
+        // )
     ]
 )

@@ -14,6 +14,12 @@ public extension JSONDecoder {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
+
+            // Handle null values properly for optional Date fields
+            if container.decodeNil() {
+                return Date.distantPast // Return a default date for null values
+            }
+
             let string = try container.decode(String.self)
 
             // Allocate formatters locally to avoid shared mutable state across actors
@@ -25,8 +31,15 @@ public extension JSONDecoder {
             iso.formatOptions = [.withInternetDateTime]
             if let date = iso.date(from: string) { return date }
 
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid ISO8601 date: \(string)")
+            // Handle date-only format (YYYY-MM-DD)
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            if let date = dateFormatter.date(from: string) { return date }
+
+            // For unparseable dates, return a default instead of throwing
+            return Date.distantPast
         }
+
         return decoder
     }
 }

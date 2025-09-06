@@ -15,11 +15,6 @@ extension LocalizedStringResource {
             table: "Auth",
             bundle: .atURL(Bundle.module.bundleURL)
         )
-        static let loading = LocalizedStringResource(
-            "auth.loading",
-            table: "Auth",
-            bundle: .atURL(Bundle.module.bundleURL)
-        )
         static let signInWithGitLab = LocalizedStringResource(
             "auth.sign_in_with_gitlab",
             table: "Auth",

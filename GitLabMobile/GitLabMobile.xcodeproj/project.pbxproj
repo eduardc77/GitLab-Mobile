@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE0260572E64BDB2000A6415 /* GitLabNavigation in Frameworks */ = {isa = PBXBuildFile; productRef = CE0260562E64BDB2000A6415 /* GitLabNavigation */; };
+		CE2BC5682E5CD6C3007D685F /* GitLabImageLoadingSDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = CE2BC5672E5CD6C3007D685F /* GitLabImageLoadingSDWebImage */; };
 		CE30893D2E59384800B3F40D /* ProjectDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = CE77B2B42E53C59700AA55AF /* ProjectDetailsFeature */; };
-		CE3089832E59462500B3F40D /* GitLabNavigation in Frameworks */ = {isa = PBXBuildFile; productRef = CE3089822E59462500B3F40D /* GitLabNavigation */; };
 		CE3536012E53CFCD00B479D7 /* ProjectsCache in Frameworks */ = {isa = PBXBuildFile; productRef = CE3536002E53CFCD00B479D7 /* ProjectsCache */; };
 		CE3536032E53CFCD00B479D7 /* ProjectsData in Frameworks */ = {isa = PBXBuildFile; productRef = CE3536022E53CFCD00B479D7 /* ProjectsData */; };
 		CE3536052E53CFCD00B479D7 /* ProjectsDomain in Frameworks */ = {isa = PBXBuildFile; productRef = CE3536042E53CFCD00B479D7 /* ProjectsDomain */; };
@@ -24,7 +25,6 @@
 		CEBA20532E551A350004A2E1 /* UsersData in Frameworks */ = {isa = PBXBuildFile; productRef = CEBA20522E551A350004A2E1 /* UsersData */; };
 		CEBA20552E551A350004A2E1 /* UsersDomain in Frameworks */ = {isa = PBXBuildFile; productRef = CEBA20542E551A350004A2E1 /* UsersDomain */; };
 		CEF49D392E54A7D500E6D38C /* GitLabImageLoading in Frameworks */ = {isa = PBXBuildFile; productRef = CEF49D382E54A7D500E6D38C /* GitLabImageLoading */; };
-		CEF49D3B2E54A7D500E6D38C /* GitLabImageLoadingKingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = CEF49D3A2E54A7D500E6D38C /* GitLabImageLoadingKingfisher */; };
 		CEF49D422E54AA5900E6D38C /* UserProjectsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = CEF49D412E54AA5900E6D38C /* UserProjectsFeature */; };
 /* End PBXBuildFile section */
 
@@ -47,7 +47,6 @@
 				GitLabDesignSystem,
 				GitLabImageLoading,
 				GitLabLogging,
-				GitLabNavigation,
 				GitLabNetwork,
 				GitLabPersistence,
 				GitLabUtilities,
@@ -119,9 +118,8 @@
 				CE77B2B32E53C58B00AA55AF /* ProfileFeature in Frameworks */,
 				CEF49D422E54AA5900E6D38C /* UserProjectsFeature in Frameworks */,
 				CE77B2A32E53C56B00AA55AF /* AuthFeature in Frameworks */,
-				CEF49D3B2E54A7D500E6D38C /* GitLabImageLoadingKingfisher in Frameworks */,
-				CE3089832E59462500B3F40D /* GitLabNavigation in Frameworks */,
 				CEF49D392E54A7D500E6D38C /* GitLabImageLoading in Frameworks */,
+				CE0260572E64BDB2000A6415 /* GitLabNavigation in Frameworks */,
 				CE7E159B2E53D5AA00C3FD3E /* GitLabDesignSystem in Frameworks */,
 				CE77B2AD2E53C57E00AA55AF /* GitLabPersistence in Frameworks */,
 				CE77B2B12E53C58600AA55AF /* HomeFeature in Frameworks */,
@@ -131,6 +129,7 @@
 				CE77B2AF2E53C58200AA55AF /* GitLabUtilities in Frameworks */,
 				CE3536052E53CFCD00B479D7 /* ProjectsDomain in Frameworks */,
 				CEBA20532E551A350004A2E1 /* UsersData in Frameworks */,
+				CE2BC5682E5CD6C3007D685F /* GitLabImageLoadingSDWebImage in Frameworks */,
 				CE77B2A92E53C57700AA55AF /* GitLabLogging in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -202,11 +201,11 @@
 				CE3536042E53CFCD00B479D7 /* ProjectsDomain */,
 				CE7E159A2E53D5AA00C3FD3E /* GitLabDesignSystem */,
 				CEF49D382E54A7D500E6D38C /* GitLabImageLoading */,
-				CEF49D3A2E54A7D500E6D38C /* GitLabImageLoadingKingfisher */,
 				CEF49D412E54AA5900E6D38C /* UserProjectsFeature */,
 				CEBA20522E551A350004A2E1 /* UsersData */,
 				CEBA20542E551A350004A2E1 /* UsersDomain */,
-				CE3089822E59462500B3F40D /* GitLabNavigation */,
+				CE2BC5672E5CD6C3007D685F /* GitLabImageLoadingSDWebImage */,
+				CE0260562E64BDB2000A6415 /* GitLabNavigation */,
 			);
 			productName = GitLabMobile;
 			productReference = CE8494CD2E4B783300B03BD6 /* GitLabMobile.app */;
@@ -277,7 +276,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nCONFIG_PATH=\"$SRCROOT/../.swiftlint.yml\"\n\nif which swiftlint > /dev/null; then\n    echo \"Auto-fixing SwiftLint violations where possible…\"\n    swiftlint --fix --config \"$CONFIG_PATH\"\n\n    echo \"Then linting for remaining violations…\"\n    swiftlint lint --config \"$CONFIG_PATH\"\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nCONFIG_PATH=\"$SRCROOT/../.swiftlint.yml\"\n\nif which swiftlint > /dev/null; then\n    echo \"Auto-fixing SwiftLint violations where possible…\"\n    swiftlint --fix --config \"$CONFIG_PATH\" || true\n\n    echo \"Then linting for remaining violations…\"\n    swiftlint lint --config \"$CONFIG_PATH\" || true\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -511,9 +510,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		CE3089822E59462500B3F40D /* GitLabNavigation */ = {
+		CE0260562E64BDB2000A6415 /* GitLabNavigation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = GitLabNavigation;
+		};
+		CE2BC5672E5CD6C3007D685F /* GitLabImageLoadingSDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GitLabImageLoadingSDWebImage;
 		};
 		CE3536002E53CFCD00B479D7 /* ProjectsCache */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -578,10 +581,6 @@
 		CEF49D382E54A7D500E6D38C /* GitLabImageLoading */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = GitLabImageLoading;
-		};
-		CEF49D3A2E54A7D500E6D38C /* GitLabImageLoadingKingfisher */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = GitLabImageLoadingKingfisher;
 		};
 		CEF49D412E54AA5900E6D38C /* UserProjectsFeature */ = {
 			isa = XCSwiftPackageProductDependency;

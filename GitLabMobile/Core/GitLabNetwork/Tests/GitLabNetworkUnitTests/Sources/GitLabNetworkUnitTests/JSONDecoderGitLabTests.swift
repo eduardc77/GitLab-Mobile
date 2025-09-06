@@ -29,15 +29,16 @@ struct JSONDecoderSuite {
         #expect(abs(decodedWithoutFractional.timeIntervalSince1970 - 1723984496.0) < 0.01)
     }
 
-    @Test("Throws for invalid dates")
-    func throwsForInvalidDates() {
+    @Test("Returns default date for invalid dates")
+    func returnsDefaultForInvalidDates() throws {
         // Given
         let invalid = Data(#"{"date":"not-a-date"}"#.utf8)
         struct Box: Decodable { let date: Date }
 
+        // When
+        let decoded = try JSONDecoder.gitLab.decode(Box.self, from: invalid)
+
         // Then
-        #expect(throws: Error.self) {
-            _ = try JSONDecoder.gitLab.decode(Box.self, from: invalid)
-        }
+        #expect(decoded.date == Date.distantPast)
     }
 }

@@ -2,7 +2,6 @@
   "sourceLanguage" : "en",
   "strings" : {
     "userprojects.title" : { "comment" : "Navigation title for the user's projects list.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Projects" } } } },
-    "userprojects.loading" : { "comment" : "Shown while projects are loading.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Loading..." } } } },
     "userprojects.recent_searches" : { "comment" : "Header for the recent searches suggestions list.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Recent searches" } } } },
     "userprojects.empty.title" : { "comment" : "Title for empty state when no projects are found.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "No Projects" } } } },
     "userprojects.empty.description" : { "comment" : "Description for empty state when no projects are found.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "No projects found. Try refreshing or check your connection." } } } },

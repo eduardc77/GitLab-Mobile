@@ -14,28 +14,69 @@ import GitLabNavigation
 
 struct ExploreNavigationStack: View {
     @Environment(ProjectsDependencies.self) private var projectsDependencies
-    @State private var router = ExploreRouter()
+    @Environment(AppRouter.self) private var appRouter
+    @Environment(ExploreRouter.self) private var exploreRouter
 
     var body: some View {
-        NavigationStack(path: $router.path) {
+        @Bindable var appRouter = appRouter
+        NavigationStack(path: $appRouter.explorePath) {
             ExploreRootView()
-                .navigationDestination(for: ExploreRouter.Destination.self) { destination in
+                .navigationDestination(for: ExploreDestination.self) { destination in
                     switch destination {
                     case .projects:
                         ExploreProjectsView(repository: projectsDependencies.repository)
                     case .projectDetail(let project):
-                        ProjectDetailsView(projectId: project.id, repository: projectsDependencies.repository)
+                        ProjectDetailsView(
+                            projectId: project.id,
+                            repository: projectsDependencies.repository,
+                            router: exploreRouter,
+                            tab: .explore
+                        )
+                    case .projectId(let id):
+                        ProjectDetailsView(
+                            projectId: id,
+                            repository: projectsDependencies.repository,
+                            router: exploreRouter, tab: .explore
+                        )
+                    case .projectReadme(let projectId, let projectPath):
+                        ProjectREADMEView(
+                            projectId: projectId,
+                            projectPath: projectPath,
+                            repository: projectsDependencies.repository
+                        )
+                    case .projectLicense(let projectId, let projectPath):
+                        ProjectLicenseView(
+                            projectId: projectId,
+                            projectPath: projectPath,
+                            repository: projectsDependencies.repository
+                        )
+                    case .projectFiles(let projectId, let ref, let path):
+                        ProjectFilesView(
+                            projectId: projectId,
+                            repository: projectsDependencies.repository,
+                            ref: ref,
+                            path: path,
+                            router: exploreRouter,
+                            tab: .explore
+                        )
+                    case .projectFile(let projectId, let path, let ref, let blobSHA):
+                        ProjectFileViewer(
+                            projectId: projectId,
+                            path: path,
+                            ref: ref,
+                            repository: projectsDependencies.repository,
+                            blobSHA: blobSHA
+                        )
                     case .users:
-                        Text("Users")
+                        Text("Users feature coming soon")
                     case .groups:
-                        Text("Groups")
+                        Text("Groups feature coming soon")
                     case .topics:
-                        Text("Topics")
+                        Text("Topics feature coming soon")
                     case .snippets:
-                        Text("Snippets")
+                        Text("Snippets feature coming soon")
                     }
                 }
         }
-        .environment(router)
     }
 }

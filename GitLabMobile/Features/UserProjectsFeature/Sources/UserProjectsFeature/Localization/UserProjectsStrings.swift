@@ -15,11 +15,6 @@ extension LocalizedStringResource {
             table: "UserProjects",
             bundle: .atURL(Bundle.module.bundleURL)
         )
-        static let loading = LocalizedStringResource(
-            "userprojects.loading",
-            table: "UserProjects",
-            bundle: .atURL(Bundle.module.bundleURL)
-        )
         static let recentSearches = LocalizedStringResource(
             "userprojects.recent_searches",
             table: "UserProjects",

@@ -12,6 +12,10 @@ import SwiftUI
 public protocol ImageLoadingClient: Sendable {
     func loadImage(url: URL?, targetSizePoints: CGSize?) async throws -> Image
     func configureDefaults()
+    func cancelLoad(for url: URL) async
+    func cancelAllLoads() async
+    func clearMemoryCache() async
+    func clearDiskCache() async
 }
 
 private struct ImageLoaderKey: EnvironmentKey {
@@ -34,6 +38,7 @@ public struct RemoteImageView<Placeholder: View>: View {
     private let onFailure: ((Error) -> Void)?
 
     @State private var loadedImage: Image?
+    @State private var currentTask: Task<Void, Never>?
 
     public init(
         url: URL?,
@@ -58,11 +63,32 @@ public struct RemoteImageView<Placeholder: View>: View {
             }
         }
         .task(id: url) {
-            guard let loader else { return }
+            // Cancel any existing task
+            currentTask?.cancel()
+
+            guard let loader, let url else { return }
+
             do {
-                loadedImage = try await loader.loadImage(url: url, targetSizePoints: targetSize)
+                let image = try await loader.loadImage(url: url, targetSizePoints: targetSize)
+                // Only update if task wasn't cancelled
+                if !Task.isCancelled {
+                    loadedImage = image
+                }
             } catch {
-                onFailure?(error)
+                // Only call onFailure if task wasn't cancelled
+                if !Task.isCancelled {
+                    onFailure?(error)
+                }
+            }
+        }
+        .onDisappear {
+            // Cancel task when view disappears - no need to store reference
+            currentTask?.cancel()
+        }
+        .onChange(of: url) { oldValue, newValue in
+            // Clear image when URL changes
+            if oldValue != newValue {
+                loadedImage = nil
             }
         }
     }

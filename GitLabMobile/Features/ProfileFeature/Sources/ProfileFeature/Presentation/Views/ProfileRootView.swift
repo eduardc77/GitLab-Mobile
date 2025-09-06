@@ -8,15 +8,14 @@
 
 import SwiftUI
 import AuthFeature
-import UserProjectsFeature
-import ProjectsUI
-import GitLabNavigation
 import ProjectsDomain
+import GitLabNavigation
+import GitLabDesignSystem
 
 public struct ProfileRootView: View {
     @Environment(AuthenticationStore.self) private var authStore
     @Environment(ProfileStore.self) private var profileStore
-    private let router = ProfileRouter()
+    @Environment(ProfileRouter.self) private var router
     @Environment(\.scenePhase) private var scenePhase
     @Environment(ProjectsDependencies.self) private var projectsDependencies
 
@@ -26,9 +25,7 @@ public struct ProfileRootView: View {
         Group {
             switch authStore.status {
             case .authenticating:
-                ProgressView(String(localized: .ProfileLoadingL10n.profile))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(.systemGroupedBackground))
+                LoadingView()
             case .authenticated:
                 ProfileView(store: profileStore)
             case .unauthenticated:
@@ -39,7 +36,7 @@ public struct ProfileRootView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 if authStore.status == .authenticated {
-                    NavigationLink(value: ProfileRouter.Destination.settings) { Image(systemName: "gearshape") }
+                    NavigationLink(value: ProfileDestination.settings) { Image(systemName: "gearshape") }
                 }
             }
         }

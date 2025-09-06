@@ -31,11 +31,6 @@ extension LocalizedStringResource {
             table: "Explore",
             bundle: .atURL(Bundle.module.bundleURL)
         )
-        static let loading = LocalizedStringResource(
-            "explore.projects.loading",
-            table: "Explore",
-            bundle: .atURL(Bundle.module.bundleURL)
-        )
         static let emptyTitle = LocalizedStringResource(
             "explore.projects.empty.title",
             table: "Explore",

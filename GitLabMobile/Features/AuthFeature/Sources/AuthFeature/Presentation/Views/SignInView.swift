@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import GitLabDesignSystem
 
 public struct SignInView: View {
     @Environment(AuthenticationStore.self) private var authStore
@@ -23,7 +24,7 @@ public struct SignInView: View {
 
             switch authStore.status {
             case .authenticating:
-                ProgressView(String(localized: .AuthL10n.loading))
+                LoadingView()
             case .unauthenticated, .authenticated:
                 Button {
                     authStore.signIn()

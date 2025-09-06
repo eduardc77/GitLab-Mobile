@@ -23,7 +23,7 @@ public struct ExploreRootView: View {
                 ForEach(ExploreEntry.allCases, id: \.self) { entry in
                     switch entry {
                     case .projects:
-                        NavigationLink(value: ExploreRouter.Destination.projects) {
+                        NavigationLink(value: ExploreDestination.projects) {
                             NavigationRow(
                                 systemImage: entry.systemImage,
                                 iconColor: entry.iconColor,
@@ -45,7 +45,9 @@ public struct ExploreRootView: View {
             }
             .listSectionSeparator(.hidden, edges: .top)
         }
-        .navigationBarTitleDisplayMode(.large)
         .navigationTitle(String(localized: .ExploreL10n.title))
+        #if os(iOS)
+        .navigationBarTitleDisplayMode(.large)
+        #endif
     }
 }

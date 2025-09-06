@@ -66,7 +66,7 @@ extension ProfileEntry {
         }
     }
 
-    var destination: ProfileRouter.Destination {
+    var destination: ProfileDestination {
         switch self {
         case .activity: return .activity
         case .groups: return .groups

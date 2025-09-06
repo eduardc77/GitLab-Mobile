@@ -17,7 +17,7 @@ import GitLabNavigation
 public struct HomeRootView: View {
     @Environment(AuthenticationStore.self) private var authStore
     @Environment(ProjectsDependencies.self) private var projectsDependencies
-    private let router = HomeRouter()
+    @Environment(HomeRouter.self) private var router
 
     public init() {}
 
@@ -25,9 +25,7 @@ public struct HomeRootView: View {
         Group {
             switch authStore.status {
             case .authenticating:
-                ProgressView(String(localized: .HomeLoadingL10n.loading))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(.systemGroupedBackground))
+                LoadingView()
             case .authenticated:
                 yourWorkSection
             case .unauthenticated:
