@@ -1,3 +1,13 @@
+//
+//  SecureStoreUnitTests.swift
+//  GitLabPersistenceUnitTests
+//
+//  Copyright © 2025 Eliomane. All rights reserved.
+//  Licensed under Apache License v2.0. See LICENSE file.
+//
+//  Unit tests for SecureStore functionality
+//
+
 import Foundation
 import Testing
 @testable import GitLabPersistence

@@ -15,6 +15,7 @@ public final class CachedProject {
     @Attribute(.unique) public var id: Int
     public var name: String
     public var pathWithNamespace: String
+    public var namespaceName: String?
     public var projectDescription: String?
     public var starCount: Int
     public var forksCount: Int
@@ -26,6 +27,7 @@ public final class CachedProject {
         id: Int,
         name: String,
         pathWithNamespace: String,
+        namespaceName: String?,
         projectDescription: String?,
         starCount: Int,
         forksCount: Int,
@@ -36,6 +38,7 @@ public final class CachedProject {
         self.id = id
         self.name = name
         self.pathWithNamespace = pathWithNamespace
+        self.namespaceName = namespaceName
         self.projectDescription = projectDescription
         self.starCount = starCount
         self.forksCount = forksCount
@@ -49,6 +52,7 @@ public final class CachedProject {
             id: summary.id,
             name: summary.name,
             pathWithNamespace: summary.pathWithNamespace,
+            namespaceName: summary.namespaceName,
             projectDescription: summary.description,
             starCount: summary.starCount,
             forksCount: summary.forksCount,
@@ -65,6 +69,7 @@ public extension ProjectSummary {
             id: cached.id,
             name: cached.name,
             pathWithNamespace: cached.pathWithNamespace,
+            namespaceName: cached.namespaceName,
             description: cached.projectDescription,
             starCount: cached.starCount,
             forksCount: cached.forksCount,

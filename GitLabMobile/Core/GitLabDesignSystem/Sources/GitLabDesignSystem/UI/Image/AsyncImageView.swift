@@ -39,5 +39,6 @@ public struct AsyncImageView<Placeholder: View>: View {
             placeholder: { placeholder },
             onFailure: onFailure
         )
+        .frame(width: targetSizePoints?.width, height: targetSizePoints?.height)
     }
 }

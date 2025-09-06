@@ -1,3 +1,13 @@
+//
+//  RemoteImageViewTests.swift
+//  GitLabImageLoadingTests
+//
+//  Copyright © 2025 Eliomane. All rights reserved.
+//  Licensed under Apache License v2.0. See LICENSE file.
+//
+//  Unit tests for RemoteImageView functionality
+//
+
 import SwiftUI
 import Testing
 @testable import GitLabImageLoading

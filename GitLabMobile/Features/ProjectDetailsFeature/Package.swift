@@ -17,19 +17,23 @@ let package = Package(
             targets: ["ProjectDetailsFeature"])
     ],
     dependencies: [
+        .package(path: "../../Features/AuthFeature"),
         .package(path: "../../Kits/ProjectsKit"),
         .package(path: "../../Core/GitLabDesignSystem"),
-        .package(path: "../../Core/GitLabImageLoading"),
+        .package(path: "../../Core/GitLabUtilities"),
+        .package(path: "../../Core/GitLabNavigation")
     ],
     targets: [
         .target(
             name: "ProjectDetailsFeature",
             dependencies: [
+                .product(name: "AuthFeature", package: "AuthFeature"),
                 .product(name: "ProjectsDomain", package: "ProjectsKit"),
                 .product(name: "ProjectsData", package: "ProjectsKit"),
                 .product(name: "ProjectsUI", package: "ProjectsKit"),
                 .product(name: "GitLabDesignSystem", package: "GitLabDesignSystem"),
-                .product(name: "GitLabImageLoading", package: "GitLabImageLoading"),
+                .product(name: "GitLabUtilities", package: "GitLabUtilities"),
+                .product(name: "GitLabNavigation", package: "GitLabNavigation")
             ],
             resources: [
                 .process("Resources")

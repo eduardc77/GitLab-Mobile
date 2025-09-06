@@ -10,15 +10,10 @@ import SwiftUI
 import HomeFeature
 import ExploreFeature
 import ProfileFeature
+import GitLabNavigation
 
 struct ContentView: View {
-
     var body: some View {
-        TabView {
-            ForEach(AppTab.allCases) { tab in
-                tab.destination()
-                    .tabItem { tab.label }
-            }
-        }
+        AppTabView()
     }
 }

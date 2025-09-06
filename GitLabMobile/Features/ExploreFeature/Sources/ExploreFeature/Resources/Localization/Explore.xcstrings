@@ -119,17 +119,6 @@
         }
       }
     },
-    "explore.projects.loading" : {
-      "comment" : "Text shown while the Explore Projects list is loading.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Loading..."
-          }
-        }
-      }
-    },
     "explore.projects.recent_searches" : {
       "comment" : "Header for the section that displays recent searches.",
       "localizations" : {

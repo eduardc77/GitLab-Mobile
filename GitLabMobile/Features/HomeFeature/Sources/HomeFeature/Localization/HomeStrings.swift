@@ -38,14 +38,6 @@ extension LocalizedStringResource {
         )
     }
 
-    enum HomeLoadingL10n {
-        static let loading = LocalizedStringResource(
-            "home.loading",
-            table: "Home",
-            bundle: .atURL(Bundle.module.bundleURL)
-        )
-    }
-
     enum HomeDestinationsL10n {
         static let projects = LocalizedStringResource(
             "home.destinations.projects",
@@ -90,7 +82,7 @@ extension LocalizedStringResource {
     }
 
     enum HomeEntriesL10n {
-        // Refined, concise subtitles (Apple-style)
+        // Refined, concise subtitles
         static let projectsSubtitle = LocalizedStringResource(
             "home.entries.projects.subtitle",
             table: "Home",

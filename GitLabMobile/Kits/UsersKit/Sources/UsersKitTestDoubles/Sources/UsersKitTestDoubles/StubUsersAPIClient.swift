@@ -26,4 +26,22 @@ public struct StubUsersAPIClient: APIClientProtocol {
 		if let error { throw error }
 		fatalError("Not used in StubUsersAPIClient")
 	}
+	public func sendWithHeaders<Response>(_ endpoint: GitLabNetwork.Endpoint<Response>) async throws -> (Response, HTTPURLResponse) where Response: Decodable {
+		// For stub implementation, return a basic HTTP 200 response
+		let url = URL(string: "https://api.example.com")!
+		let httpResponse = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!
+
+		// For most test cases, we can just call the regular send method
+		do {
+			let response = try await send(endpoint)
+			return (response, httpResponse)
+		} catch {
+			// If the regular send fails, provide a stub response
+			throw NSError(
+                domain: "StubUsersAPIClient",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "sendWithHeaders not implemented for this endpoint in stub"]
+            )
+		}
+	}
 }

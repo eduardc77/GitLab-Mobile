@@ -17,14 +17,6 @@ extension LocalizedStringResource {
         )
     }
 
-    enum ProfileLoadingL10n {
-        static let profile = LocalizedStringResource(
-            "profile.loading",
-            table: "Profile",
-            bundle: .atURL(Bundle.module.bundleURL)
-        )
-    }
-
     enum ProfileDestinationsL10n {
         static let activity = LocalizedStringResource(
             "profile.destinations.activity",

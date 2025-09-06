@@ -34,6 +34,19 @@ public struct StubAPIClient: APIClientProtocol {
         return response
     }
 
+    public func sendWithHeaders<Response>(_ endpoint: Endpoint<Response>) async throws -> (Response, HTTPURLResponse) where Response: Decodable {
+        let key = endpoint.path
+        if let error = errors[key] { throw error }
+        guard let response = responses[key] as? Response else {
+            fatalError("No response configured for endpoint: \(key)")
+        }
+        let httpResponse = HTTPURLResponse(url: URL(string: "https://test.com")!,
+                                          statusCode: 200,
+                                          httpVersion: "1.1",
+                                          headerFields: [:])!
+        return (response, httpResponse)
+    }
+
     public mutating func configureResponse<T: Sendable>(for path: String, response: T) {
         responses[path] = response
     }

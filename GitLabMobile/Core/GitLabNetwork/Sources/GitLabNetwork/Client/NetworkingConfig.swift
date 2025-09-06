@@ -19,17 +19,40 @@ public struct NetworkingConfig: Sendable {
 }
 
 public enum AppNetworkingConfig {
-    public static func loadFromInfoPlist() -> NetworkingConfig {
-        if let dict = Bundle.main.infoDictionary,
-           let gitLab = dict["GitLabConfiguration"] as? [String: Any],
-           let base = gitLab["BaseURL"] as? String,
-           let baseURL = URL(string: base) {
-            let prefix = (gitLab["APIPrefix"] as? String) ?? "/api/v4"
-            return NetworkingConfig(baseURL: baseURL, apiPrefix: prefix)
+    public static func loadFromInfoPlist() throws -> NetworkingConfig {
+        guard let dict = Bundle.main.infoDictionary else {
+            throw NSError(
+                domain: "GitLabNetwork",
+                code: 1,
+                userInfo: [NSLocalizedDescriptionKey: "Unable to load Info.plist"]
+            )
         }
-        // Fallback to gitlab.com
-        // Avoid force unwrapping
-        let fallbackURL = URL(string: "https://gitlab.com") ?? URL(fileURLWithPath: "/")
-        return NetworkingConfig(baseURL: fallbackURL, apiPrefix: "/api/v4")
+
+        guard let gitLab = dict["GitLabConfiguration"] as? [String: Any] else {
+            throw NSError(
+                domain: "GitLabNetwork",
+                code: 2,
+                userInfo: [NSLocalizedDescriptionKey: "Missing GitLabConfiguration section in Info.plist"]
+            )
+        }
+
+        guard let base = gitLab["GitLabBaseURL"] as? String else {
+            throw NSError(
+                domain: "GitLabNetwork",
+                code: 3,
+                userInfo: [NSLocalizedDescriptionKey: "Missing GitLabBaseURL in Info.plist"]
+            )
+        }
+
+        guard let baseURL = URL(string: base) else {
+            throw NSError(
+                domain: "GitLabNetwork",
+                code: 4,
+                userInfo: [NSLocalizedDescriptionKey: "Invalid GitLabBaseURL format: \(base)"]
+            )
+        }
+
+        let prefix = (gitLab["GitLabAPIPrefix"] as? String) ?? "/api/v4"
+        return NetworkingConfig(baseURL: baseURL, apiPrefix: prefix)
     }
 }

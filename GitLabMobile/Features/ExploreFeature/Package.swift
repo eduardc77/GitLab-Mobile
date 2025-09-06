@@ -21,8 +21,8 @@ let package = Package(
         .package(path: "../../Core/GitLabUtilities"),
         .package(path: "../../Core/GitLabLogging"),
         .package(path: "../../Core/GitLabDesignSystem"),
-        .package(path: "../../Kits/ProjectsKit"),
-        .package(path: "../../Core/GitLabNavigation")
+        .package(path: "../../Core/GitLabNavigation"),
+        .package(path: "../../Kits/ProjectsKit")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -33,10 +33,10 @@ let package = Package(
                 .product(name: "GitLabUtilities", package: "GitLabUtilities"),
                 .product(name: "GitLabLogging", package: "GitLabLogging"),
                 .product(name: "GitLabDesignSystem", package: "GitLabDesignSystem"),
+                .product(name: "GitLabNavigation", package: "GitLabNavigation"),
                 .product(name: "ProjectsDomain", package: "ProjectsKit"),
                 .product(name: "ProjectsCache", package: "ProjectsKit"),
-                .product(name: "ProjectsUI", package: "ProjectsKit"),
-                .product(name: "GitLabNavigation", package: "GitLabNavigation")
+                .product(name: "ProjectsUI", package: "ProjectsKit")
             ],
             resources: [
                 // Process Resources directory for localization catalogs and assets

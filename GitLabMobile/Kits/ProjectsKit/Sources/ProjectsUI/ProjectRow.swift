@@ -18,46 +18,55 @@ public struct ProjectRow: View {
     }
 
     public var body: some View {
-        HStack {
-            AvatarView(url: project.avatarUrl)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top, spacing: 8) {
+                AvatarView(url: project.avatarUrl)
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(project.name)
-                    .font(.headline)
-                    .lineLimit(1)
+                VStack(alignment: .leading) {
+                    Text(project.name)
+                        .font(.headline)
+                        .lineLimit(1)
 
-                if let description = project.description, !description.isEmpty {
-                    Text(description)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                }
-
-                HStack(spacing: 8) {
-                    HStack {
-                        Text("\(project.starCount)")
-                        Image(systemName: "star")
-                    }
-                    .font(.caption2)
-
-                    HStack {
-                        Text("\(project.forksCount)")
-                        Image(systemName: "arrow.branch")
-                    }
-                    .font(.caption2)
-
-                    Spacer()
-
-                    if let date = project.lastActivityAt {
-                        let relative = date.formatted(.relative(presentation: .named))
-                        let format = String(localized: .DesignSystem.updated)
-                        Text(String(format: format, relative))
-                            .font(.caption2)
+                    if let namespaceName = project.namespaceName {
+                        Text(namespaceName)
+                            .font(.subheadline)
                             .foregroundStyle(.secondary)
+                            .lineLimit(1)
                     }
                 }
-                .foregroundStyle(.secondary)
             }
+
+            if let description = project.description, !description.isEmpty {
+                Text(description)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+
+            HStack(spacing: 8) {
+                HStack {
+                    Text("\(project.starCount)")
+                    Image(systemName: "star")
+                }
+                .font(.caption2)
+
+                HStack {
+                    Text("\(project.forksCount)")
+                    Image(systemName: "arrow.branch")
+                }
+                .font(.caption2)
+
+                Spacer()
+
+                if let date = project.lastActivityAt {
+                    let relative = date.formatted(.relative(presentation: .named))
+                    let format = String(localized: .DesignSystemL10n.updated)
+                    Text(String(format: format, relative))
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .foregroundStyle(.secondary)
         }
     }
 }
@@ -75,7 +84,6 @@ private struct AvatarView: View {
                 .fill(Color(.secondarySystemFill))
                 .overlay(Image(systemName: "folder").imageScale(.small).foregroundStyle(.secondary))
         }
-        .frame(width: 40, height: 40)
         .clipShape(.rect(cornerRadius: 4))
         .overlay(
             RoundedRectangle(cornerRadius: 4)

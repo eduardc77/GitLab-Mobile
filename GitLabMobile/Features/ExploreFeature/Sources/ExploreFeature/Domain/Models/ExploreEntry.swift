@@ -54,7 +54,7 @@ extension ExploreEntry {
         }
     }
 
-    var destination: ExploreRouter.Destination {
+    var destination: ExploreDestination {
         switch self {
         case .projects: return .projects
         case .users: return .users

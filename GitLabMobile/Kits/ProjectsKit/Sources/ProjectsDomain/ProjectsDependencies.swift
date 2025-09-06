@@ -6,12 +6,14 @@
 //  Licensed under Apache License v2.0. See LICENSE file.
 //
 
-import Observation
+import GitLabNetwork
+import SwiftUICore
 
 @Observable
-@MainActor
-public final class ProjectsDependencies {
+public final class ProjectsDependencies: Sendable {
     @ObservationIgnored public let repository: any ProjectsRepository
 
-    public init(repository: any ProjectsRepository) { self.repository = repository }
+    public init(repository: any ProjectsRepository) {
+        self.repository = repository
+    }
 }

@@ -11,7 +11,6 @@
     "profile.entries.followers.subtitle" : { "comment" : "Subtitle under Followers in Profile: people who follow you.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "People who follow you" } } } },
     "profile.entries.following.subtitle" : { "comment" : "Subtitle under Following in Profile: people you follow.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "People you follow" } } } },
     "profile.title" : { "comment" : "Navigation bar title for the Profile screen.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Profile" } } } },
-    "profile.loading" : { "comment" : "Text shown while user profile loads.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Loading profile..." } } } },
     "profile.destinations.groups" : { "comment" : "Destination label.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Groups" } } } },
     "profile.destinations.activity" : { "comment" : "Destination label for Activity in Profile.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Activity" } } } },
     "profile.destinations.contributed_projects" : { "comment" : "Destination label for Contributed Projects in Profile.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Contributed Projects" } } } },

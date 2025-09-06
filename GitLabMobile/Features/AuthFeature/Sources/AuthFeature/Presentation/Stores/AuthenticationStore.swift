@@ -140,13 +140,25 @@ public final class AuthenticationStore {
         pendingState = nil
     }
 
+    public func getValidToken() async throws -> AuthToken {
+        let dto = try await authManager.getValidToken()
+        return AuthToken.from(dto)
+    }
+
     public func clearError() { errorMessage = nil }
 }
 
 private final class WebAuthPresentationProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        #if os(iOS)
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = scene.windows.first { return window }
         return ASPresentationAnchor()
+        #elseif os(macOS)
+        if let window = NSApplication.shared.mainWindow { return window }
+        return ASPresentationAnchor()
+        #else
+        return ASPresentationAnchor()
+        #endif
     }
 }

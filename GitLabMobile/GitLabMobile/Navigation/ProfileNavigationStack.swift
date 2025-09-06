@@ -8,19 +8,21 @@
 
 import SwiftUI
 import ProfileFeature
-import GitLabNavigation
 import ProjectsDomain
 import UserProjectsFeature
 import ProjectDetailsFeature
+import GitLabNavigation
 
 struct ProfileNavigationStack: View {
     @Environment(ProjectsDependencies.self) private var projectsDependencies
-    @State private var router = ProfileRouter()
+    @Environment(AppRouter.self) private var appRouter
+    @Environment(ProfileRouter.self) private var profileRouter
 
     var body: some View {
-        NavigationStack(path: $router.path) {
+        @Bindable var appRouter = appRouter
+        NavigationStack(path: $appRouter.profilePath) {
             ProfileRootView()
-                .navigationDestination(for: ProfileRouter.Destination.self) { destination in
+                .navigationDestination(for: ProfileDestination.self) { destination in
                     switch destination {
                     case .activity:
                         Text("Activity")
@@ -28,7 +30,8 @@ struct ProfileNavigationStack: View {
                         ProjectsListView(
                             repository: projectsDependencies.repository,
                             scope: .owned,
-                            navigationContext: .profile(router))
+                            navigationContext: .profile(profileRouter)
+                        )
                     case .contributedProjects:
                         Text("Contributed Projects")
                     case .starredProjects:
@@ -44,10 +47,42 @@ struct ProfileNavigationStack: View {
                     case .settings:
                         ProfileSettingsView()
                     case .projectDetail(let project):
-                        ProjectDetailsView(projectId: project.id, repository: projectsDependencies.repository)
+                        ProjectDetailsView(
+                            projectId: project.id,
+                            repository: projectsDependencies.repository,
+                            router: profileRouter, tab: .profile
+                        )
+                    case .projectReadme(let projectId, let projectPath):
+                        ProjectREADMEView(
+                            projectId: projectId,
+                            projectPath: projectPath,
+                            repository: projectsDependencies.repository
+                        )
+                    case .projectLicense(let projectId, let projectPath):
+                        ProjectLicenseView(
+                            projectId: projectId,
+                            projectPath: projectPath,
+                            repository: projectsDependencies.repository
+                        )
+                    case .projectFiles(let projectId, let ref, let path):
+                        ProjectFilesView(
+                            projectId: projectId,
+                            repository: projectsDependencies.repository,
+                            ref: ref,
+                            path: path,
+                            router: profileRouter,
+                            tab: .profile
+                        )
+                    case .projectFile(let projectId, let path, let ref, let blobSHA):
+                        ProjectFileViewer(
+                            projectId: projectId,
+                            path: path,
+                            ref: ref,
+                            repository: projectsDependencies.repository,
+                            blobSHA: blobSHA
+                        )
                     }
                 }
         }
-        .environment(router)
     }
 }

@@ -199,17 +199,6 @@
         }
       }
     },
-    "home.loading" : {
-      "comment" : "Text shown while data loads on the Home screen.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Loading..."
-          }
-        }
-      }
-    },
     "home.sections.your_work" : {
       "comment" : "Header for the user's work shortcuts section.",
       "localizations" : {

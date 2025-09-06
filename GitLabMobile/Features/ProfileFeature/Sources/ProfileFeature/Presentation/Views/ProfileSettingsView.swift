@@ -22,7 +22,7 @@ public struct ProfileSettingsView: View {
                 Button(role: .destructive) {
                     Task {
                         await authStore.signOut()
-                        router.navigateBack()
+                        router.goBack()
                     }
                 } label: {
                     Text(.ProfileSettingsL10n.signOut)

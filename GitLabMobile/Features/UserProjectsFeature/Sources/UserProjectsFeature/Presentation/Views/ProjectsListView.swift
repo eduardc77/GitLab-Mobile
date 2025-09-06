@@ -17,7 +17,7 @@ import GitLabNavigation
 
 public struct ProjectsListView: View {
     @Environment(\.modelContext) private var modelContext
-    @State public var store: UserProjectsStore
+    @State private var store: UserProjectsStore
     @State private var searchPresented = false
     private let navigationContext: NavigationContext
 
@@ -40,8 +40,10 @@ public struct ProjectsListView: View {
             items: store.items,
             isLoadingMore: store.isLoadingMore,
             onItemAppear: { project in
-                if store.isNearEnd(for: project.id) {
-                    Task(priority: .utility) { await store.loadMoreIfNeeded(currentItem: project) }
+                Task(priority: .utility) { @MainActor in
+                    if store.isNearEnd(for: project.id) {
+                        await store.loadMoreIfNeeded(currentItem: project)
+                    }
                 }
             },
             row: { project in
@@ -80,9 +82,7 @@ public struct ProjectsListView: View {
         }
         .overlay {
             if store.isReloading || store.isSearching || (store.isLoading && store.items.isEmpty) {
-                ProgressView(String(localized: .UserProjectsL10n.loading))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(.systemGroupedBackground))
+                LoadingView()
             } else if store.items.isEmpty, !(store.isLoading || store.isReloading || store.isSearching) {
                 ContentUnavailableView {
                     Label(String(localized: .UserProjectsL10n.emptyTitle), systemImage: "folder.badge.questionmark")

@@ -47,7 +47,9 @@ public final class ExploreProjectsStore {
     // MARK: - Pagination state
     @ObservationIgnored private var nextPageCursor: Int?
     @ObservationIgnored private let perPage = StoreDefaults.perPage
-    private var sortContext: SortContext { SortContext(query: queryIfValid(), sortBy: sortBy, sort: sortDirection) }
+    @ObservationIgnored private var sortContext: SortContext {
+        SortContext(query: queryIfValid(), sortBy: sortBy, sort: sortDirection)
+    }
     @ObservationIgnored private var pendingSectionChange = false
 
     public var sortBy: ProjectSortField = .starCount {

@@ -24,12 +24,13 @@ public struct HTTPRequestBuilder: Sendable {
 
     public func buildURL<Response>(for endpoint: Endpoint<Response>) throws -> URL {
         let fullPath = endpoint.isAbsolutePath ? endpoint.path : (apiPrefix + endpoint.path)
-        guard var components = URLComponents(
-            url: baseURL.appendingPathComponent(fullPath),
-            resolvingAgainstBaseURL: false
-        ) else {
-            throw NetworkError.invalidURL
-        }
+        var components = URLComponents()
+        components.scheme = baseURL.scheme
+        components.host = baseURL.host
+        components.port = baseURL.port
+        // Preserve any percent-encoding already present in the path (e.g., %2F for file_path)
+        let basePath = baseURL.path.isEmpty ? "" : baseURL.path
+        components.percentEncodedPath = basePath + fullPath
         components.queryItems = endpoint.queryItems.isEmpty ? nil : endpoint.queryItems
         guard let url = components.url else { throw NetworkError.invalidURL }
         return url

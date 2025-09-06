@@ -66,7 +66,7 @@ extension HomeEntry {
         }
     }
 
-    var destination: HomeRouter.Destination {
+    var destination: HomeDestination {
         switch self {
         case .projects: return .projects
         case .groups: return .groups

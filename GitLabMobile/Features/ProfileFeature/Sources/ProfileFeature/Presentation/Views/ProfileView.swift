@@ -8,7 +8,6 @@
 
 import SwiftUI
 import GitLabDesignSystem
-import GitLabNavigation
 
 public struct ProfileView: View {
     public var store: ProfileStore
@@ -18,10 +17,7 @@ public struct ProfileView: View {
             if let user = store.user {
                 ProfileHeader(user: user)
             } else if store.isLoading {
-                HStack {
-                    ProgressView()
-                    Text(.ProfileLoadingL10n.profile).foregroundStyle(.secondary)
-                }
+                LoadingView()
             }
 
             Section {
