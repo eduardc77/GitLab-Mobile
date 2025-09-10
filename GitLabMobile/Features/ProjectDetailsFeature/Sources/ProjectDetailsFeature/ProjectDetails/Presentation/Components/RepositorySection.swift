@@ -80,9 +80,10 @@ struct RepositorySection: View {
                     .foregroundStyle(Color.secondary)
             }
             Spacer()
-            Text(commitsCount.map { "\($0)" } ?? String(localized: ProjectDetailsL10n.none))
-                .foregroundStyle(.secondary)
-                .redacted(reason: isLoadingExtras && commitsCount == nil ? .placeholder : [])
+            AnimatedCountText(
+                count: commitsCount,
+                isLoading: isLoadingExtras && commitsCount == nil
+            )
         }
     }
 }

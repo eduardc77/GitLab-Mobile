@@ -11,7 +11,7 @@ import SwiftData
 import ProjectsDomain
 
 @MainActor
-public final class ProjectsCache: ProjectsCacheProviding {
+public final class ProjectsCache: ProjectsCacheProviding, ProjectDetailsCacheProviding {
     private let modelContext: ModelContext
 
     public init(modelContext: ModelContext) {
@@ -110,5 +110,74 @@ public final class ProjectsCache: ProjectsCacheProviding {
             limit: limit,
             staleInterval: staleInterval
         )
+    }
+
+    // MARK: - Project Details Caching
+
+    public func saveProjectDetails(_ details: ProjectDetails) throws {
+        // Delete existing cached details for this project
+        let projectId = details.id
+        let fetch = FetchDescriptor<CachedProjectDetails>(predicate: #Predicate { $0.id == projectId })
+        if let existing = try? modelContext.fetch(fetch).first {
+            modelContext.delete(existing)
+        }
+
+        // Save new cached details
+        let cached = CachedProjectDetails(from: details)
+        modelContext.insert(cached)
+        try modelContext.save()
+    }
+
+    public func loadProjectDetails(id: Int, staleInterval: TimeInterval) throws -> CachedProjectDetailsDTO? {
+        let fetch = FetchDescriptor<CachedProjectDetails>(predicate: #Predicate { $0.id == id })
+        guard let cached = try modelContext.fetch(fetch).first else { return nil }
+        // Decode topics from Data
+        let topics: [String]
+        if let topicsData = cached.topicsData {
+            topics = (try? JSONDecoder().decode([String].self, from: topicsData)) ?? []
+        } else {
+            topics = []
+        }
+
+        return CachedProjectDetailsDTO(
+            id: cached.id,
+            name: cached.name,
+            pathWithNamespace: cached.pathWithNamespace,
+            namespaceName: cached.namespaceName,
+            description: cached.projectDescription,
+            starCount: cached.starCount,
+            forksCount: cached.forksCount,
+            avatarUrl: cached.avatarUrlString.flatMap(URL.init(string:)),
+            webUrl: URL(string: cached.webUrlString) ?? URL(fileURLWithPath: "/"),
+            createdAt: cached.createdAt,
+            lastActivityAt: cached.lastActivityAt,
+            defaultBranch: cached.defaultBranch,
+            visibility: cached.visibility,
+            topics: topics,
+            cachedAt: cached.cachedAt
+        )
+    }
+
+    public func isProjectDetailsFresh(id: Int, staleInterval: TimeInterval) throws -> Bool {
+        let fetch = FetchDescriptor<CachedProjectDetails>(predicate: #Predicate { $0.id == id })
+        guard let cached = try modelContext.fetch(fetch).first else { return false }
+        return Date().timeIntervalSince(cached.cachedAt) <= staleInterval
+    }
+
+    public func clearProjectDetails(id: Int) throws {
+        let fetch = FetchDescriptor<CachedProjectDetails>(predicate: #Predicate { $0.id == id })
+        if let cached = try modelContext.fetch(fetch).first {
+            modelContext.delete(cached)
+            try modelContext.save()
+        }
+    }
+
+    public func clearAllProjectDetails() throws {
+        let fetch = FetchDescriptor<CachedProjectDetails>()
+        let allCached = try modelContext.fetch(fetch)
+        for cached in allCached {
+            modelContext.delete(cached)
+        }
+        try modelContext.save()
     }
 }

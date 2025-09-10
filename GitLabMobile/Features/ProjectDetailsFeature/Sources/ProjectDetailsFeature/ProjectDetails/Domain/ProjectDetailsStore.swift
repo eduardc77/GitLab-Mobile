@@ -9,6 +9,7 @@
 import Foundation
 import ProjectsDomain
 import GitLabLogging
+import GitLabDesignSystem
 
 @MainActor
 @Observable
@@ -33,15 +34,15 @@ final class ProjectDetailsStore {
 
     var selectedBranch: String? {
         didSet {
-            // When branch changes, refresh stats that depend on branch
+            // When branch changes, only refresh commits (branch-specific)
             if oldValue != selectedBranch {
                 // Cancel any existing branch task to prevent accumulation
                 branchTask?.cancel()
 
-                // Start new task for branch-specific stats
+                // Start new task for branch-specific stats only
                 branchTask = Task { @MainActor in
                     defer { branchTask = nil }
-                    await fetchStats()
+                    await fetchBranchSpecificStats()
                 }
             }
         }
@@ -135,6 +136,29 @@ final class ProjectDetailsStore {
         branchTask = nil
     }
 
+    /// Clear cached project details to force fresh data on next load
+    func clearCache() async {
+        // Note: The repository handles cache clearing internally
+        // This method is for future extensibility if we need manual cache control
+        AppLog.projects.debug("Cache clear requested for project \(self.projectId)")
+    }
+
+    /// Force refresh project details (bypasses cache)
+    func forceRefresh() async {
+        do {
+            // Use repository's force refresh method (clears cache + fetches fresh)
+            details = try await repository.forceRefreshProjectDetails(id: projectId)
+
+            // Reload extras to ensure everything is fresh
+            await loadAllExtras()
+
+            AppLog.projects.debug("Force refresh completed for project \(self.projectId)")
+        } catch {
+            // If force refresh fails, fall back to regular load
+            await load()
+        }
+    }
+
     /// Determine if an error should trigger a retry
     private func shouldRetry(error: ProjectDetailsError) -> Bool {
         switch error {
@@ -211,7 +235,7 @@ final class ProjectDetailsStore {
         // Fetch stats in parallel but handle failures individually
         async let issuesTask = repository.openIssuesCount(projectId: self.projectId)
         async let mrsTask = repository.openMergeRequestsCount(projectId: self.projectId)
-        async let contributorsTask = repository.contributorsCount(projectId: self.projectId, ref: branchRef)
+        async let contributorsTask = repository.contributorsCount(projectId: self.projectId, ref: nil)
         async let releasesTask = repository.releasesCount(projectId: self.projectId)
         async let milestonesTask = repository.milestonesCount(projectId: self.projectId)
         async let commitsTask = repository.commitsCount(projectId: self.projectId, ref: branchRef)
@@ -235,7 +259,7 @@ final class ProjectDetailsStore {
 
         do {
             self.contributorsCount = try await contributorsTask
-            AppLog.projects.debug("Successfully loaded contributors count for project \(self.projectId) on branch \(branchRef): \(self.contributorsCount ?? 0)")
+            AppLog.projects.debug("Successfully loaded total contributors count for project \(self.projectId): \(self.contributorsCount ?? 0)")
         } catch {
             AppLog.projects.debug("Failed to load contributors count for project \(self.projectId): \(error.localizedDescription)")
             self.contributorsCount = nil
@@ -266,6 +290,20 @@ final class ProjectDetailsStore {
         }
     }
 
+    /// Fetch only branch-specific statistics (commits only)
+    @MainActor
+    private func fetchBranchSpecificStats() async {
+        // Use selectedBranch if available, otherwise fallback to details.defaultBranch or "main"
+        let branchRef = selectedBranch ?? (details?.defaultBranch ?? "main")
+
+        // Only fetch commits (branch-specific), contributors are project-wide and don't change
+        do {
+            self.commitsCount = try await repository.commitsCount(projectId: self.projectId, ref: branchRef)
+        } catch {
+            self.commitsCount = nil
+        }
+    }
+
     func selectBranch(_ branchName: String) {
         selectedBranch = branchName
         AppLog.projects.debug("Selected branch: \(branchName) for project \(self.projectId)")
@@ -279,7 +317,7 @@ final class ProjectDetailsStore {
             AppLog.projects.debug("Successfully loaded license for project \(self.projectId)")
         } catch {
             AppLog.projects.debug("Failed to load license for project \(self.projectId): \(error.localizedDescription)")
-            self.licenseText = String(localized: ProjectDetailsL10n.none)
+            self.licenseText = String(localized: LocalizedStringResource.DesignSystemL10n.none)
         }
     }
 

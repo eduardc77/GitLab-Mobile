@@ -62,11 +62,11 @@ struct ActivitySection: View {
                 }
                 Spacer()
                 if isLoadingLicense && licenseType == nil {
-                    Text(String(localized: ProjectDetailsL10n.none))
+                    Text(String(localized: LocalizedStringResource.DesignSystemL10n.none))
                         .foregroundStyle(.secondary)
                         .redacted(reason: .placeholder)
                 } else {
-                    Text(licenseType ?? String(localized: ProjectDetailsL10n.none))
+                    Text(licenseType ?? String(localized: LocalizedStringResource.DesignSystemL10n.none))
                         .foregroundStyle(.secondary)
                 }
                 if licenseType != nil || isLoadingLicense {

@@ -11,6 +11,7 @@ import AuthFeature
 import ProjectsDomain
 import GitLabDesignSystem
 import GitLabNavigation
+import GitLabLogging
 
 public struct ProjectDetailsView: View {
     @Environment(\.openURL) private var openURL
@@ -50,6 +51,9 @@ public struct ProjectDetailsView: View {
         }
         .listStyle(.plain)
         .navigationBarTitleDisplayMode(.inline)
+        .refreshable {
+            await refreshProjectDetails()
+        }
         .task {
             await store.load()
             await authStore.restoreIfPossible()
@@ -203,8 +207,18 @@ public struct ProjectDetailsView: View {
             }
             .scrollTargetLayout()
         }
-        .scrollClipDisabled()
-        .scrollIndicators(.hidden)
-        .accessibilityLabel(String(localized: ProjectDetailsL10n.topics))
+            .scrollClipDisabled()
+            .scrollIndicators(.hidden)
+            .accessibilityLabel(String(localized: ProjectDetailsL10n.topics))
+    }
+
+    /// Handle pull-to-refresh by force refreshing all project data
+    @MainActor
+    private func refreshProjectDetails() async {
+        // Force refresh to bypass cache and get latest data
+        await store.forceRefresh()
+
+        // Log successful refresh
+        AppLog.projects.debug("Project \(store.projectId) force refreshed via pull-to-refresh")
     }
 }

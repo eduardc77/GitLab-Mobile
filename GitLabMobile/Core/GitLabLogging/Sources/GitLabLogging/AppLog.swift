@@ -15,6 +15,7 @@ public enum AppLog {
     // Feature-oriented categories
     public static let explore = Logger(subsystem: subsystem, category: "Explore")
     public static let projects = Logger(subsystem: subsystem, category: "Projects")
+    public static let issues = Logger(subsystem: subsystem, category: "Issues")
     public static let auth = Logger(subsystem: subsystem, category: "Auth")
     public static let network = Logger(subsystem: subsystem, category: "Network")
     public static let config = Logger(subsystem: subsystem, category: "Configuration")

@@ -24,6 +24,7 @@
       }
     },
     "ds.loading_more" : { "comment" : "Short status text shown at the bottom of lists while more items are loading.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Loading more..." } } } },
+    "ds.none" : { "comment" : "Text shown when there are no items or counts to display.", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "None" } } } },
   },
   "version" : "1.0"
 }

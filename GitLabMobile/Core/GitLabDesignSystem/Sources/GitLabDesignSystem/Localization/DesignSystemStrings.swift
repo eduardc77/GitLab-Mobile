@@ -26,5 +26,10 @@ public extension LocalizedStringResource {
             table: "DesignSystem",
             bundle: .atURL(Bundle.module.bundleURL)
         )
+        public static let none = LocalizedStringResource(
+            "ds.none",
+            table: "DesignSystem",
+            bundle: .atURL(Bundle.module.bundleURL)
+        )
     }
 }

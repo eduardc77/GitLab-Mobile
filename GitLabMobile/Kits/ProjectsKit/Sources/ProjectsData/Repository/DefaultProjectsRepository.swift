@@ -13,9 +13,13 @@ import ProjectsCache
 import GitLabNetwork
 import GitLabLogging
 
+// Import for NetworkError handling
+public typealias NetworkError = GitLabNetwork.NetworkError
+
 public actor DefaultProjectsRepository: ProjectsRepository {
     let remote: ProjectsRemoteDataSource
     let local: ProjectsLocalDataSource
+    let projectDetailsLocal: ProjectDetailsLocalDataSource
     let staleness: TimeInterval
     private let perPageDefault: Int
     private let readmeService: READMEService
@@ -23,12 +27,14 @@ public actor DefaultProjectsRepository: ProjectsRepository {
     public init(
         remote: ProjectsRemoteDataSource,
         local: ProjectsLocalDataSource,
+        projectDetailsLocal: ProjectDetailsLocalDataSource,
         readmeService: READMEService,
         staleness: TimeInterval = StoreDefaults.cacheStaleInterval,
         perPageDefault: Int = StoreDefaults.perPage
     ) {
         self.remote = remote
         self.local = local
+        self.projectDetailsLocal = projectDetailsLocal
         self.readmeService = readmeService
         self.staleness = staleness
         self.perPageDefault = perPageDefault
@@ -36,11 +42,40 @@ public actor DefaultProjectsRepository: ProjectsRepository {
 
     public func configureLocalCache(makeCache: @escaping @Sendable @MainActor () -> ProjectsCacheProviding) async {
         await local.configure(makeCache: makeCache)
+
+        // Configure project details cache
+        await projectDetailsLocal.configure(makeCache: { () -> ProjectDetailsCacheProviding in
+            // Cast to the combined protocol since ProjectsCache implements both
+            if let cache = makeCache() as? ProjectDetailsCacheProviding {
+                return cache
+            }
+            // Fallback - this shouldn't happen with our current implementation
+            fatalError("Cache does not support project details")
+        })
     }
 
     public func projectDetails(id: Int) async throws -> ProjectDetails {
+        // Try to load from cache first (for offline support)
+        if let cachedDTO = await projectDetailsLocal.loadProjectDetails(id: id, staleInterval: staleness) {
+            let projectDetails = ProjectDetails(from: cachedDTO)
+            AppLog.projects.debug("✅ Project details \(id) loaded from cache - offline ready!")
+
+            // Background refresh (don't await)
+            Task {
+                await refreshProjectDetails(id: id)
+            }
+
+            return projectDetails
+        }
+
+        // No cache available, fetch from network
+        AppLog.projects.debug("🌐 Project details \(id) not cached - fetching from network")
+        return try await fetchAndCacheProjectDetails(id: id)
+    }
+
+    private func fetchAndCacheProjectDetails(id: Int) async throws -> ProjectDetails {
         let dto = try await remote.fetchProjectDetails(id: id)
-        return ProjectDetails(
+        let projectDetails = ProjectDetails(
             id: dto.id,
             name: dto.name,
             pathWithNamespace: dto.pathWithNamespace,
@@ -56,6 +91,43 @@ public actor DefaultProjectsRepository: ProjectsRepository {
             visibility: dto.visibility,
             topics: dto.topics ?? []
         )
+
+        // Cache the fresh data
+        await projectDetailsLocal.saveProjectDetails(projectDetails)
+        AppLog.projects.debug("💾 Project details \(id) cached successfully")
+
+        return projectDetails
+    }
+
+    private func refreshProjectDetails(id: Int) async {
+        AppLog.projects.debug("🔄 Background refresh started for project \(id)")
+        do {
+            // This will update cache if data has changed (ETag prevents unnecessary downloads)
+            _ = try await fetchAndCacheProjectDetails(id: id)
+            AppLog.projects.debug("🔄 Background refresh completed for project \(id)")
+        } catch let error as NetworkError {
+            if case .server(304, _) = error {
+                // Data hasn't changed - this is expected and good!
+                AppLog.projects.debug("🔄 Project details \(id) unchanged (304), cache remains valid")
+            } else {
+                // Other NetworkError cases - cache remains unchanged
+                AppLog.projects.debug("🔄 Failed to refresh project details \(id): \(error.localizedDescription)")
+            }
+        } catch {
+            // Other errors (offline, auth, etc.) - cache remains unchanged
+            AppLog.projects.debug("🔄 Failed to refresh project details \(id): \(error.localizedDescription)")
+        }
+    }
+
+    /// Force refresh project details by clearing cache first
+    public func forceRefreshProjectDetails(id: Int) async throws -> ProjectDetails {
+        // Clear cache first to force fresh data
+        AppLog.projects.debug("🗑️ Force clearing cache for project \(id)")
+        await projectDetailsLocal.clearProjectDetails(id: id)
+
+        // Fetch fresh data (will recache automatically)
+        AppLog.projects.debug("🔄 Force refresh started for project \(id)")
+        return try await fetchAndCacheProjectDetails(id: id)
     }
 
     // MARK: - Extra fetchers (issues/MRs counts, license, tree)
