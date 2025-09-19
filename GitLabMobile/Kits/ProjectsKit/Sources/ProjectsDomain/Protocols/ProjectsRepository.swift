@@ -60,6 +60,7 @@ public protocol ProjectsRepository: Sendable {
 
 	// Details (single project)
 	func projectDetails(id: Int) async throws -> ProjectDetails
+	func forceRefreshProjectDetails(id: Int) async throws -> ProjectDetails
 
 	// Details extras
 	func openIssuesCount(projectId: Int) async throws -> Int
@@ -82,4 +83,10 @@ public protocol ProjectsRepository: Sendable {
 }
 
 // MARK: - Convenience helpers (default protocol extension)
-public extension ProjectsRepository {}
+public extension ProjectsRepository {
+    func forceRefreshProjectDetails(id: Int) async throws -> ProjectDetails {
+        // Default implementation just calls regular projectDetails
+        // Subclasses can override for more sophisticated cache clearing
+        try await projectDetails(id: id)
+    }
+}

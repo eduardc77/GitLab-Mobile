@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import GitLabDesignSystem
 
 /// A reusable row component for activity metrics
 /// This component encapsulates the common HStack pattern used for displaying
@@ -29,7 +30,7 @@ struct ActivityRow: View {
             CountDisplayView(
                 count: count,
                 isLoading: isLoading,
-                fallbackText: String(localized: ProjectDetailsL10n.none)
+                fallbackText: String(localized: LocalizedStringResource.DesignSystemL10n.none)
             )
         }
     }

@@ -32,7 +32,7 @@ public struct ExploreProjectsView: View {
             onItemAppear: { project in
                 Task { @MainActor in
                     if store.isNearEnd(for: project.id) {
-                        Task(priority: .utility) { await store.loadMoreIfNeeded(currentItem: project) }
+                        Task { await store.loadMoreIfNeeded(currentItem: project) }
                     }
                 }
             },

@@ -10,8 +10,11 @@ excluded:
   - .build
   - build
   - DerivedData
+  - build/
+  - DerivedData/
   - SourcePackages
   - Pods
+  - .swiftpm
   - Carthage
   - "**/checkouts/**"
   - "**/*.xcodeproj/**"

@@ -14,6 +14,7 @@ import AuthFeature
 import ProfileFeature
 import ProjectsDomain
 import ProjectsData
+import ProjectsCache
 import UsersData
 import Foundation
 
@@ -77,11 +78,23 @@ public final class AppEnvironment {
         // Repository wiring
         let remoteDS = DefaultProjectsRemoteDataSource(api: client)
         let localDS = DefaultProjectsLocalDataSource()
+        let projectDetailsLocalDS = DefaultProjectDetailsLocalDataSource()
         // Create README service outside of actor for better separation of concerns
         let readmeService = READMEService(remote: remoteDS, markdownRenderer: client)
-        let projectsRepository = DefaultProjectsRepository(remote: remoteDS, local: localDS, readmeService: readmeService)
+        let projectsRepository = DefaultProjectsRepository(
+            remote: remoteDS,
+            local: localDS,
+            projectDetailsLocal: projectDetailsLocalDS,
+            readmeService: readmeService
+        )
+
+        // Create issues repository
+        let issuesRepository = IssuesRepository(networkClient: client)
 
         // Create observable dependency container
-        self.projectsDependencies = ProjectsDependencies(repository: projectsRepository)
+        self.projectsDependencies = ProjectsDependencies(
+            repository: projectsRepository,
+            issuesRepository: issuesRepository
+        )
     }
 }

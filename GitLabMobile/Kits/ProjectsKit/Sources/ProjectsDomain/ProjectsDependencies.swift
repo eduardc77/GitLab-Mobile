@@ -12,8 +12,13 @@ import SwiftUICore
 @Observable
 public final class ProjectsDependencies: Sendable {
     @ObservationIgnored public let repository: any ProjectsRepository
+    @ObservationIgnored public let issuesRepository: any IssuesRepositoryProtocol
 
-    public init(repository: any ProjectsRepository) {
+    public init(
+        repository: any ProjectsRepository,
+        issuesRepository: any IssuesRepositoryProtocol
+    ) {
         self.repository = repository
+        self.issuesRepository = issuesRepository
     }
 }

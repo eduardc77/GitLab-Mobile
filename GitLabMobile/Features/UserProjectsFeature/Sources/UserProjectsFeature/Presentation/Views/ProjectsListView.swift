@@ -40,7 +40,7 @@ public struct ProjectsListView: View {
             items: store.items,
             isLoadingMore: store.isLoadingMore,
             onItemAppear: { project in
-                Task(priority: .utility) { @MainActor in
+                Task { @MainActor in
                     if store.isNearEnd(for: project.id) {
                         await store.loadMoreIfNeeded(currentItem: project)
                     }
