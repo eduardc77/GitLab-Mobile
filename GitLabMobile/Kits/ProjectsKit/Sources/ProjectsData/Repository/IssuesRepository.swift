@@ -4,7 +4,7 @@ import GitLabNetwork
 import GitLabLogging
 
 /// Implementation of IssuesRepository with separated cache
-public actor IssuesRepository: IssuesRepository {
+public actor IssuesRepository: IssuesRepositoryProtocol {
     private let networkClient: APIClient
     private var cache: IssuesCacheProviding?
 

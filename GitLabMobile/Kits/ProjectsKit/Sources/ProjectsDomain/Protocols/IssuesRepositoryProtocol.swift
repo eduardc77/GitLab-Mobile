@@ -1,7 +1,7 @@
 import Foundation
 
 /// Repository protocol for issue operations
-public protocol IssuesRepository: Sendable {
+public protocol IssuesRepositoryProtocol: Sendable {
     /// Fetch issues for a specific project
     func issues(for projectId: Int, page: Int, perPage: Int) async throws -> [Issue]
 
